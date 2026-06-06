@@ -3,15 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ROUTES } from "@/lib/constants";
 import type { UserRole, VerificationStatus } from "@/lib/types";
 
-const bypassAuth =
-  process.env.NEXT_PUBLIC_BYPASS_AUTH === "true";
-
 export async function middleware(request: NextRequest) {
-  // Dev only: set NEXT_PUBLIC_BYPASS_AUTH=true in .env.local to open protected routes without login
-  if (bypassAuth) {
-    return NextResponse.next({ request });
-  }
-
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
