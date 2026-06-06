@@ -1,14 +1,28 @@
-import type { Metadata } from "next";
+import { redirect } from "next/navigation";
+import {
+  getCurrentUserProfile,
+  getUserDashboardStats,
+} from "@/features/user/services/user-service";
+import { getRecommendationsByPredictedClass } from "@/features/user/services/recommendation-service";
 
-export const metadata: Metadata = {
-  title: "Dashboard | Face Skin Detection",
-  description: "Dashboard pengguna - hasil prediksi dan rekomendasi skincare",
-};
+export default async function UserDashboardPage() {
+  const profile = await getCurrentUserProfile();
 
-export default function UserDashboardPage() {
+  if (!profile) {
+    redirect("/login");
+  }
+
+  const stats = await getUserDashboardStats();
+
+  const recommendations = stats.latestPrediction
+    ? await getRecommendationsByPredictedClass(
+        stats.latestPrediction.predicted_class,
+      )
+    : [];
+
   return (
     <div>
-      <h1>Dashboard User</h1>
+      {/* UI lama tetap dipakai, data dummy diganti dari variable ini */}
     </div>
   );
 }
