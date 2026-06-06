@@ -11,8 +11,8 @@ const variantClasses: Record<ButtonVariant, string> = {
   success:
     "bg-emerald-600 text-white shadow hover:bg-emerald-700 dark:bg-emerald-500 dark:text-white dark:hover:bg-emerald-600",
   outline:
-    "border border-zinc-200 bg-white shadow-sm hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:bg-zinc-900",
-  ghost: "hover:bg-zinc-100 dark:hover:bg-zinc-900",
+    "border border-zinc-200 bg-white text-zinc-950 shadow-sm hover:bg-zinc-100 dark:border-zinc-200 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100",
+  ghost: "hover:bg-zinc-100 dark:hover:bg-zinc-100",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

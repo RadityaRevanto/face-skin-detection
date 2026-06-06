@@ -69,7 +69,7 @@ const adminNavItems: SidebarNavItem[] = [
   {
     label: "Verification",
     href: ROUTES.ADMIN.DOCTOR_VERIFICATIONS,
-    badge: "14",
+    badge: "5",
     icon: (
       <Icon>
         <path d="M12 21s7-3.5 7-10V5l-7-3-7 3v6c0 6.5 7 10 7 10Z" {...iconStroke} />
@@ -77,71 +77,71 @@ const adminNavItems: SidebarNavItem[] = [
       </Icon>
     ),
   },
-  {
-    label: "Reports",
-    href: "/admin/reports",
-    icon: (
-      <Icon>
-        <path d="M7 3h7l4 4v14H7V3Z" {...iconStroke} />
-        <path d="M14 3v5h4" {...iconStroke} />
-        <path d="M9.5 16.5v-3" {...iconStroke} />
-        <path d="M12 16.5v-5" {...iconStroke} />
-        <path d="M14.5 16.5v-2" {...iconStroke} />
-      </Icon>
-    ),
-    children: [
-      {
-        label: "User Reports",
-        href: "/admin/reports/users",
-      },
-      {
-        label: "Doctor Reports",
-        href: "/admin/reports/doctors",
-      },
-    ],
-  },
-  {
-    label: "System Master Data",
-    href: "/admin/master-data",
-    icon: (
-      <Icon>
-        <path d="M12 8c4.4 0 8-1.3 8-3s-3.6-3-8-3-8 1.3-8 3 3.6 3 8 3Z" {...iconStroke} />
-        <path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5" {...iconStroke} />
-        <path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" {...iconStroke} />
-      </Icon>
-    ),
-    children: [
-      {
-        label: "Skin Concerns",
-        href: "/admin/master-data/skin-concerns",
-      },
-      {
-        label: "Verification Status",
-        href: "/admin/master-data/verification-status",
-      },
-    ],
-  },
-  {
-    label: "Activity Logs",
-    href: "/admin/activity-logs",
-    icon: (
-      <Icon>
-        <path d="M3 12a9 9 0 1 0 3-6.7" {...iconStroke} />
-        <path d="M3 4v5h5" {...iconStroke} />
-        <path d="M12 7v5l3 2" {...iconStroke} />
-      </Icon>
-    ),
-  },
-  {
-    label: "Settings",
-    href: "/admin/settings",
-    icon: (
-      <Icon>
-        <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" {...iconStroke} />
-        <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2a2 2 0 1 1-4 0V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 1 1 4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.4 7A2 2 0 1 1 7.2 4.2l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.6h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 1 1 20.2 7l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.6 1h.2a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.6 1Z" {...iconStroke} />
-      </Icon>
-    ),
-  },
+  // {
+  //   label: "Reports",
+  //   href: "/admin/reports",
+  //   icon: (
+  //     <Icon>
+  //       <path d="M7 3h7l4 4v14H7V3Z" {...iconStroke} />
+  //       <path d="M14 3v5h4" {...iconStroke} />
+  //       <path d="M9.5 16.5v-3" {...iconStroke} />
+  //       <path d="M12 16.5v-5" {...iconStroke} />
+  //       <path d="M14.5 16.5v-2" {...iconStroke} />
+  //     </Icon>
+  //   ),
+  //   children: [
+  //     {
+  //       label: "User Reports",
+  //       href: "/admin/reports/users",
+  //     },
+  //     {
+  //       label: "Doctor Reports",
+  //       href: "/admin/reports/doctors",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "System Master Data",
+  //   href: "/admin/master-data",
+  //   icon: (
+  //     <Icon>
+  //       <path d="M12 8c4.4 0 8-1.3 8-3s-3.6-3-8-3-8 1.3-8 3 3.6 3 8 3Z" {...iconStroke} />
+  //       <path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5" {...iconStroke} />
+  //       <path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" {...iconStroke} />
+  //     </Icon>
+  //   ),
+  //   children: [
+  //     {
+  //       label: "Skin Concerns",
+  //       href: "/admin/master-data/skin-concerns",
+  //     },
+  //     {
+  //       label: "Verification Status",
+  //       href: "/admin/master-data/verification-status",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "Activity Logs",
+  //   href: "/admin/activity-logs",
+  //   icon: (
+  //     <Icon>
+  //       <path d="M3 12a9 9 0 1 0 3-6.7" {...iconStroke} />
+  //       <path d="M3 4v5h5" {...iconStroke} />
+  //       <path d="M12 7v5l3 2" {...iconStroke} />
+  //     </Icon>
+  //   ),
+  // },
+  // {
+  //   label: "Settings",
+  //   href: "/admin/settings",
+  //   icon: (
+  //     <Icon>
+  //       <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" {...iconStroke} />
+  //       <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2a2 2 0 1 1-4 0V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1A2 2 0 1 1 4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.2a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.4 7A2 2 0 1 1 7.2 4.2l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 1 1.6h.1a1.7 1.7 0 0 0 1.9-.3l.1-.1A2 2 0 1 1 20.2 7l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.6 1h.2a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.6 1Z" {...iconStroke} />
+  //     </Icon>
+  //   ),
+  // },
 ];
 
 export function AdminSidebar() {
