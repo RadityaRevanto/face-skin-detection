@@ -52,7 +52,7 @@ export const ROUTES = {
   REGISTER_DOCTOR: "/register/doctor",
   USER: {
     DASHBOARD: "/user/dashboard",
-    SCAN: "/user/scan",
+    SCAN: "/user/pemeriksaan",
     HISTORY: "/user/history",
   },
   DOCTOR: {
