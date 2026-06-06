@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { AdminProfileMenu } from "@/components/admin/admin-profile-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -131,18 +132,7 @@ export function DashboardHeader({
           </IconButton>
         )}
 
-        <Button
-          type="button"
-          variant="ghost"
-          aria-label="Open profile menu"
-          className="h-11 w-11 rounded-full p-0 hover:bg-slate-100 dark:hover:bg-slate-100"
-        >
-          {avatar ?? (
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
-              AU
-            </span>
-          )}
-        </Button>
+        {avatar ?? <AdminProfileMenu />}
       </div>
     </header>
   );
