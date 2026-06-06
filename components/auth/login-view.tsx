@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type FormEvent, type ReactNode, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/lib/constants";
+import { createClient } from "@/lib/supabase/client";
+import type { UserRole } from "@/lib/types";
 
 function MailIcon() {
   return (
@@ -110,13 +113,61 @@ function FieldIcon({ children }: { children: ReactNode }) {
 }
 
 export function LoginView() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    setErrorMessage(null);
     setIsLoading(true);
-    window.setTimeout(() => setIsLoading(false), 900);
+
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") ?? "");
+    const password = String(formData.get("password") ?? "");
+    const supabase = createClient();
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error || !data.user) {
+      setErrorMessage("Email atau password tidak sesuai.");
+      setIsLoading(false);
+      return;
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
+
+    if (profileError || !profile?.role) {
+      await supabase.auth.signOut();
+      setErrorMessage("Profil akun belum lengkap. Hubungi admin.");
+      setIsLoading(false);
+      return;
+    }
+
+    const role = profile.role as UserRole;
+
+    if (role === "admin") {
+      router.replace(ROUTES.ADMIN.DASHBOARD);
+      router.refresh();
+      return;
+    }
+
+    if (role === "doctor") {
+      router.replace(ROUTES.DOCTOR.VERIFICATION_STATUS);
+      router.refresh();
+      return;
+    }
+
+    router.replace(ROUTES.USER.DASHBOARD);
+    router.refresh();
   }
 
   return (
@@ -199,6 +250,12 @@ export function LoginView() {
               </Link>
             </div>
           </div>
+
+          {errorMessage ? (
+            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+              {errorMessage}
+            </p>
+          ) : null}
 
           <Button
             variant="success"

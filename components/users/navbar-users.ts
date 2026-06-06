@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { createElement, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { createElement, useEffect, useState, type ReactNode } from "react";
+
+import { createClient } from "@/lib/supabase/client";
 
 type NavItem = {
   label: string;
@@ -68,20 +70,6 @@ function ClockIcon() {
   );
 }
 
-function BulbIcon() {
-  return createElement(
-    Icon,
-    { className: "h-4 w-4" },
-    createElement("path", {
-      d: "M9 18h6m-5 3h4m2.5-10.5A4.5 4.5 0 0 0 7.7 12c.5 1.2 1.4 2 2.1 2.9.5.6.7 1.2.7 2.1h3c0-.9.2-1.5.7-2.1.7-.9 1.6-1.7 2.1-2.9.2-.5.2-1 .2-1.5Z",
-      stroke: "currentColor",
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      strokeWidth: "1.8",
-    })
-  );
-}
-
 function BellIcon() {
   return createElement(
     Icon,
@@ -97,6 +85,41 @@ function BellIcon() {
       d: "M10 19a2 2 0 0 0 4 0",
       stroke: "currentColor",
       strokeLinecap: "round",
+      strokeWidth: "1.8",
+    })
+  );
+}
+
+function ChevronDownIcon() {
+  return createElement(
+    Icon,
+    { className: "h-4 w-4" },
+    createElement("path", {
+      d: "m6 9 6 6 6-6",
+      stroke: "currentColor",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      strokeWidth: "2",
+    })
+  );
+}
+
+function LogoutIcon() {
+  return createElement(
+    Icon,
+    { className: "h-4 w-4" },
+    createElement("path", {
+      d: "M10 17l5-5-5-5M15 12H3",
+      stroke: "currentColor",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      strokeWidth: "1.8",
+    }),
+    createElement("path", {
+      d: "M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4",
+      stroke: "currentColor",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
       strokeWidth: "1.8",
     })
   );
@@ -159,7 +182,52 @@ const navItems: NavItem[] = [
 ];
 
 export default function NavbarUsers() {
+  const router = useRouter();
   const pathname = usePathname();
+  const [displayName, setDisplayName] = useState("Pengguna");
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    async function loadProfile() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.full_name) {
+        setDisplayName(profile.full_name);
+        return;
+      }
+
+      if (user.email) {
+        setDisplayName(user.email.split("@")[0] ?? "Pengguna");
+      }
+    }
+
+    void loadProfile();
+  }, []);
+
+  async function handleLogout() {
+    setIsLoggingOut(true);
+
+    const supabase = createClient();
+    await supabase.auth.signOut();
+
+    router.replace("/login");
+    router.refresh();
+  }
 
   return createElement(
     "header",
@@ -242,18 +310,79 @@ export default function NavbarUsers() {
         ),
         createElement(
           "div",
-          { className: "hidden items-center gap-3 sm:flex" },
+          { className: "relative hidden sm:block" },
           createElement(
-            "span",
-            { className: "text-sm font-medium text-slate-500" },
-            "Halo, ",
+            "button",
+            {
+              type: "button",
+              "aria-haspopup": "menu",
+              "aria-expanded": isProfileOpen,
+              onClick: () => setIsProfileOpen((value) => !value),
+              className:
+                "flex items-center gap-3 rounded-full py-1 pl-3 pr-1 transition-colors hover:bg-slate-50",
+            },
             createElement(
-              "strong",
-              { className: "font-bold text-slate-700" },
-              "MOCH RADITYA REVANTO"
+              "span",
+              { className: "text-sm font-medium text-slate-500" },
+              "Halo, ",
+              createElement(
+                "strong",
+                { className: "font-bold text-slate-700" },
+                displayName
+              )
+            ),
+            createElement(Avatar),
+            createElement(
+              "span",
+              {
+                className: [
+                  "grid h-5 w-5 place-items-center text-slate-400 transition-transform",
+                  isProfileOpen ? "rotate-180" : "",
+                ].join(" "),
+              },
+              createElement(ChevronDownIcon)
             )
           ),
-          createElement(Avatar)
+          isProfileOpen
+            ? createElement(
+                "div",
+                {
+                  role: "menu",
+                  className:
+                    "absolute right-0 top-full mt-3 w-64 overflow-hidden rounded-2xl border border-slate-100 bg-white p-2 shadow-xl shadow-slate-200/70",
+                },
+                createElement(
+                  "div",
+                  { className: "border-b border-slate-100 px-3 py-3" },
+                  createElement(
+                    "p",
+                    { className: "text-xs font-medium text-slate-500" },
+                    "Masuk sebagai"
+                  ),
+                  createElement(
+                    "p",
+                    {
+                      className:
+                        "mt-1 truncate text-sm font-bold text-slate-800",
+                    },
+                    displayName
+                  )
+                ),
+                createElement(
+                  "button",
+                  {
+                    type: "button",
+                    role: "menuitem",
+                    disabled: isLoggingOut,
+                    onClick: handleLogout,
+                    className:
+                      "mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:pointer-events-none disabled:opacity-60",
+                  },
+                  createElement(LogoutIcon),
+                  isLoggingOut ? "Keluar..." : "Logout"
+                )
+              )
+            : null
         )
       )
     )

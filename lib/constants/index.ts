@@ -51,7 +51,7 @@ export const ROUTES = {
   REGISTER: "/register",
   REGISTER_DOCTOR: "/register/doctor",
   USER: {
-    DASHBOARD: "/user/dashboard",
+    DASHBOARD: "/user/home",
     SCAN: "/user/pemeriksaan",
     HISTORY: "/user/history",
   },
