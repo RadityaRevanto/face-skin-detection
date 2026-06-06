@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/lib/constants";
+import { createClient } from "@/lib/supabase/client";
+import type { UserRole } from "@/lib/types";
 
 function MailIcon() {
   return (
@@ -273,6 +275,12 @@ export function LoginView() {
               </Link>
             </div>
           </div>
+
+          {errorMessage ? (
+            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+              {errorMessage}
+            </p>
+          ) : null}
 
           <Button
             variant='success'
