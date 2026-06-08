@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import { skinConcerns } from "@/app/(doctor)/doctor/_lib/doctor-content-data";
 import { DoctorHeader } from "@/components/doctor/doctor-header";
@@ -14,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ROUTES } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Kelola Skin Concern | Face Skin Detection",
@@ -92,13 +94,15 @@ export default function DoctorSkinConcernsPage() {
                   </p>
                 </div>
 
-                <Button
-                  type="button"
-                  variant="success"
-                  className="h-11 rounded-xl px-5 font-semibold"
-                >
-                  Tambah Concern
-                </Button>
+                <Link href={ROUTES.DOCTOR.SKIN_CONCERNS_CREATE}>
+                  <Button
+                    type="button"
+                    variant="success"
+                    className="h-11 rounded-xl px-5 font-semibold"
+                  >
+                    Tambah Concern
+                  </Button>
+                </Link>
               </div>
 
               <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -165,15 +169,17 @@ export default function DoctorSkinConcernsPage() {
                         </TableCell>
                         <TableCell className="whitespace-nowrap px-6 py-5 text-right text-sm font-medium sm:px-8">
                           <div className="flex items-center justify-end gap-2">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              title="Edit"
-                              className="h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50! hover:text-emerald-700"
-                            >
-                              <ActionIcon type="edit" />
-                            </Button>
+                            <Link href={ROUTES.DOCTOR.SKIN_CONCERNS_EDIT(concern.id)}>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                title="Edit"
+                                className="h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50! hover:text-emerald-700"
+                              >
+                                <ActionIcon type="edit" />
+                              </Button>
+                            </Link>
                             <Button
                               type="button"
                               variant="ghost"
