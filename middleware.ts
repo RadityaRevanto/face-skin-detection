@@ -71,19 +71,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (pathname.startsWith("/doctor/dashboard")) {
-    const { data: verification } = await supabase
-      .from("doctor_verifications")
-      .select("verification_status")
-      .eq("doctor_id", user.id)
-      .maybeSingle();
-
-    if (verification?.verification_status !== "approved") {
-      const url = request.nextUrl.clone();
-      url.pathname = "/doctor/verification-status";
-      return NextResponse.redirect(url);
-    }
-  }
+  // TODO: Re-enable dashboard verification guard after doctor_verifications
+  // has reliable approved/rejected data.
+  // if (pathname.startsWith("/doctor/dashboard")) {
+  //   const { data: verification } = await supabase
+  //     .from("doctor_verifications")
+  //     .select("verification_status")
+  //     .eq("doctor_id", user.id)
+  //     .maybeSingle();
+  //
+  //   if (verification?.verification_status !== "approved") {
+  //     const url = request.nextUrl.clone();
+  //     url.pathname = "/doctor/verification-status";
+  //     return NextResponse.redirect(url);
+  //   }
+  // }
 
   return response;
 }
