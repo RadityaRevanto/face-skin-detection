@@ -67,10 +67,34 @@ export async function POST(request: Request) {
     );
   }
 
+  let redirectTo = "/login";
+
+  if (profile?.role === "admin") {
+    redirectTo = "/admin/dashboard";
+  }
+
+  if (profile?.role === "user") {
+    redirectTo = "/user/home";
+  }
+
+  if (profile?.role === "doctor") {
+    const { data: verification } = await supabase
+      .from("doctor_verifications")
+      .select("verification_status")
+      .eq("doctor_id", data.user.id)
+      .maybeSingle();
+
+    redirectTo =
+      verification?.verification_status === "approved"
+        ? "/doctor/dashboard"
+        : "/doctor/verification-status";
+  }
+
   return NextResponse.json({
     success: true,
     message: "Login berhasil.",
     user: data.user,
     profile,
+    redirectTo,
   });
 }

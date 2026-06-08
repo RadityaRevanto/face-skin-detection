@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import type { ReactNode } from "react";
+
+import { DoctorLogoutButton } from "@/components/doctor/doctor-logout-button";
 
 export const metadata: Metadata = {
   title: "Status Verifikasi | Face Skin Detection",
@@ -257,12 +258,7 @@ export default function VerificationStatusPage() {
             </p>
           </div>
 
-          <Link
-            href="/login"
-            className="inline-flex h-11 w-fit items-center justify-center rounded-xl bg-emerald-600 px-5 text-sm font-bold text-white shadow-lg shadow-emerald-100 transition-colors hover:bg-emerald-700"
-          >
-            Kembali ke Login
-          </Link>
+          <DoctorLogoutButton />
         </section>
       </div>
     </main>

@@ -60,7 +60,7 @@ export async function GET() {
     return NextResponse.json({
       success: true,
       role: "user",
-      redirectTo: "/user/dashboard",
+      redirectTo: "/user/home",
     });
   }
 
