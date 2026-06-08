@@ -64,6 +64,8 @@ export const ROUTES = {
     RECOMMENDATIONS_CREATE: "/doctor/recommendations/create",
     RECOMMENDATIONS_EDIT: (id: string) => `/doctor/recommendations/${id}/edit`,
     SKIN_CONCERNS: "/doctor/skin-concerns",
+    SKIN_CONCERNS_CREATE: "/doctor/skin-concerns/create",
+    SKIN_CONCERNS_EDIT: (id: string) => `/doctor/skin-concerns/${id}/edit`,
     VERIFICATION_STATUS: "/doctor/verification-status",
   },
   ADMIN: {

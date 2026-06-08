@@ -227,3 +227,7 @@ export function getSkincareProduct(id: string) {
 export function getSkincareRecommendation(id: string) {
   return skincareRecommendations.find((recommendation) => recommendation.id === id);
 }
+
+export function getSkinConcern(id: string) {
+  return skinConcerns.find((concern) => concern.id === id);
+}
