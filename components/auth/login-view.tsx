@@ -159,26 +159,12 @@ export function LoginView() {
         return;
       }
 
-      const redirectResponse = await fetch("/api/auth/redirect", {
-        method: "GET",
-        cache: "no-store",
-      });
-
-      const redirectResult = await redirectResponse.json();
-
-      if (!redirectResponse.ok) {
-        setErrorMessage(
-          redirectResult.message || "Gagal menentukan halaman tujuan.",
-        );
-        return;
-      }
-
-      if (!redirectResult.redirectTo) {
+      if (!loginResult.redirectTo) {
         setErrorMessage("Halaman tujuan tidak ditemukan.");
         return;
       }
 
-      router.replace(redirectResult.redirectTo);
+      router.replace(loginResult.redirectTo);
     } catch (error) {
       console.error(error);
       setErrorMessage("Terjadi kesalahan saat login.");
