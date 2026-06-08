@@ -78,16 +78,9 @@ export async function POST(request: Request) {
   }
 
   if (profile?.role === "doctor") {
-    const { data: verification } = await supabase
-      .from("doctor_verifications")
-      .select("verification_status")
-      .eq("doctor_id", data.user.id)
-      .maybeSingle();
-
-    redirectTo =
-      verification?.verification_status === "approved"
-        ? "/doctor/dashboard"
-        : "/doctor/verification-status";
+    // TODO: Enable verification-status redirect after doctor_verifications
+    // has reliable approved/rejected data.
+    redirectTo = "/doctor/dashboard";
   }
 
   return NextResponse.json({

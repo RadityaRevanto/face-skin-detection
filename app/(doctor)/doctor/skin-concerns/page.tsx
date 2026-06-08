@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
-import {
-  skinConcerns,
-  skincareRecommendations,
-} from "@/app/(doctor)/doctor/_lib/doctor-content-data";
+import { skinConcerns } from "@/app/(doctor)/doctor/_lib/doctor-content-data";
 import { DoctorHeader } from "@/components/doctor/doctor-header";
 import { DoctorSidebar } from "@/components/doctor/doctor-sidebar";
 import { Button } from "@/components/ui/button";
@@ -18,28 +14,29 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ROUTES } from "@/lib/constants";
 
 export const metadata: Metadata = {
-  title: "Kelola Rekomendasi | Face Skin Detection",
-  description: "Kelola rekomendasi skincare - Dashboard Dokter",
+  title: "Kelola Skin Concern | Face Skin Detection",
+  description: "Kelola skin concern untuk rekomendasi skincare",
 };
 
 const summaryCards = [
   {
-    label: "Total Rekomendasi",
-    value: "32",
-    helper: "Mapping rekomendasi aktif",
-  },
-  {
-    label: "Skin Concern",
+    label: "Total Concern",
     value: String(skinConcerns.length),
-    helper: "Concern yang memiliki rule",
+    helper: "Concern yang dikenali sistem",
   },
   {
-    label: "Routine Step",
-    value: "7",
-    helper: "Pagi dan malam",
+    label: "Terkait AI",
+    value: String(skinConcerns.length),
+    helper: "Terhubung ke class deteksi",
+  },
+  {
+    label: "Rekomendasi",
+    value: String(
+      skinConcerns.reduce((total, concern) => total + concern.recommendationCount, 0),
+    ),
+    helper: "Rule rekomendasi terkait",
   },
 ];
 
@@ -69,7 +66,7 @@ function ActionIcon({ type }: { type: "edit" | "delete" }) {
   );
 }
 
-export default function DoctorRecommendationsPage() {
+export default function DoctorSkinConcernsPage() {
   return (
     <main className="min-h-screen bg-[#f7fbf8]! text-slate-950 dark:bg-[#f7fbf8]! dark:text-slate-950!">
       <div className="flex min-h-screen flex-col bg-[#f7fbf8]! dark:bg-[#f7fbf8]! lg:flex-row">
@@ -77,9 +74,9 @@ export default function DoctorRecommendationsPage() {
 
         <div className="min-w-0 flex-1 bg-[#f7fbf8]! dark:bg-[#f7fbf8]!">
           <DoctorHeader
-            title="Kelola Rekomendasi"
-            description="Atur rekomendasi yang akan muncul setelah user mendapat hasil analisis AI."
-            searchPlaceholder="Cari rekomendasi..."
+            title="Kelola Skin Concern"
+            description="Atur concern yang menjadi jembatan antara hasil AI dan rekomendasi dokter."
+            searchPlaceholder="Cari skin concern..."
           />
 
           <div className="py-6 pl-5 pr-4 sm:pl-6 sm:pr-6 lg:pl-8 lg:pr-8">
@@ -87,23 +84,21 @@ export default function DoctorRecommendationsPage() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <h1 className="text-2xl font-bold tracking-tight text-slate-950">
-                    Rule Rekomendasi Skincare
+                    Data Skin Concern
                   </h1>
                   <p className="mt-1 text-sm text-slate-500">
-                    Sistem mencocokkan hasil AI user dengan rule concern,
-                    severity, tipe kulit, dan step routine dari dokter.
+                    Concern ini dipakai sebagai kunci matching dari class AI ke
+                    rule rekomendasi skincare.
                   </p>
                 </div>
 
-                <Link href={ROUTES.DOCTOR.RECOMMENDATIONS_CREATE}>
-                  <Button
-                    type="button"
-                    variant="success"
-                    className="h-11 rounded-xl px-5 font-semibold"
-                  >
-                    Tambah Rekomendasi
-                  </Button>
-                </Link>
+                <Button
+                  type="button"
+                  variant="success"
+                  className="h-11 rounded-xl px-5 font-semibold"
+                >
+                  Tambah Concern
+                </Button>
               </div>
 
               <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -131,16 +126,13 @@ export default function DoctorRecommendationsPage() {
                         No
                       </TableHead>
                       <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8">
-                        Rule Match AI
+                        Concern
                       </TableHead>
                       <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8">
-                        Produk
+                        Class AI
                       </TableHead>
                       <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8">
-                        Routine
-                      </TableHead>
-                      <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8">
-                        Catatan
+                        Rekomendasi
                       </TableHead>
                       <TableHead className="px-6 py-5 text-right text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8">
                         Action
@@ -149,53 +141,39 @@ export default function DoctorRecommendationsPage() {
                   </TableHeader>
 
                   <TableBody className="divide-y divide-gray-100 bg-white">
-                    {skincareRecommendations.map((recommendation) => (
+                    {skinConcerns.map((concern) => (
                       <TableRow
-                        key={recommendation.id}
+                        key={concern.id}
                         className="group border-gray-100 transition-colors hover:bg-emerald-50/30"
                       >
                         <TableCell className="whitespace-nowrap px-6 py-5 text-sm font-medium text-gray-500 sm:px-8">
-                          {recommendation.no}
+                          {concern.no}
                         </TableCell>
-                        <TableCell className="min-w-64 px-6 py-5 sm:px-8">
+                        <TableCell className="min-w-72 px-6 py-5 sm:px-8">
                           <div className="text-sm font-semibold text-gray-800 transition-colors group-hover:text-emerald-700">
-                            {recommendation.concern}
+                            {concern.name}
                           </div>
                           <div className="mt-1 text-xs text-gray-500">
-                            {recommendation.severity} · {recommendation.skinType}
+                            {concern.description}
                           </div>
                         </TableCell>
-                        <TableCell className="min-w-56 px-6 py-5 sm:px-8">
-                          <div className="text-sm font-medium text-gray-700">
-                            {recommendation.productName}
-                          </div>
-                          <div className="mt-1 text-xs text-gray-500">
-                            {recommendation.productBrand}
-                          </div>
+                        <TableCell className="whitespace-nowrap px-6 py-5 text-sm font-medium text-gray-700 sm:px-8">
+                          {concern.detectedClass}
                         </TableCell>
                         <TableCell className="whitespace-nowrap px-6 py-5 text-sm text-gray-500 sm:px-8">
-                          {recommendation.routineStep}
-                        </TableCell>
-                        <TableCell className="min-w-72 px-6 py-5 text-sm text-gray-500 sm:px-8">
-                          {recommendation.doctorNote}
+                          {concern.recommendationCount} rule
                         </TableCell>
                         <TableCell className="whitespace-nowrap px-6 py-5 text-right text-sm font-medium sm:px-8">
                           <div className="flex items-center justify-end gap-2">
-                            <Link
-                              href={ROUTES.DOCTOR.RECOMMENDATIONS_EDIT(
-                                recommendation.id,
-                              )}
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              title="Edit"
+                              className="h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50! hover:text-emerald-700"
                             >
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                title="Edit"
-                                className="h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50! hover:text-emerald-700"
-                              >
-                                <ActionIcon type="edit" />
-                              </Button>
-                            </Link>
+                              <ActionIcon type="edit" />
+                            </Button>
                             <Button
                               type="button"
                               variant="ghost"
@@ -214,9 +192,9 @@ export default function DoctorRecommendationsPage() {
 
                 <Pagination
                   currentPage={1}
-                  totalPages={7}
-                  totalItems={32}
-                  pageSize={skincareRecommendations.length}
+                  totalPages={2}
+                  totalItems={skinConcerns.length}
+                  pageSize={skinConcerns.length}
                 />
               </Card>
             </div>

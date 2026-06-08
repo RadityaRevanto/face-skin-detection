@@ -65,7 +65,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
       : "Upload Image - Classification";
 
   return (
-    <main className='grid min-h-[calc(100vh-72px)] w-full gap-6 px-8 py-8 sm:px-10 lg:grid-cols-[360px_1fr] lg:px-12'>
+    <main className='grid w-full items-start gap-6 px-8 py-8 sm:px-10 lg:grid-cols-[360px_1fr] lg:px-12'>
       <HistorySidebar
         histories={histories}
         selectedHistoryId={selectedHistory?.id}

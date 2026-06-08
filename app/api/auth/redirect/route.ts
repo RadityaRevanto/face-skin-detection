@@ -65,26 +65,19 @@ export async function GET() {
   }
 
   if (profile.role === "doctor") {
-    const { data: verification } = await supabase
-      .from("doctor_verifications")
-      .select("verification_status")
-      .eq("doctor_id", user.id)
-      .maybeSingle();
-
-    if (verification?.verification_status === "approved") {
-      return NextResponse.json({
-        success: true,
-        role: "doctor",
-        verificationStatus: "approved",
-        redirectTo: "/doctor/dashboard",
-      });
-    }
+    // TODO: Enable verification-status redirect after doctor_verifications
+    // has reliable approved/rejected data.
+    // const { data: verification } = await supabase
+    //   .from("doctor_verifications")
+    //   .select("verification_status")
+    //   .eq("doctor_id", user.id)
+    //   .maybeSingle();
 
     return NextResponse.json({
       success: true,
       role: "doctor",
-      verificationStatus: verification?.verification_status ?? "not_submitted",
-      redirectTo: "/doctor/verification-status",
+      verificationStatus: "pending",
+      redirectTo: "/doctor/dashboard",
     });
   }
 
