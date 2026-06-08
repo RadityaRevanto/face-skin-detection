@@ -1,9 +1,7 @@
 import Link from "next/link";
 
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
-import { DashboardHeader } from "@/components/admin/admin-header";
-
 import type { DoctorVerificationDetail } from "../lib/verification-detail-types";
+import { RejectedReasonCard } from "./rejected-reason-card";
 import { StatusBadge } from "./status-badge";
 import { VerificationContactCard } from "./verification-contact-card";
 import { VerificationDecisionCard } from "./verification-decision-card";
@@ -17,55 +15,53 @@ type VerificationDetailContentProps = {
 export function VerificationDetailContent({
   doctor,
 }: VerificationDetailContentProps) {
+  const isPending = doctor.rawStatus === "pending";
+  const isRejected = doctor.rawStatus === "rejected";
+
   return (
-    <main className='min-h-screen bg-[#f7fbf8]! text-slate-950 dark:bg-[#f7fbf8]! dark:text-slate-950!'>
-      <div className='flex min-h-screen flex-col bg-[#f7fbf8]! dark:bg-[#f7fbf8]! lg:flex-row'>
-        <AdminSidebar />
+    <div className='w-full space-y-6'>
+      <div className='flex flex-col justify-between gap-4 sm:flex-row sm:items-start'>
+        <div>
+          <Link
+            href={
+              isRejected
+                ? "/admin/doctor-verifications/rejected"
+                : "/admin/doctor-verifications/pending"
+            }
+            className='text-sm font-semibold text-emerald-700 hover:text-emerald-800'
+          >
+            Back to verification list
+          </Link>
 
-        <div className='min-w-0 flex-1 bg-[#f7fbf8]! dark:bg-[#f7fbf8]!'>
-          <DashboardHeader
-            title='Verification Detail'
-            description='Review doctor document before approval'
-          />
+          <h1 className='mt-3 text-2xl font-bold tracking-tight text-slate-950'>
+            Verifikasi Detail Dokter
+          </h1>
 
-          <div className='py-6 pl-5 pr-4 sm:pl-6 sm:pr-6 lg:pl-8 lg:pr-8'>
-            <div className='w-full space-y-6'>
-              <div className='flex flex-col justify-between gap-4 sm:flex-row sm:items-start'>
-                <div>
-                  <Link
-                    href='/admin/doctor-verifications'
-                    className='text-sm font-semibold text-emerald-700 hover:text-emerald-800'
-                  >
-                    Back to verification list
-                  </Link>
+          <p className='mt-1 text-sm text-slate-500'>
+            Review detail data dokter, dokumen verifikasi, dan status pengajuan
+            akun dokter.
+          </p>
+        </div>
 
-                  <h1 className='mt-3 text-2xl font-bold tracking-tight text-slate-950'>
-                    Verifikasi Detail Dokter
-                  </h1>
+        <StatusBadge status={doctor.status} />
+      </div>
 
-                  <p className='mt-1 text-sm text-slate-500'>
-                    Review detail data dokter, dokumen verifikasi, dan tentukan
-                    status akun.
-                  </p>
-                </div>
+      <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
+        <VerificationIdentityCard doctor={doctor} />
 
-                <StatusBadge status={doctor.status} />
-              </div>
-
-              <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
-                <VerificationIdentityCard doctor={doctor} />
-
-                <div className='flex flex-col gap-6'>
-                  <VerificationContactCard doctor={doctor} />
-                  <VerificationDocumentCard doctor={doctor} />
-                </div>
-              </div>
-
-              <VerificationDecisionCard verificationId={doctor.id} />
-            </div>
-          </div>
+        <div className='flex flex-col gap-6'>
+          <VerificationContactCard doctor={doctor} />
+          <VerificationDocumentCard doctor={doctor} />
         </div>
       </div>
-    </main>
+
+      {isPending ? (
+        <VerificationDecisionCard verificationId={doctor.id} />
+      ) : null}
+
+      {isRejected ? (
+        <RejectedReasonCard reason={doctor.rejectionReason} />
+      ) : null}
+    </div>
   );
 }

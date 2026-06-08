@@ -1,9 +1,9 @@
 import { Card } from "@/components/ui/card";
 
-import type { DoctorVerificationStats } from "../lib/doctor-verification-types";
+import type { DoctorVerificationStats as DoctorVerificationStatsType } from "../lib/doctor-verification-types";
 
 type DoctorVerificationStatsProps = {
-  stats: DoctorVerificationStats;
+  stats: DoctorVerificationStatsType;
 };
 
 export function DoctorVerificationStats({
@@ -19,16 +19,16 @@ export function DoctorVerificationStats({
       </Card>
 
       <Card className='rounded-2xl border-slate-100! bg-white! p-5 text-slate-950! shadow-sm dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
-        <p className='text-sm font-medium text-gray-500'>Perlu Revisi</p>
-        <p className='mt-3 text-3xl font-bold text-amber-600'>
-          {stats.revisionCount}
+        <p className='text-sm font-medium text-gray-500'>Ditolak</p>
+        <p className='mt-3 text-3xl font-bold text-rose-600'>
+          {stats.rejectedCount}
         </p>
       </Card>
 
       <Card className='rounded-2xl border-slate-100! bg-white! p-5 text-slate-950! shadow-sm dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
-        <p className='text-sm font-medium text-gray-500'>Total Antrean</p>
+        <p className='text-sm font-medium text-gray-500'>Disetujui</p>
         <p className='mt-3 text-3xl font-bold text-emerald-600'>
-          {stats.totalQueue}
+          {stats.approvedCount}
         </p>
       </Card>
     </div>

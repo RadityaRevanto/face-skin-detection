@@ -1,4 +1,4 @@
-import type { VerificationStatus } from "./verification-detail-types";
+import type { DoctorVerificationStatus } from "./doctor-detail-types";
 
 export function formatDate(date: string | null | undefined) {
   if (!date) {
@@ -11,22 +11,6 @@ export function formatDate(date: string | null | undefined) {
   }).format(new Date(date));
 }
 
-export function mapVerificationStatus(status: VerificationStatus | string) {
-  if (status === "pending") {
-    return "Pending";
-  }
-
-  if (status === "approved") {
-    return "Approved";
-  }
-
-  if (status === "rejected") {
-    return "Rejected";
-  }
-
-  return "Pending";
-}
-
 export function getDocumentLabel(documentUrl: string | null) {
   if (!documentUrl) {
     return "No Document";
@@ -35,6 +19,18 @@ export function getDocumentLabel(documentUrl: string | null) {
   const fileName = documentUrl.split("/").pop();
 
   return fileName || "Document";
+}
+
+export function mapVerificationStatus(
+  status: DoctorVerificationStatus | string,
+) {
+  if (status === "pending") return "Pending";
+  if (status === "approved") return "Approved";
+  if (status === "rejected") return "Rejected";
+  if (status === "revision_required") return "Revision Required";
+  if (status === "suspended") return "Suspended";
+
+  return "Not Submitted";
 }
 
 export function getInitials(name: string) {

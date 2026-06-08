@@ -11,11 +11,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import type { DoctorVerificationRequest } from "../lib/doctor-verification-types";
+import type {
+  DoctorVerificationPageType,
+  DoctorVerificationRequest,
+} from "../lib/doctor-verification-types";
 import { DocumentIcon, ViewIcon } from "./doctor-verification-icons";
 import { StatusBadge } from "./status-badge";
 
 type DoctorVerificationTableProps = {
+  pageType: DoctorVerificationPageType;
   verificationRequests: DoctorVerificationRequest[];
   pagination: {
     currentPage: number;
@@ -26,9 +30,12 @@ type DoctorVerificationTableProps = {
 };
 
 export function DoctorVerificationTable({
+  pageType,
   verificationRequests,
   pagination,
 }: DoctorVerificationTableProps) {
+  const isRejectedPage = pageType === "rejected";
+
   return (
     <Card className='overflow-hidden rounded-2xl border-slate-100! bg-white! text-slate-950! shadow-sm dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
       <Table className='min-w-full divide-y divide-gray-100'>
@@ -37,27 +44,41 @@ export function DoctorVerificationTable({
             <TableHead className='w-20 px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
               No
             </TableHead>
+
             <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
               Nama Lengkap
             </TableHead>
+
             <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
               Email
             </TableHead>
+
             <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
               Nomor STR / Identitas Dokter
             </TableHead>
+
             <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
               Spesialisasi
             </TableHead>
+
             <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
               Dokumen
             </TableHead>
+
             <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
               Status
             </TableHead>
+
+            {isRejectedPage ? (
+              <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
+                Alasan Penolakan
+              </TableHead>
+            ) : null}
+
             <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
-              Diajukan
+              {isRejectedPage ? "Ditolak" : "Diajukan"}
             </TableHead>
+
             <TableHead className='px-6 py-5 text-right text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
               Aksi
             </TableHead>
@@ -105,7 +126,7 @@ export function DoctorVerificationTable({
                     {doctor.document}
                   </a>
                 ) : (
-                  <span className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-700'>
+                  <span className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700'>
                     <DocumentIcon />
                     {doctor.document}
                   </span>
@@ -116,10 +137,18 @@ export function DoctorVerificationTable({
                 <StatusBadge status={doctor.status} />
               </TableCell>
 
+              {isRejectedPage ? (
+                <TableCell className='max-w-[280px] px-6 py-5 text-sm font-medium text-rose-700 sm:px-8'>
+                  <p className='line-clamp-2'>
+                    {doctor.rejectionReason ?? "-"}
+                  </p>
+                </TableCell>
+              ) : null}
+
               <TableCell className='px-6 py-5 text-sm font-medium text-gray-700 sm:px-8'>
-                {doctor.submittedAt}
+                {isRejectedPage ? doctor.reviewedAt : doctor.submittedAt}
                 <div className='mt-1 text-xs font-normal text-gray-500'>
-                  Submitted document
+                  {isRejectedPage ? "Rejected document" : "Submitted document"}
                 </div>
               </TableCell>
 
@@ -138,7 +167,9 @@ export function DoctorVerificationTable({
 
       {verificationRequests.length === 0 ? (
         <div className='border-t border-gray-100 bg-white px-6 py-8 text-sm font-semibold text-gray-500 sm:px-8'>
-          Tidak ada antrean verifikasi dokter.
+          {isRejectedPage
+            ? "Tidak ada data verifikasi dokter yang ditolak."
+            : "Tidak ada antrean verifikasi dokter."}
         </div>
       ) : null}
 

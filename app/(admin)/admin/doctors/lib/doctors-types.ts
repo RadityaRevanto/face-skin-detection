@@ -1,3 +1,5 @@
+export type DoctorVerificationStatus = "approved";
+
 export type DoctorRow = {
   id: string;
   verificationId: string;
@@ -9,7 +11,8 @@ export type DoctorRow = {
   document: string;
   documentUrl: string | null;
   verifiedAt: string;
-  status: string;
+  status: "Approved";
+  rawStatus: DoctorVerificationStatus;
   isActive: boolean;
 };
 

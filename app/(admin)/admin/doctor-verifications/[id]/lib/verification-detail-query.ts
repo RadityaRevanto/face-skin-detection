@@ -13,12 +13,14 @@ import {
   mapVerificationStatus,
 } from "./verification-detail-utils";
 
-export async function getDoctorVerificationDetail(id: string) {
+export async function getDoctorVerificationDetail(
+  id: string,
+): Promise<DoctorVerificationDetail> {
   await requireAdminProfile();
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { data: verification, error: verificationError } = await supabase
     .from("doctor_verifications")
     .select(
       `
@@ -29,28 +31,28 @@ export async function getDoctorVerificationDetail(id: string) {
       document_url,
       verification_status,
       rejection_reason,
-      revision_note,
-      created_at,
-      profiles:doctor_id (
-        id,
-        full_name,
-        email
-      )
+      created_at
     `,
     )
     .eq("id", id)
     .maybeSingle();
 
-  if (error) {
-    console.error("Failed to fetch doctor verification detail:", error);
+  if (verificationError) {
+    console.error("Failed to fetch doctor verification detail:", {
+      message: verificationError.message,
+      details: verificationError.details,
+      hint: verificationError.hint,
+      code: verificationError.code,
+    });
+
     notFound();
   }
 
-  if (!data) {
+  if (!verification) {
     notFound();
   }
 
-  const row = data as unknown as {
+  const row = verification as {
     id: string;
     doctor_id: string;
     str_number: string | null;
@@ -58,23 +60,32 @@ export async function getDoctorVerificationDetail(id: string) {
     document_url: string | null;
     verification_status: VerificationStatus;
     rejection_reason: string | null;
-    revision_note: string | null;
     created_at: string | null;
-    profiles: {
-      id: string;
-      full_name: string | null;
-      email: string | null;
-    } | null;
   };
 
-  const doctor: DoctorVerificationDetail = {
+  const { data: profile, error: profileError } = await supabase
+    .from("profiles")
+    .select("id, full_name, email")
+    .eq("id", row.doctor_id)
+    .eq("role", "doctor")
+    .maybeSingle();
+
+  if (profileError) {
+    console.error("Failed to fetch doctor profile for verification detail:", {
+      message: profileError.message,
+      details: profileError.details,
+      hint: profileError.hint,
+      code: profileError.code,
+    });
+  }
+
+  return {
     id: row.id,
     doctorId: row.doctor_id,
-    name: row.profiles?.full_name ?? "Dokter",
-    email: row.profiles?.email ?? "-",
+    name: profile?.full_name ?? "Dokter",
+    email: profile?.email ?? "-",
 
-    // Untuk sekarang fallback dulu karena schema yang kita pakai belum punya phone/address.
-    // Kalau nanti ada kolom phone/address, baru query-nya bisa ditambah.
+    // Fallback dulu karena schema kita belum punya field phone/address di profiles.
     phone: "-",
     address: "-",
 
@@ -86,8 +97,5 @@ export async function getDoctorVerificationDetail(id: string) {
     rawStatus: row.verification_status,
     submittedAt: formatDate(row.created_at),
     rejectionReason: row.rejection_reason,
-    revisionNote: row.revision_note,
   };
-
-  return doctor;
 }

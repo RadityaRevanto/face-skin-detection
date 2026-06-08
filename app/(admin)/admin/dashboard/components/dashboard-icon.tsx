@@ -49,46 +49,6 @@ export function DashboardIcon({ name }: DashboardIconProps) {
           <path d='m21 8-4 4' {...common} />
         </>
       ) : null}
-
-      {name === "leaf" ? (
-        <path d='M5 19c8 0 14-6 14-14-8 0-14 6-14 14Zm0 0 8-8' {...common} />
-      ) : null}
-
-      {name === "box" ? (
-        <>
-          <path d='M4 7.5 12 3l8 4.5-8 4.5L4 7.5Z' {...common} />
-          <path d='M4 7.5v9L12 21l8-4.5v-9' {...common} />
-          <path d='M12 12v9' {...common} />
-        </>
-      ) : null}
-
-      {name === "star" ? (
-        <path
-          d='m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z'
-          {...common}
-        />
-      ) : null}
-
-      {name === "flask" ? (
-        <>
-          <path d='M9 3h6' {...common} />
-          <path
-            d='M10 3v5l-5 9a3 3 0 0 0 2.6 4.5h8.8A3 3 0 0 0 19 17l-5-9V3'
-            {...common}
-          />
-          <path d='M8 15h8' {...common} />
-        </>
-      ) : null}
-
-      {name === "settings" ? (
-        <>
-          <path d='M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z' {...common} />
-          <path
-            d='M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a7 7 0 0 0-1.7-1L14.5 3h-5l-.3 3a7 7 0 0 0-1.7 1l-2.4-1-2 3.5 2 1.5a7 7 0 0 0 0 2l-2 1.5 2 3.5 2.4-1a7 7 0 0 0 1.7 1l.3 3h5l.3-3a7 7 0 0 0 1.7-1l2.4 1 2-3.5-2-1.5c.1-.3.1-.7.1-1Z'
-            {...common}
-          />
-        </>
-      ) : null}
     </svg>
   );
 }

@@ -1,9 +1,4 @@
-export type VerificationStatus =
-  | "pending"
-  | "approved"
-  | "rejected"
-  | "revision_required"
-  | "suspended";
+export type VerificationStatus = "pending" | "approved" | "rejected";
 
 export type DoctorVerificationDetail = {
   id: string;
@@ -20,5 +15,4 @@ export type DoctorVerificationDetail = {
   rawStatus: VerificationStatus;
   submittedAt: string;
   rejectionReason: string | null;
-  revisionNote: string | null;
 };

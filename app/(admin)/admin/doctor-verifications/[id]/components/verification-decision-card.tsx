@@ -21,41 +21,64 @@ export function VerificationDecisionCard({
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  async function submitAction(type: "approve" | "revision" | "reject") {
+  async function submitAction(type: "approve" | "reject") {
     setMessage("");
+
+    const trimmedNote = note.trim();
+
+    if (type === "reject" && !trimmedNote) {
+      setMessage("Alasan penolakan wajib diisi sebelum reject.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const body =
-        type === "approve"
-          ? undefined
-          : JSON.stringify(type === "revision" ? { note } : { reason: note });
-
       const response = await fetch(
         `/api/admin/doctor-verifications/${verificationId}/${type}`,
         {
           method: "POST",
-          headers:
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body:
             type === "approve"
-              ? undefined
-              : {
-                  "Content-Type": "application/json",
-                },
-          body,
+              ? JSON.stringify({})
+              : JSON.stringify({ reason: trimmedNote }),
         },
       );
+
+      const contentType = response.headers.get("content-type");
+
+      if (!contentType?.includes("application/json")) {
+        const text = await response.text();
+        console.error("Non JSON response:", text);
+
+        setMessage(
+          `Response API bukan JSON. Status: ${response.status}. Cek console/browser network.`,
+        );
+        return;
+      }
 
       const result = await response.json();
 
       if (!response.ok) {
-        setMessage(result.message || "Aksi gagal diproses.");
+        setMessage(result.message || `Aksi gagal. Status: ${response.status}`);
         return;
       }
 
       setMessage(result.message || "Aksi berhasil diproses.");
+
+      if (type === "approve") {
+        router.push("/admin/doctors");
+      } else {
+        router.push("/admin/doctor-verifications/rejected");
+      }
+
       router.refresh();
-    } catch {
-      setMessage("Terjadi kesalahan saat memproses aksi.");
+    } catch (error) {
+      console.error("Submit verification action error:", error);
+      setMessage("Terjadi kesalahan saat memproses aksi. Cek console browser.");
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +91,8 @@ export function VerificationDecisionCard({
           Keputusan Verifikasi
         </h3>
         <p className='mt-0.5 text-sm text-gray-400'>
-          Tulis catatan admin lalu tentukan status verifikasi dokter.
+          Approve dokter jika dokumen valid, atau reject dengan alasan
+          penolakan.
         </p>
       </div>
 
@@ -84,7 +108,7 @@ export function VerificationDecisionCard({
             htmlFor='review-note'
             className='mb-2 block text-xs font-semibold text-gray-400'
           >
-            Catatan Admin
+            Alasan Penolakan
           </label>
 
           <textarea
@@ -93,12 +117,12 @@ export function VerificationDecisionCard({
             rows={3}
             value={note}
             onChange={(event) => setNote(event.target.value)}
-            placeholder='Contoh: Dokumen STR tidak terbaca jelas, mohon upload ulang dokumen dengan kualitas yang lebih baik.'
+            placeholder='Wajib diisi jika melakukan reject. Contoh: Dokumen STR tidak terbaca jelas atau tidak sesuai identitas.'
             className='w-full resize-none rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3 text-sm leading-6 text-gray-700 outline-none transition-colors placeholder:text-gray-400 focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100'
           />
         </div>
 
-        <div className='grid gap-3 sm:grid-cols-3'>
+        <div className='grid gap-3 sm:grid-cols-2'>
           <Button
             type='button'
             variant='ghost'
@@ -108,17 +132,6 @@ export function VerificationDecisionCard({
           >
             <ActionIcon type='approve' />
             Approve
-          </Button>
-
-          <Button
-            type='button'
-            variant='ghost'
-            disabled={isLoading}
-            onClick={() => submitAction("revision")}
-            className='h-12 rounded-xl bg-amber-50! text-amber-700! hover:bg-amber-100!'
-          >
-            <ActionIcon type='revision' />
-            Request Revision
           </Button>
 
           <Button
