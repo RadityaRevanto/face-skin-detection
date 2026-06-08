@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useMemo, useState } from "react";
 
 import type { PredictionHistory } from "../_lib/history-types";
 import {
@@ -12,13 +15,34 @@ type HistorySidebarProps = {
   histories: PredictionHistory[];
   selectedHistoryId?: string;
 };
+  
+const INITIAL_VISIBLE_HISTORIES = 4;
+const LOAD_MORE_STEP = 4;
 
 export function HistorySidebar({
   histories,
   selectedHistoryId,
 }: HistorySidebarProps) {
+  const selectedIndex = histories.findIndex(
+    (history) => history.id === selectedHistoryId,
+  );
+  const initialVisibleCount =
+    selectedIndex >= INITIAL_VISIBLE_HISTORIES
+      ? selectedIndex + 1
+      : INITIAL_VISIBLE_HISTORIES;
+
+  const [visibleCount, setVisibleCount] = useState(initialVisibleCount);
+
+  const visibleHistories = useMemo(
+    () => histories.slice(0, visibleCount),
+    [histories, visibleCount],
+  );
+
+  const hasMoreHistories = visibleCount < histories.length;
+  const shouldShowLoadButton = histories.length > INITIAL_VISIBLE_HISTORIES;
+
   return (
-    <aside className='rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100'>
+    <aside className='h-fit rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100'>
       <h1 className='text-2xl font-bold tracking-tight text-slate-900'>
         Riwayat Pemeriksaan
       </h1>
@@ -46,7 +70,7 @@ export function HistorySidebar({
 
       <div className='mt-5 space-y-4'>
         {histories.length > 0 ? (
-          histories.map((item) => {
+          visibleHistories.map((item) => {
             const itemTone = getToneBySeverity(
               item.severity_level,
               item.severity_score,
@@ -100,12 +124,29 @@ export function HistorySidebar({
         )}
       </div>
 
-      <button className='mt-5 h-12 w-full rounded-2xl bg-slate-50 text-sm font-bold text-slate-600 transition-colors hover:bg-emerald-50 hover:text-emerald-700'>
-        Muat Lebih Banyak
-        <span className='ml-2 inline-grid h-4 w-4 place-items-center align-middle'>
-          <ChevronDownIcon />
-        </span>
-      </button>
+      {shouldShowLoadButton ? (
+        <button
+          type='button'
+          onClick={() =>
+            setVisibleCount((currentCount) =>
+              hasMoreHistories
+                ? Math.min(currentCount + LOAD_MORE_STEP, histories.length)
+                : initialVisibleCount,
+            )
+          }
+          className='mt-5 h-12 w-full rounded-2xl bg-slate-50 text-sm font-bold text-slate-600 transition-colors hover:bg-emerald-50 hover:text-emerald-700'
+        >
+          {hasMoreHistories ? "Muat Lebih Banyak" : "Tampilkan Lebih Sedikit"}
+          <span
+            className={[
+              "ml-2 inline-grid h-4 w-4 place-items-center align-middle transition-transform",
+              hasMoreHistories ? "" : "rotate-180",
+            ].join(" ")}
+          >
+            <ChevronDownIcon />
+          </span>
+        </button>
+      ) : null}
     </aside>
   );
 }
