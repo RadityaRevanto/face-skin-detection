@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
 
-import { AdminSidebar } from "@/components/admin/admin-sidebar";
+import { AdminDashboardContent } from "./components/admin-dashboard-content";
+import { getAdminDashboardData } from "./lib/admin-dashboard-query";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Dashboard Admin | Face Skin Detection",
   description: "Dashboard administrasi sistem",
 };
 
-export default function AdminDashboardPage() {
-  return (
-    <main className="min-h-screen bg-[#f7fbf8] text-zinc-950">
-      <div className="flex min-h-screen flex-col lg:flex-row">
-        <AdminSidebar />
-      </div>
-    </main>
-  );
+export default async function AdminDashboardPage() {
+  const dashboardData = await getAdminDashboardData();
+
+  return <AdminDashboardContent {...dashboardData} />;
 }

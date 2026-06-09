@@ -1,14 +1,5 @@
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Verifikasi Dokter | Face Skin Detection",
-  description: "Review dan verifikasi dokumen dokter",
-};
+import { redirect } from "next/navigation";
 
 export default function AdminDoctorVerificationsPage() {
-  return (
-    <div>
-      <h1>Verifikasi Dokter</h1>
-    </div>
-  );
+  redirect("/admin/doctor-verifications/pending");
 }
