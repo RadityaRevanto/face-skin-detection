@@ -1,0 +1,17 @@
+{
+  "img_size": [
+    128,
+    128
+  ],
+  "hog_orientations": 9,
+  "hog_pixels_per_cell": [
+    16,
+    16
+  ],
+  "hog_cells_per_block": [
+    2,
+    2
+  ],
+  "color_hist_bins": 32,
+  "feature_dim": 1860
+}

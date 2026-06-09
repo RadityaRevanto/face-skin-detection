@@ -44,3 +44,8 @@ next-env.d.ts
 AGENTS.md
 CLAUDE.md
 spesifikasi_face_skin_detection.md
+
+# ML modeling
+backend-ml/data/
+backend-ml/models/*.pkl
+backend-ml/models/*.png
