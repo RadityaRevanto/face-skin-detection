@@ -49,3 +49,6 @@ spesifikasi_face_skin_detection.md
 backend-ml/data/
 backend-ml/models/*.pkl
 backend-ml/models/*.png
+
+face-skin-detection/
+face-skin-detection.zip
