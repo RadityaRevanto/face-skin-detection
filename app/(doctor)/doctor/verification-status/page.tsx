@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { unstable_noStore as noStore } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { DoctorLogoutButton } from "@/components/doctor/doctor-logout-button";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "Status Verifikasi | Face Skin Detection",
@@ -155,7 +157,15 @@ function formatDate(date: string | null | undefined) {
 }
 
 function normalizeStatus(status: string | null | undefined) {
-  return status?.toLowerCase().trim() ?? "pending";
+  return status?.toLowerCase().trim() || "pending";
+}
+
+function isRevisionStatus(status: string) {
+  return (
+    status === "revision" ||
+    status === "revision_required" ||
+    status === "needs_revision"
+  );
 }
 
 function getStatusConfig(status: string | null | undefined) {
@@ -193,11 +203,7 @@ function getStatusConfig(status: string | null | undefined) {
     };
   }
 
-  if (
-    normalizedStatus === "revision" ||
-    normalizedStatus === "revision_required" ||
-    normalizedStatus === "needs_revision"
-  ) {
+  if (isRevisionStatus(normalizedStatus)) {
     return {
       label: "Perlu Revisi",
       badgeLabel: "Revision",
@@ -286,11 +292,7 @@ function getVerificationSteps(
     ];
   }
 
-  if (
-    status === "revision" ||
-    status === "revision_required" ||
-    status === "needs_revision"
-  ) {
+  if (isRevisionStatus(status)) {
     return [
       {
         title: "Pendaftaran akun",
@@ -374,6 +376,8 @@ function StepIcon({ status, index }: { status: StepStatus; index: number }) {
 }
 
 export default async function VerificationStatusPage() {
+  noStore();
+
   const supabase = await createClient();
 
   const {
@@ -385,17 +389,28 @@ export default async function VerificationStatusPage() {
     redirect("/login");
   }
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profileData, error: profileError } = await supabase
     .from("profiles")
     .select("id, full_name, email, role, is_active")
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profileError || !profile) {
+  if (profileError) {
+    console.error("Failed to fetch doctor profile on verification page:", {
+      message: profileError.message,
+      details: profileError.details,
+      hint: profileError.hint,
+      code: profileError.code,
+    });
+
     redirect("/login");
   }
 
-  const doctorProfile = profile as DoctorProfile;
+  if (!profileData) {
+    redirect("/login");
+  }
+
+  const doctorProfile = profileData as DoctorProfile;
 
   if (doctorProfile.role !== "doctor") {
     redirect("/login");
@@ -435,7 +450,10 @@ export default async function VerificationStatusPage() {
   const statusConfig = getStatusConfig(verification?.verification_status);
   const verificationSteps = getVerificationSteps(verification);
 
-  if (normalizedStatus === "approved" && doctorProfile.is_active !== false) {
+  const isApproved = normalizedStatus === "approved";
+  const isActive = doctorProfile.is_active !== false;
+
+  if (isApproved && isActive) {
     redirect("/doctor/dashboard");
   }
 
@@ -627,9 +645,7 @@ export default async function VerificationStatusPage() {
         </section>
 
         {normalizedStatus === "rejected" ||
-        normalizedStatus === "revision" ||
-        normalizedStatus === "revision_required" ||
-        normalizedStatus === "needs_revision" ? (
+        isRevisionStatus(normalizedStatus) ? (
           <section className='mt-6 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100'>
             <h2 className='font-bold text-slate-900'>Catatan dari Admin</h2>
 
@@ -637,6 +653,20 @@ export default async function VerificationStatusPage() {
               {verification?.rejection_reason ||
                 verification?.revision_note ||
                 "Admin belum menambahkan catatan detail."}
+            </p>
+          </section>
+        ) : null}
+
+        {!verification ? (
+          <section className='mt-6 rounded-3xl bg-amber-50 p-6 shadow-sm ring-1 ring-amber-100'>
+            <h2 className='font-bold text-amber-900'>
+              Data verifikasi belum ditemukan
+            </h2>
+
+            <p className='mt-2 text-sm leading-6 text-amber-700'>
+              Akun dokter Anda sudah terdaftar, tetapi data verifikasi belum
+              tersedia di sistem. Silakan hubungi admin jika status ini tidak
+              berubah.
             </p>
           </section>
         ) : null}

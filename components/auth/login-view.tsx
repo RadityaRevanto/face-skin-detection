@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { type FormEvent, type ReactNode, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/client";
-import type { UserRole } from "@/lib/types";
+import { useRouter } from "next/navigation";
+type LoginResponse = {
+  success?: boolean;
+  message?: string;
+  redirectTo?: string;
+};
 
 function MailIcon() {
   return (
@@ -129,9 +133,12 @@ export function LoginView() {
     setIsLoading(true);
     setErrorMessage("");
 
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
-    const email = String(formData.get("email") || "").trim();
+    const email = String(formData.get("email") || "")
+      .trim()
+      .toLowerCase();
     const password = String(formData.get("password") || "");
 
     if (!email || !password) {
@@ -141,32 +148,94 @@ export function LoginView() {
     }
 
     try {
-      const loginResponse = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      const supabase = createClient();
+
+      const { data: loginData, error: loginError } =
+        await supabase.auth.signInWithPassword({
           email,
           password,
-        }),
-      });
+        });
 
-      const loginResult = await loginResponse.json();
-
-      if (!loginResponse.ok) {
-        setErrorMessage(loginResult.message || "Login gagal.");
+      if (loginError || !loginData.user) {
+        setErrorMessage(loginError?.message || "Email atau password salah.");
         return;
       }
 
-      if (!loginResult.redirectTo) {
-        setErrorMessage("Halaman tujuan tidak ditemukan.");
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("id, full_name, email, role, is_active")
+        .eq("id", loginData.user.id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error("Failed to fetch profile after login:", {
+          message: profileError.message,
+          details: profileError.details,
+          hint: profileError.hint,
+          code: profileError.code,
+        });
+
+        setErrorMessage("Gagal mengambil data profil.");
         return;
       }
 
-      router.replace(loginResult.redirectTo);
+      if (!profile) {
+        await supabase.auth.signOut();
+        setErrorMessage("Profil akun tidak ditemukan.");
+        return;
+      }
+
+      if (profile.role === "admin") {
+        window.location.href = "/admin/dashboard";
+        return;
+      }
+
+      if (profile.role === "user") {
+        if (profile.is_active === false) {
+          await supabase.auth.signOut();
+          setErrorMessage("Akun user belum aktif.");
+          return;
+        }
+
+        window.location.href = "/user/home";
+        return;
+      }
+
+      if (profile.role === "doctor") {
+        const { data: verification, error: verificationError } = await supabase
+          .from("doctor_verifications")
+          .select("doctor_id, verification_status")
+          .eq("doctor_id", profile.id)
+          .maybeSingle();
+
+        if (verificationError) {
+          console.error("Failed to fetch doctor verification after login:", {
+            message: verificationError.message,
+            details: verificationError.details,
+            hint: verificationError.hint,
+            code: verificationError.code,
+          });
+
+          setErrorMessage("Gagal mengambil status verifikasi dokter.");
+          return;
+        }
+
+        const verificationStatus =
+          verification?.verification_status?.toLowerCase().trim() || "pending";
+
+        if (verificationStatus === "approved" && profile.is_active !== false) {
+          window.location.href = "/doctor/dashboard";
+          return;
+        }
+
+        window.location.href = "/doctor/verification-status";
+        return;
+      }
+
+      await supabase.auth.signOut();
+      setErrorMessage("Role akun tidak dikenali.");
     } catch (error) {
-      console.error(error);
+      console.error("Login submit error:", error);
       setErrorMessage("Terjadi kesalahan saat login.");
     } finally {
       setIsLoading(false);
@@ -201,7 +270,7 @@ export function LoginView() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} method='post' className='space-y-4'>
+        <form onSubmit={handleSubmit} className='space-y-4'>
           {errorMessage ? (
             <div className='rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700'>
               {errorMessage}
@@ -222,6 +291,7 @@ export function LoginView() {
                 autoComplete='email'
                 className='h-12 rounded-xl pl-10 focus-visible:ring-emerald-500'
                 required
+                disabled={isLoading}
               />
             </div>
           </div>
@@ -240,6 +310,7 @@ export function LoginView() {
                 autoComplete='current-password'
                 className='h-12 rounded-xl pl-10 pr-10 focus-visible:ring-emerald-500'
                 required
+                disabled={isLoading}
               />
               <button
                 type='button'
@@ -247,11 +318,13 @@ export function LoginView() {
                   showPassword ? "Sembunyikan password" : "Tampilkan password"
                 }
                 onClick={() => setShowPassword((value) => !value)}
-                className='absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 transition hover:text-emerald-600'
+                className='absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 transition hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-60'
+                disabled={isLoading}
               >
                 <EyeIcon hidden={showPassword} />
               </button>
             </div>
+
             <div className='text-right'>
               <Link
                 href='#'
@@ -262,12 +335,6 @@ export function LoginView() {
             </div>
           </div>
 
-          {errorMessage ? (
-            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
-              {errorMessage}
-            </p>
-          ) : null}
-
           <Button
             variant='success'
             className='h-12 w-full rounded-xl bg-emerald-700 text-base shadow-xl shadow-emerald-700/25 hover:bg-emerald-800'
@@ -276,7 +343,7 @@ export function LoginView() {
           >
             {isLoading ? (
               <>
-                Masuk
+                Memproses...
                 <span className='h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white' />
               </>
             ) : (
