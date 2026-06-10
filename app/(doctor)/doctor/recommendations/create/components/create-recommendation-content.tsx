@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 
 import { RecommendationForm } from "@/app/(doctor)/doctor/recommendations/_components/recommendation-form";
@@ -6,26 +5,14 @@ import { DoctorHeader } from "@/components/doctor/doctor-header";
 import { DoctorSidebar } from "@/components/doctor/doctor-sidebar";
 import { ROUTES } from "@/lib/constants";
 
-import { getEditRecommendationPageData } from "./lib/edit-recommendation-query";
+import type { CreateRecommendationPageData } from "../lib/create-recommendation-types";
 
-export const dynamic = "force-dynamic";
+type CreateRecommendationContentProps = CreateRecommendationPageData;
 
-export const metadata: Metadata = {
-  title: "Edit Rekomendasi | Face Skin Detection",
-  description: "Edit rule rekomendasi skincare - Dashboard Dokter",
-};
-
-type PageProps = {
-  params: Promise<{
-    id: string;
-  }>;
-};
-
-export default async function EditRecommendationPage({ params }: PageProps) {
-  const { id } = await params;
-
-  const pageData = await getEditRecommendationPageData(id);
-
+export function CreateRecommendationContent({
+  concerns,
+  products,
+}: CreateRecommendationContentProps) {
   return (
     <main className='min-h-screen bg-[#f7fbf8]! text-slate-950 dark:bg-[#f7fbf8]! dark:text-slate-950!'>
       <div className='flex min-h-screen flex-col bg-[#f7fbf8]! dark:bg-[#f7fbf8]! lg:flex-row'>
@@ -33,8 +20,8 @@ export default async function EditRecommendationPage({ params }: PageProps) {
 
         <div className='min-w-0 flex-1 bg-[#f7fbf8]! dark:bg-[#f7fbf8]!'>
           <DoctorHeader
-            title='Edit Rekomendasi'
-            description='Perbarui rule rekomendasi berdasarkan hasil analisis AI.'
+            title='Tambah Rekomendasi'
+            description='Buat rule rekomendasi berdasarkan hasil analisis AI.'
             searchPlaceholder='Cari rekomendasi...'
           />
 
@@ -50,21 +37,16 @@ export default async function EditRecommendationPage({ params }: PageProps) {
                 </Link>
 
                 <h1 className='mt-4 text-2xl font-bold tracking-tight text-slate-950'>
-                  Edit Rule Rekomendasi
+                  Tambah Rule Rekomendasi
                 </h1>
 
                 <p className='mt-1 text-sm text-slate-500'>
-                  Perubahan rule akan memengaruhi rekomendasi yang ditampilkan
-                  saat user mendapat hasil AI yang cocok.
+                  Rule ini akan dipakai untuk mencocokkan hasil AI user dengan
+                  produk skincare yang sesuai.
                 </p>
               </div>
 
-              <RecommendationForm
-                mode='edit'
-                concerns={pageData.concerns}
-                products={pageData.products}
-                defaultValues={pageData.recommendation}
-              />
+              <RecommendationForm concerns={concerns} products={products} />
             </div>
           </div>
         </div>
