@@ -1,4 +1,5 @@
 import type { PredictionHistory, ProblemDetail } from "../_lib/history-types";
+import { getHistoryImageUrl } from "../_lib/history-utils";
 import { ShieldIcon } from "./icons";
 
 type AnalysisPhotoCardProps = {
@@ -10,56 +11,66 @@ export function AnalysisPhotoCard({
   selectedHistory,
   problemDetails,
 }: AnalysisPhotoCardProps) {
+  const imageUrl = getHistoryImageUrl(selectedHistory);
+
   return (
     <section className='rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100'>
       <h2 className='text-lg font-bold text-slate-900'>Foto Analisis</h2>
 
       <p className='mt-1 text-sm font-medium text-slate-500'>
-        Hasil deteksi menggunakan teknologi YOLO
+        Foto hasil pemeriksaan dari bucket skin-images
       </p>
 
-      <div className='relative mt-5 min-h-[420px] overflow-hidden rounded-3xl bg-linear-to-br from-emerald-50 via-white to-cyan-50'>
-        <div className='absolute bottom-0 left-1/2 h-[410px] w-[330px] -translate-x-1/2'>
-          <div className='absolute left-1/2 top-5 h-36 w-52 -translate-x-1/2 rounded-t-full bg-slate-950' />
-          <div className='absolute left-1/2 top-[70px] h-[210px] w-[180px] -translate-x-1/2 rounded-[46%] bg-[#efc09d]' />
-          <div className='absolute left-[115px] top-[160px] h-2.5 w-2.5 rounded-full bg-slate-900' />
-          <div className='absolute right-[115px] top-[160px] h-2.5 w-2.5 rounded-full bg-slate-900' />
-          <div className='absolute left-1/2 top-[200px] h-2.5 w-10 -translate-x-1/2 rounded-full bg-rose-300' />
-          <div className='absolute bottom-0 left-1/2 h-28 w-[310px] -translate-x-1/2 rounded-t-[100px] bg-white' />
-        </div>
+      <div className='relative mt-5 min-h-[420px] overflow-hidden rounded-3xl bg-slate-100'>
+        {imageUrl ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={imageUrl}
+              alt={`Foto pemeriksaan ${selectedHistory?.predicted_class ?? ""}`}
+              className='absolute inset-0 h-full w-full object-cover'
+            />
 
-        {problemDetails.slice(0, 5).map((problem, index) => {
-          const positions = [
-            "left-[12%] top-[25%]",
-            "left-[16%] top-[55%]",
-            "right-[18%] top-[18%]",
-            "right-[16%] top-[43%]",
-            "right-[22%] top-[62%]",
-          ];
+            {problemDetails.slice(0, 5).map((problem, index) => {
+              const positions = [
+                "left-[8%] top-[20%]",
+                "left-[12%] top-[50%]",
+                "right-[10%] top-[15%]",
+                "right-[8%] top-[42%]",
+                "right-[14%] top-[65%]",
+              ];
 
-          const colors = [
-            "bg-yellow-50 text-yellow-700",
-            "bg-yellow-50 text-yellow-700",
-            "bg-emerald-50 text-emerald-700",
-            "bg-red-50 text-red-700",
-            "bg-emerald-50 text-emerald-700",
-          ];
+              const colors = [
+                "bg-yellow-50/95 text-yellow-700",
+                "bg-yellow-50/95 text-yellow-700",
+                "bg-emerald-50/95 text-emerald-700",
+                "bg-red-50/95 text-red-700",
+                "bg-emerald-50/95 text-emerald-700",
+              ];
 
-          return (
-            <span
-              key={`${problem.name}-${index}`}
-              className={`absolute ${
-                positions[index] ?? "left-[12%] top-[25%]"
-              } rounded-lg px-3 py-2 text-xs font-bold shadow ${
-                colors[index] ?? "bg-emerald-50 text-emerald-700"
-              }`}
-            >
-              {problem.name}
-              <br />
-              {problem.value}%
-            </span>
-          );
-        })}
+              return (
+                <span
+                  key={`${problem.name}-${index}`}
+                  className={`absolute z-10 ${
+                    positions[index] ?? "left-[8%] top-[20%]"
+                  } rounded-lg px-3 py-2 text-xs font-bold shadow-md backdrop-blur-sm ${
+                    colors[index] ?? "bg-emerald-50/95 text-emerald-700"
+                  }`}
+                >
+                  {problem.name}
+                  <br />
+                  {problem.value}%
+                </span>
+              );
+            })}
+          </>
+        ) : (
+          <div className='flex h-full min-h-[420px] items-center justify-center bg-linear-to-br from-emerald-50 via-white to-cyan-50 px-6 text-center'>
+            <p className='text-sm font-semibold text-slate-500'>
+              Belum ada foto pemeriksaan untuk hasil ini.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className='mt-5 flex flex-col gap-3 rounded-2xl bg-slate-50 p-4 sm:flex-row sm:items-center sm:justify-between'>
@@ -73,7 +84,9 @@ export function AnalysisPhotoCard({
               Teknologi: {selectedHistory?.model_used ?? "Belum Ada"}
             </p>
             <p className='text-xs font-medium text-slate-500'>
-              Analisis real-time dengan akurasi tinggi
+              {selectedHistory?.scan_mode === "livecam_yolo"
+                ? "Foto livecam dari skin-images"
+                : "Foto upload dari skin-images"}
             </p>
           </div>
         </div>

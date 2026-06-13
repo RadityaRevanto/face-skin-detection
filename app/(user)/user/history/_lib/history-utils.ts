@@ -4,6 +4,14 @@ import type {
   ToneConfig,
 } from "./history-types";
 
+export function getHistoryImageUrl(history: PredictionHistory | null) {
+  if (!history) {
+    return null;
+  }
+
+  return history.cropped_image_url ?? history.image_url ?? null;
+}
+
 export function formatDate(date: string) {
   return new Intl.DateTimeFormat("id-ID", {
     dateStyle: "medium",

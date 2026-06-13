@@ -4,6 +4,50 @@ import type {
   ToneConfig,
 } from "./pemeriksaan-types";
 
+export function normalizeSeverityLevel(
+  level: string | null | undefined,
+): PredictionHistory["severity_level"] {
+  const value = (level ?? "").toLowerCase();
+
+  if (value === "high" || value === "severe") {
+    return "severe";
+  }
+
+  if (value === "medium" || value === "moderate") {
+    return "moderate";
+  }
+
+  return "mild";
+}
+
+export function getSeverityLabel(level: string | null | undefined) {
+  const normalized = normalizeSeverityLevel(level);
+
+  if (normalized === "severe") {
+    return "Tinggi";
+  }
+
+  if (normalized === "moderate") {
+    return "Sedang";
+  }
+
+  return "Rendah";
+}
+
+export function getSeverityBadgeClass(level: string | null | undefined) {
+  const normalized = normalizeSeverityLevel(level);
+
+  if (normalized === "severe") {
+    return "bg-rose-50 text-rose-700 ring-rose-200";
+  }
+
+  if (normalized === "moderate") {
+    return "bg-amber-50 text-amber-700 ring-amber-200";
+  }
+
+  return "bg-emerald-50 text-emerald-700 ring-emerald-200";
+}
+
 export function getConfidencePercent(
   confidence: number | string | null | undefined,
 ) {

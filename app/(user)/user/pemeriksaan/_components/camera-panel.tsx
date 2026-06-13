@@ -1,25 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
+import type { LiveScanResult } from "../_lib/pemeriksaan-types";
 import { BoltIcon, CameraIcon, RefreshIcon } from "./icons";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-type PredictionResult = {
-  predicted_class: string;
-  confidence: number;
-  probabilities: Record<string, number>;
-  severity_score: number;
-  severity_level: string;
-  model_used: string;
-};
-
-type ScanResult = {
-  prediction: PredictionResult;
-  cropped_image_url: string;
-  history_id?: string;
+type CameraPanelProps = {
+  onScanComplete?: (result: LiveScanResult) => void;
+  onReset?: () => void;
 };
 
 type ScanPhase =
@@ -29,32 +17,12 @@ type ScanPhase =
   | "done"       // hasil sudah ada
   | "error";     // ada error
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function severityColor(level: string) {
-  if (level === "high" || level === "severe") return "text-rose-600";
-  if (level === "medium" || level === "moderate") return "text-amber-600";
-  return "text-emerald-600";
-}
-
-function severityBadge(level: string) {
-  if (level === "high" || level === "severe")
-    return "bg-rose-50 text-rose-700 ring-rose-200";
-  if (level === "medium" || level === "moderate")
-    return "bg-amber-50 text-amber-700 ring-amber-200";
-  return "bg-emerald-50 text-emerald-700 ring-emerald-200";
-}
-
-function severityLabel(level: string) {
-  if (level === "high" || level === "severe") return "Tinggi";
-  if (level === "medium" || level === "moderate") return "Sedang";
-  return "Rendah";
-}
-
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function CameraPanel() {
-  const router = useRouter();
+export function CameraPanel({
+  onScanComplete,
+  onReset,
+}: CameraPanelProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -62,7 +30,6 @@ export function CameraPanel() {
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const [phase, setPhase] = useState<ScanPhase>("idle");
   const [capturedDataUrl, setCapturedDataUrl] = useState<string | null>(null);
-  const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
   // Assign stream ke video element
@@ -94,7 +61,6 @@ export function CameraPanel() {
 
       setStream(mediaStream);
       setCapturedDataUrl(null);
-      setScanResult(null);
       setErrorMsg("");
       setPhase("live");
     } catch {
@@ -162,11 +128,12 @@ export function CameraPanel() {
             throw new Error(json.error ?? "Gagal analisis dari server.");
           }
 
-          setScanResult(json.data as ScanResult);
+          const result: LiveScanResult = {
+            ...(json.data as LiveScanResult),
+            recommendations: (json.data as LiveScanResult).recommendations ?? [],
+          };
           setPhase("done");
-
-          // Refresh Server Component data (sidebar: status, problem, rekomendasi)
-          router.refresh();
+          onScanComplete?.(result);
         } catch (err) {
           const msg = err instanceof Error ? err.message : "Terjadi kesalahan.";
           setErrorMsg(msg);
@@ -180,22 +147,16 @@ export function CameraPanel() {
 
   function resetScan() {
     setCapturedDataUrl(null);
-    setScanResult(null);
     setErrorMsg("");
     setPhase("idle");
+    onReset?.();
   }
-
-  // ── Derived values ───────────────────────────────────────────────────────
-
-  const confidencePct = scanResult
-    ? Math.round(scanResult.prediction.confidence * 100)
-    : 0;
 
   const statusMessage: Record<ScanPhase, string> = {
     idle: "Klik tombol kamera untuk mulai livecam",
     live: "Livecam aktif. Posisikan wajah di tengah, lalu klik tombol capture.",
     analyzing: "Menganalisis kondisi kulit… harap tunggu.",
-    done: "Analisis selesai! Hasil tersimpan ke riwayat.",
+    done: "Analisis selesai! Hasil otomatis tersimpan ke riwayat.",
     error: errorMsg || "Terjadi kesalahan.",
   };
 
@@ -204,7 +165,7 @@ export function CameraPanel() {
   return (
     <section className='overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-100'>
       {/* ── Camera viewport ── */}
-      <div className='relative min-h-[560px] overflow-hidden rounded-t-3xl bg-linear-to-br from-emerald-50 via-white to-cyan-50'>
+      <div className='relative min-h-[560px] overflow-visible rounded-t-3xl bg-linear-to-br from-emerald-50 via-white to-cyan-50'>
 
         {/* YOLO badge */}
         <div className='absolute left-5 top-5 z-20 rounded-xl bg-emerald-600 px-4 py-3 text-white shadow-lg shadow-emerald-100'>
@@ -246,7 +207,7 @@ export function CameraPanel() {
             autoPlay
             muted
             playsInline
-            className='absolute inset-0 h-full w-full object-cover'
+            className='absolute inset-0 h-full w-full rounded-t-3xl object-cover'
           />
         )}
 
@@ -257,7 +218,7 @@ export function CameraPanel() {
             <img
               src={capturedDataUrl}
               alt='Frame hasil capture livecam'
-              className='absolute inset-0 h-full w-full object-cover'
+              className='absolute inset-0 h-full w-full rounded-t-3xl object-cover'
             />
           )}
 
@@ -284,26 +245,6 @@ export function CameraPanel() {
             <div className='h-16 w-16 animate-spin rounded-full border-4 border-white/20 border-t-emerald-400' />
             <p className='text-lg font-bold text-white'>Menganalisis kulit…</p>
             <p className='text-sm text-white/70'>Menghubungi ML service</p>
-          </div>
-        )}
-
-        {/* Result overlay — tampilkan ringkasan singkat di atas gambar */}
-        {phase === "done" && scanResult && (
-          <div className='absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-slate-900/90 via-slate-900/60 to-transparent px-6 pb-14 pt-20'>
-            <p className='text-xs font-semibold uppercase tracking-widest text-white/60'>
-              Hasil Analisis
-            </p>
-            <h3 className={`mt-1 text-2xl font-black ${severityColor(scanResult.prediction.severity_level)} drop-shadow`}>
-              {scanResult.prediction.predicted_class}
-            </h3>
-            <div className='mt-2 flex items-center gap-3'>
-              <span className={`rounded-full px-3 py-1 text-xs font-bold ring-1 ${severityBadge(scanResult.prediction.severity_level)}`}>
-                Severity: {severityLabel(scanResult.prediction.severity_level)}
-              </span>
-              <span className='rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white ring-1 ring-white/30'>
-                Confidence {confidencePct}%
-              </span>
-            </div>
           </div>
         )}
 
@@ -354,7 +295,7 @@ export function CameraPanel() {
               {phase === "idle" && "Aktifkan kamera untuk mulai pemeriksaan"}
               {phase === "live" && "Posisikan wajah Anda di tengah kamera"}
               {phase === "analyzing" && "Sedang menganalisis kondisi kulit…"}
-              {phase === "done" && "Analisis selesai — data tersimpan ke riwayat"}
+              {phase === "done" && "Analisis selesai — tersimpan ke riwayat"}
               {phase === "error" && "Terjadi kesalahan saat analisis"}
             </h2>
             <p className='mt-1 text-sm font-medium text-slate-500'>
@@ -381,71 +322,6 @@ export function CameraPanel() {
           </span>
         </div>
 
-        {/* Result detail card — tampil saat done */}
-        {phase === "done" && scanResult && (
-          <div className='mx-auto mt-5 max-w-3xl overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm'>
-            <div className='border-b border-slate-100 px-6 py-4'>
-              <p className='text-xs font-semibold uppercase tracking-wider text-slate-400'>
-                Detail Hasil Pemeriksaan Livecam
-              </p>
-            </div>
-            <div className='grid grid-cols-3 divide-x divide-slate-100 px-2 py-3'>
-              <div className='px-4 py-3 text-center'>
-                <p className='text-xs font-semibold text-slate-400'>Kondisi</p>
-                <p className='mt-1 text-sm font-black text-slate-800 leading-tight'>
-                  {scanResult.prediction.predicted_class}
-                </p>
-              </div>
-              <div className='px-4 py-3 text-center'>
-                <p className='text-xs font-semibold text-slate-400'>Confidence</p>
-                <p className={`mt-1 text-2xl font-black ${severityColor(scanResult.prediction.severity_level)}`}>
-                  {confidencePct}%
-                </p>
-              </div>
-              <div className='px-4 py-3 text-center'>
-                <p className='text-xs font-semibold text-slate-400'>Severity</p>
-                <span className={`mt-2 inline-flex rounded-xl px-3 py-1.5 text-xs font-bold ring-1 ${severityBadge(scanResult.prediction.severity_level)}`}>
-                  {severityLabel(scanResult.prediction.severity_level)}
-                </span>
-              </div>
-            </div>
-            <div className='border-t border-slate-100 px-6 py-4'>
-              <p className='mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400'>
-                Probabilitas per Kondisi
-              </p>
-              <div className='space-y-2'>
-                {Object.entries(scanResult.prediction.probabilities)
-                  .sort(([, a], [, b]) => b - a)
-                  .slice(0, 5)
-                  .map(([label, prob]) => (
-                    <div key={label} className='flex items-center gap-3'>
-                      <span className='w-44 truncate text-xs font-semibold text-slate-500'>
-                        {label}
-                      </span>
-                      <div className='flex-1 overflow-hidden rounded-full bg-slate-100 h-2'>
-                        <div
-                          className='h-2 rounded-full bg-emerald-500 transition-all duration-700'
-                          style={{ width: `${Math.round(prob * 100)}%` }}
-                        />
-                      </div>
-                      <span className='w-10 text-right text-xs font-bold text-slate-700'>
-                        {Math.round(prob * 100)}%
-                      </span>
-                    </div>
-                  ))}
-              </div>
-            </div>
-            <div className='border-t border-slate-100 px-6 py-4'>
-              <button
-                type='button'
-                onClick={resetScan}
-                className='w-full rounded-xl bg-emerald-600 py-3 text-sm font-bold text-white shadow transition-colors hover:bg-emerald-700'
-              >
-                Scan Ulang
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </section>
   );
