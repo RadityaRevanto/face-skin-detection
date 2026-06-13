@@ -12,11 +12,21 @@ export type PredictionHistory = {
   created_at: string;
 };
 
+export type SkincareProduct = {
+  id: string;
+  name: string;
+  category: string;
+  key_ingredients: string | null;
+  usage_instruction: string | null;
+  warning: string | null;
+};
+
 export type Recommendation = {
   id: string;
   title: string;
   recommendation_text: string;
   priority_level: "low" | "medium" | "high";
+  skincare_products?: SkincareProduct[] | SkincareProduct | null;
 };
 
 export type SkinProblem = {
@@ -31,4 +41,22 @@ export type ToneConfig = {
   description: string;
   titleClassName: string;
   badgeClassName: string;
+};
+
+export type LiveScanPrediction = {
+  predicted_class: string;
+  confidence: number;
+  probabilities: Record<string, number>;
+  severity_score: number;
+  severity_level: string;
+  model_used: string;
+};
+
+export type LiveScanResult = {
+  prediction: LiveScanPrediction;
+  recommendations: Recommendation[];
+  scan_mode?: "upload_image" | "livecam_yolo";
+  image_url?: string | null;
+  cropped_image_url: string | null;
+  history_id?: string;
 };

@@ -7,6 +7,7 @@ import type { PredictionHistory } from "../_lib/history-types";
 import {
   formatDate,
   getConfidencePercent,
+  getHistoryImageUrl,
   getToneBySeverity,
 } from "../_lib/history-utils";
 import { CalendarIcon, ChevronDownIcon } from "./icons";
@@ -78,20 +79,33 @@ export function HistorySidebar({
 
             const isActive = item.id === selectedHistoryId;
             const confidencePercent = getConfidencePercent(item.confidence);
+            const imageUrl = getHistoryImageUrl(item);
 
             return (
-              <article
+              <Link
                 key={item.id}
+                href={`/user/history?id=${item.id}`}
+                aria-current={isActive ? "page" : undefined}
                 className={[
-                  "flex gap-4 rounded-2xl border bg-white p-4 transition-colors",
+                  "group flex gap-4 rounded-2xl border bg-white p-4 transition-colors",
                   isActive
                     ? "border-emerald-300 ring-2 ring-emerald-100"
                     : "border-slate-100 hover:border-emerald-200",
                 ].join(" ")}
               >
-                <div className='relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-linear-to-br from-amber-200 to-emerald-100'>
-                  <div className='absolute left-1/2 top-3 h-9 w-9 -translate-x-1/2 rounded-full bg-amber-100' />
-                  <div className='absolute bottom-0 left-1/2 h-12 w-14 -translate-x-1/2 rounded-t-full bg-slate-900' />
+                <div className='relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-slate-100'>
+                  {imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={imageUrl}
+                      alt={`Foto pemeriksaan ${item.predicted_class}`}
+                      className='h-full w-full object-cover'
+                    />
+                  ) : (
+                    <div className='flex h-full w-full items-center justify-center bg-linear-to-br from-amber-200 to-emerald-100 text-[10px] font-bold text-slate-500'>
+                      No Image
+                    </div>
+                  )}
                 </div>
                 <div className='min-w-0 flex-1'>
                   <div className='flex items-start justify-between gap-3'>
@@ -107,14 +121,11 @@ export function HistorySidebar({
                   <h2 className={`mt-2 font-bold ${itemTone.title}`}>
                     {item.predicted_class}
                   </h2>
-                  <Link
-                    href={`/user/history?id=${item.id}`}
-                    className='mt-3 inline-block text-sm font-bold text-emerald-700'
-                  >
+                  <span className='mt-3 inline-block text-sm font-bold text-emerald-700 transition-colors group-hover:text-emerald-800'>
                     Lihat Detail ›
-                  </Link>
+                  </span>
                 </div>
-              </article>
+              </Link>
             );
           })
         ) : (
