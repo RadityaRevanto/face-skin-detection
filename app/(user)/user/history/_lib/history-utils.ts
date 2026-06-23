@@ -74,10 +74,14 @@ function normalizeProbabilityValue(value: number) {
 }
 
 function mapProblemName(name: string) {
-  const normalizedName = name.toLowerCase();
+  // Normalize hyphens to spaces so both "Non-Inflammatory Acne" and the raw
+  // model classes ("non inflammatory acne black heads") match consistently.
+  const normalizedName = name.toLowerCase().replace(/-/g, " ");
 
+  // Check the more specific "non inflammatory" first — otherwise it also
+  // matches the broader "inflammatory acne" check and collapses to "Jerawat".
+  if (normalizedName.includes("non inflammatory acne")) return "Komedo";
   if (normalizedName.includes("inflammatory acne")) return "Jerawat";
-  if (normalizedName.includes("non-inflammatory acne")) return "Komedo";
   if (normalizedName.includes("dark spots")) return "Flek Hitam";
   if (normalizedName.includes("redness")) return "Kemerahan";
   if (normalizedName.includes("pores")) return "Pori-pori Besar";
@@ -108,10 +112,20 @@ export function getProblemDetails(
     return [];
   }
 
-  return Object.entries(history.probabilities)
+  // Several raw classes map to the same display name (e.g. blackheads and
+  // whiteheads both become "Komedo"), so aggregate their probabilities to
+  // avoid duplicate entries — and therefore duplicate React keys.
+  const aggregated = new Map<string, number>();
+
+  for (const [name, value] of Object.entries(history.probabilities)) {
+    const displayName = mapProblemName(name);
+    aggregated.set(displayName, (aggregated.get(displayName) ?? 0) + Number(value));
+  }
+
+  return Array.from(aggregated.entries())
     .map(([name, value], index) => ({
-      name: mapProblemName(name),
-      value: normalizeProbabilityValue(Number(value)),
+      name,
+      value: normalizeProbabilityValue(value),
       color: getProblemColor(index),
     }))
     .sort((a, b) => b.value - a.value);
