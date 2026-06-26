@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { SESSION_MAX_AGE_SECONDS } from "@/lib/constants";
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -10,6 +12,10 @@ export async function updateSession(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
+      cookieOptions: {
+        // Sesi login bertahan 3 hari (lihat SESSION_MAX_AGE_SECONDS).
+        maxAge: SESSION_MAX_AGE_SECONDS,
+      },
       cookies: {
         getAll() {
           return request.cookies.getAll();
