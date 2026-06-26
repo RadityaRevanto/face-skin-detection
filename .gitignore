@@ -44,3 +44,7 @@ next-env.d.ts
 AGENTS.md
 CLAUDE.md
 spesifikasi_face_skin_detection.md
+
+# ML Service
+ml-service/__pycache__/
+ml-service/yolov8n.pt

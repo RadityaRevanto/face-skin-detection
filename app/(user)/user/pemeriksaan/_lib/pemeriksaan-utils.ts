@@ -4,6 +4,50 @@ import type {
   ToneConfig,
 } from "./pemeriksaan-types";
 
+export function normalizeSeverityLevel(
+  level: string | null | undefined,
+): PredictionHistory["severity_level"] {
+  const value = (level ?? "").toLowerCase();
+
+  if (value === "high" || value === "severe") {
+    return "severe";
+  }
+
+  if (value === "medium" || value === "moderate") {
+    return "moderate";
+  }
+
+  return "mild";
+}
+
+export function getSeverityLabel(level: string | null | undefined) {
+  const normalized = normalizeSeverityLevel(level);
+
+  if (normalized === "severe") {
+    return "Tinggi";
+  }
+
+  if (normalized === "moderate") {
+    return "Sedang";
+  }
+
+  return "Rendah";
+}
+
+export function getSeverityBadgeClass(level: string | null | undefined) {
+  const normalized = normalizeSeverityLevel(level);
+
+  if (normalized === "severe") {
+    return "bg-rose-50 text-rose-700 ring-rose-200";
+  }
+
+  if (normalized === "moderate") {
+    return "bg-amber-50 text-amber-700 ring-amber-200";
+  }
+
+  return "bg-emerald-50 text-emerald-700 ring-emerald-200";
+}
+
 export function getConfidencePercent(
   confidence: number | string | null | undefined,
 ) {
@@ -61,10 +105,14 @@ function normalizeProbabilityValue(value: number) {
 }
 
 function mapProblemName(name: string) {
-  const normalizedName = name.toLowerCase();
+  // Normalize hyphens to spaces so both "Non-Inflammatory Acne" and the raw
+  // model classes ("non inflammatory acne black heads") match consistently.
+  const normalizedName = name.toLowerCase().replace(/-/g, " ");
 
+  // Check the more specific "non inflammatory" first — otherwise it also
+  // matches the broader "inflammatory acne" check and collapses to "Jerawat".
+  if (normalizedName.includes("non inflammatory acne")) return "Komedo";
   if (normalizedName.includes("inflammatory acne")) return "Jerawat";
-  if (normalizedName.includes("non-inflammatory acne")) return "Komedo";
   if (normalizedName.includes("dark spots")) return "Flek Hitam";
   if (normalizedName.includes("redness")) return "Kemerahan";
   if (normalizedName.includes("pores")) return "Pori-pori Besar";
@@ -95,10 +143,20 @@ export function getSkinProblemsFromPrediction(
     return [];
   }
 
-  return Object.entries(prediction.probabilities)
+  // Several raw classes map to the same display name (e.g. blackheads and
+  // whiteheads both become "Komedo"), so aggregate their probabilities to
+  // avoid duplicate entries — and therefore duplicate React keys.
+  const aggregated = new Map<string, number>();
+
+  for (const [name, value] of Object.entries(prediction.probabilities)) {
+    const displayName = mapProblemName(name);
+    aggregated.set(displayName, (aggregated.get(displayName) ?? 0) + Number(value));
+  }
+
+  return Array.from(aggregated.entries())
     .map(([name, value], index) => ({
-      name: mapProblemName(name),
-      value: normalizeProbabilityValue(Number(value)),
+      name,
+      value: normalizeProbabilityValue(value),
       color: getProblemColor(index),
     }))
     .sort((a, b) => b.value - a.value)

@@ -1,14 +1,28 @@
 import type { Metadata } from "next";
 
+import { RecommendationContent } from "./components/recommendation-content";
+import { getRecommendationsPageData } from "./lib/recommendations-query";
+
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Kelola Rekomendasi | Face Skin Detection",
   description: "Kelola rekomendasi skincare - Dashboard Dokter",
 };
 
-export default function DoctorRecommendationsPage() {
-  return (
-    <div>
-      <h1>Kelola Rekomendasi</h1>
-    </div>
-  );
+type DoctorRecommendationsPageProps = {
+  searchParams?: Promise<{
+    page?: string;
+  }>;
+};
+
+export default async function DoctorRecommendationsPage({
+  searchParams,
+}: DoctorRecommendationsPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const page = Number(resolvedSearchParams?.page ?? 1);
+
+  const pageData = await getRecommendationsPageData({ page });
+
+  return <RecommendationContent {...pageData} />;
 }

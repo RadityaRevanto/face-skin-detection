@@ -36,6 +36,27 @@ export function CameraIcon({ className }: { className?: string }) {
   );
 }
 
+export function UploadIcon({ className }: { className?: string }) {
+  return (
+    <Icon className={className}>
+      <path
+        d='M12 16V4m0 0 4 4m-4-4-4 4'
+        stroke='currentColor'
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeWidth='1.8'
+      />
+      <path
+        d='M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3'
+        stroke='currentColor'
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        strokeWidth='1.8'
+      />
+    </Icon>
+  );
+}
+
 export function BoltIcon() {
   return (
     <Icon className='h-5 w-5'>
