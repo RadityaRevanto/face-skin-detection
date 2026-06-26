@@ -265,6 +265,10 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
 
   const isCameraOn = phase === "live" || phase === "countdown" || phase === "analyzing";
 
+  // Kamera depan (selfie) ditampilkan mirror agar gerakan pengguna terasa natural
+  // seperti bercermin. Kamera belakang dibiarkan apa adanya.
+  const mirrorClass = facingMode === "user" ? "-scale-x-100" : "";
+
   const statusText: Record<ScanPhase, string> = {
     idle     : "Klik tombol kamera untuk mulai, wajah akan terdeteksi otomatis",
     live     : faceDetected ? "Wajah terdeteksi! Tahan sebentar…" : "Posisikan wajah di tengah kamera",
@@ -307,14 +311,14 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
         {/* Live video */}
         {(phase === "live" || phase === "countdown") && (
           <video ref={videoRef} autoPlay muted playsInline
-            className="absolute inset-0 h-full w-full rounded-t-3xl object-cover" />
+            className={`absolute inset-0 h-full w-full rounded-t-3xl object-cover ${mirrorClass}`} />
         )}
 
         {/* Captured frame */}
         {(phase === "analyzing" || phase === "done" || phase === "error") && capturedDataUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={capturedDataUrl} alt="Frame hasil capture"
-            className="absolute inset-0 h-full w-full rounded-t-3xl object-cover" />
+            className={`absolute inset-0 h-full w-full rounded-t-3xl object-cover ${mirrorClass}`} />
         )}
 
         {/* Idle placeholder */}
