@@ -47,7 +47,7 @@ export function RecommendationCard({
 
                   <div className='min-w-0 flex-1'>
                     <div className='flex items-start justify-between gap-3'>
-                      <div>
+                      <div className='min-w-0'>
                         <p className='text-xs font-bold uppercase tracking-[0.18em] text-emerald-600'>
                           Rekomendasi #{index + 1}
                         </p>
@@ -86,7 +86,7 @@ export function RecommendationCard({
                         Produk Skincare
                       </p>
                       <div className='mt-2 flex items-start justify-between gap-3'>
-                        <div>
+                        <div className='min-w-0'>
                           <h4 className='text-sm font-black text-slate-900'>
                             {product.name}
                           </h4>

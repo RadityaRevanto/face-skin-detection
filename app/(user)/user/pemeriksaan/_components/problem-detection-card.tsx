@@ -28,7 +28,7 @@ export function ProblemDetectionCard({
             <div className='space-y-3'>
               {probabilityEntries.map(([label, prob]) => (
                 <div key={label} className='flex items-center gap-3'>
-                  <span className='w-36 truncate text-xs font-semibold text-slate-500'>
+                  <span className='w-24 truncate text-xs font-semibold text-slate-500 sm:w-36'>
                     {label}
                   </span>
                   <div className='h-2 flex-1 overflow-hidden rounded-full bg-slate-100'>

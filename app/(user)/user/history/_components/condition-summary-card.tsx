@@ -18,7 +18,7 @@ export function ConditionSummaryCard({
         Ringkasan Kondisi Kulit
       </h2>
 
-      <div className='mt-6 flex items-center gap-7'>
+      <div className='mt-6 flex flex-col items-center gap-6 text-center sm:flex-row sm:items-center sm:gap-7 sm:text-left'>
         <div
           className='grid h-32 w-32 shrink-0 place-items-center rounded-full'
           style={{
@@ -34,7 +34,7 @@ export function ConditionSummaryCard({
           </div>
         </div>
 
-        <div>
+        <div className='min-w-0'>
           <h3 className={`text-2xl font-bold ${tone.title}`}>
             {selectedHistory?.predicted_class ?? "Belum Ada Data"}
           </h3>

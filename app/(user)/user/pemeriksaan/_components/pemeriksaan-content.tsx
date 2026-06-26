@@ -60,8 +60,8 @@ export function PemeriksaanContent({
   const skinProblems = getSkinProblemsFromPrediction(activePrediction);
 
   return (
-    <div className='grid gap-8 xl:grid-cols-[1.65fr_0.75fr]'>
-      <div className='space-y-6'>
+    <div className='grid gap-6 xl:grid-cols-[1.65fr_0.75fr] xl:gap-8'>
+      <div className='min-w-0 space-y-6'>
         <CameraPanel
           onScanComplete={setLiveScan}
           onReset={() => setLiveScan(null)}
@@ -73,7 +73,7 @@ export function PemeriksaanContent({
         <StepsCard />
       </div>
 
-      <aside className='space-y-6'>
+      <aside className='min-w-0 space-y-6'>
         <SkinStatusCard
           latestPrediction={activePrediction}
           confidencePercent={confidencePercent}
