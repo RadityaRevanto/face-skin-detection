@@ -70,26 +70,6 @@ function ClockIcon() {
   );
 }
 
-function BellIcon() {
-  return createElement(
-    Icon,
-    { className: "h-5 w-5 text-slate-500" },
-    createElement("path", {
-      d: "M18 9a6 6 0 1 0-12 0c0 7-2 7-2 7h16s-2 0-2-7Z",
-      stroke: "currentColor",
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      strokeWidth: "1.8",
-    }),
-    createElement("path", {
-      d: "M10 19a2 2 0 0 0 4 0",
-      stroke: "currentColor",
-      strokeLinecap: "round",
-      strokeWidth: "1.8",
-    })
-  );
-}
-
 function ChevronDownIcon() {
   return createElement(
     Icon,
@@ -130,7 +110,7 @@ function LogoMark() {
     "svg",
     {
       "aria-hidden": true,
-      className: "h-10 w-10",
+      className: "h-9 w-9 sm:h-10 sm:w-10",
       viewBox: "0 0 48 48",
       fill: "none",
     },
@@ -181,12 +161,181 @@ const navItems: NavItem[] = [
   // { label: "Tips", href: "/user/tips", icon: createElement(BulbIcon) },
 ];
 
+function MenuIcon() {
+  return createElement(
+    Icon,
+    { className: "h-6 w-6" },
+    createElement("path", {
+      d: "M4 6h16M4 12h16M4 18h16",
+      stroke: "currentColor",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      strokeWidth: "1.8",
+    })
+  );
+}
+
+function CloseIcon() {
+  return createElement(
+    Icon,
+    { className: "h-5 w-5" },
+    createElement("path", {
+      d: "M6 6l12 12M18 6 6 18",
+      stroke: "currentColor",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      strokeWidth: "1.8",
+    })
+  );
+}
+
+function MobileMenu({
+  isOpen,
+  onClose,
+  pathname,
+  displayName,
+  onLogout,
+  isLoggingOut,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  pathname: string;
+  displayName: string;
+  onLogout: () => void;
+  isLoggingOut: boolean;
+}) {
+  return createElement(
+    "div",
+    { className: "md:hidden" },
+    createElement("button", {
+      type: "button",
+      "aria-label": "Tutup menu navigasi",
+      tabIndex: isOpen ? 0 : -1,
+      onClick: onClose,
+      className: [
+        "fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300",
+        isOpen ? "opacity-100" : "pointer-events-none opacity-0",
+      ].join(" "),
+    }),
+    createElement(
+      "aside",
+      {
+        "aria-hidden": !isOpen,
+        className: [
+          "fixed inset-y-0 right-0 z-50 flex w-72 max-w-[82%] flex-col bg-white shadow-2xl transition-transform duration-300 ease-out",
+          isOpen ? "translate-x-0" : "translate-x-full",
+        ].join(" "),
+      },
+      createElement(
+        "div",
+        {
+          className:
+            "flex items-center justify-between border-b border-slate-100 px-5 py-4",
+        },
+        createElement(
+          Link,
+          {
+            href: "/user/home",
+            onClick: onClose,
+            className: "flex items-center gap-2.5",
+          },
+          createElement(LogoMark),
+          createElement(
+            "span",
+            { className: "text-lg font-bold tracking-tight text-slate-900" },
+            "SkinCheck"
+          )
+        ),
+        createElement(
+          "button",
+          {
+            type: "button",
+            "aria-label": "Tutup menu navigasi",
+            onClick: onClose,
+            className:
+              "grid h-9 w-9 place-items-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-emerald-600",
+          },
+          createElement(CloseIcon)
+        )
+      ),
+      createElement(
+        "div",
+        {
+          className:
+            "flex items-center gap-3 border-b border-slate-100 px-5 py-4",
+        },
+        createElement(Avatar),
+        createElement(
+          "div",
+          { className: "flex min-w-0 flex-col" },
+          createElement(
+            "span",
+            { className: "text-xs font-medium text-slate-500" },
+            "Masuk sebagai"
+          ),
+          createElement(
+            "span",
+            { className: "truncate text-sm font-bold text-slate-800" },
+            displayName
+          )
+        )
+      ),
+      createElement(
+        "nav",
+        {
+          "aria-label": "Navigasi pengguna",
+          className: "flex flex-1 flex-col gap-1 px-3 py-4",
+        },
+        navItems.map((item) => {
+          const isActive =
+            pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+          return createElement(
+            Link,
+            {
+              key: item.label,
+              href: item.href,
+              onClick: onClose,
+              "aria-current": isActive ? "page" : undefined,
+              className: [
+                "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors",
+                isActive
+                  ? "bg-emerald-50 text-emerald-600"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-emerald-600",
+              ].join(" "),
+            },
+            item.icon,
+            createElement("span", null, item.label)
+          );
+        })
+      ),
+      createElement(
+        "div",
+        { className: "border-t border-slate-100 p-3" },
+        createElement(
+          "button",
+          {
+            type: "button",
+            disabled: isLoggingOut,
+            onClick: onLogout,
+            className:
+              "flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:pointer-events-none disabled:opacity-60",
+          },
+          createElement(LogoutIcon),
+          isLoggingOut ? "Keluar..." : "Logout"
+        )
+      )
+    )
+  );
+}
+
 export default function NavbarUsers() {
   const router = useRouter();
   const pathname = usePathname();
   const [displayName, setDisplayName] = useState("Pengguna");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -219,6 +368,18 @@ export default function NavbarUsers() {
     void loadProfile();
   }, []);
 
+  useEffect(() => {
+    if (typeof document === "undefined") {
+      return;
+    }
+
+    document.body.style.overflow = isMenuOpen ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
   async function handleLogout() {
     setIsLoggingOut(true);
 
@@ -240,25 +401,22 @@ export default function NavbarUsers() {
       {
         "aria-label": "Navigasi pengguna",
         className:
-            "relative flex h-[72px] w-full items-center justify-between gap-6 px-10",
+          "relative flex h-[72px] w-full items-center justify-between gap-4 px-4 sm:px-6 md:px-10",
       },
       createElement(
         Link,
-        { href: "/user/home", className: "flex shrink-0 items-center gap-3" },
+        {
+          href: "/user/home",
+          className: "flex shrink-0 items-center gap-2.5",
+        },
         createElement(LogoMark),
         createElement(
           "span",
-          { className: "flex flex-col leading-none" },
-          createElement(
-            "span",
-            { className: "text-lg font-bold tracking-tight text-slate-900" },
-            "SkinCheck"
-          ),
-          createElement(
-            "span",
-            { className: "text-sm font-semibold text-emerald-500" },
-            "Health"
-          )
+          {
+            className:
+              "text-lg font-bold tracking-tight text-slate-900 sm:text-xl",
+          },
+          "SkinCheck"
         )
       ),
       createElement(
@@ -297,17 +455,7 @@ export default function NavbarUsers() {
       ),
       createElement(
         "div",
-        { className: "flex shrink-0 items-center gap-5" },
-        createElement(
-          "button",
-          {
-            type: "button",
-            "aria-label": "Notifikasi",
-            className:
-              "grid h-10 w-10 place-items-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-emerald-600",
-          },
-          createElement(BellIcon)
-        ),
+        { className: "flex shrink-0 items-center gap-2 sm:gap-4 md:gap-5" },
         createElement(
           "div",
           { className: "relative hidden sm:block" },
@@ -383,8 +531,28 @@ export default function NavbarUsers() {
                 )
               )
             : null
+        ),
+        createElement(
+          "button",
+          {
+            type: "button",
+            "aria-label": "Buka menu navigasi",
+            "aria-expanded": isMenuOpen,
+            onClick: () => setIsMenuOpen(true),
+            className:
+              "grid h-10 w-10 place-items-center rounded-full text-slate-600 transition-colors hover:bg-slate-100 hover:text-emerald-600 md:hidden",
+          },
+          createElement(MenuIcon)
         )
       )
-    )
+    ),
+    createElement(MobileMenu, {
+      isOpen: isMenuOpen,
+      onClose: () => setIsMenuOpen(false),
+      pathname,
+      displayName,
+      onLogout: handleLogout,
+      isLoggingOut,
+    })
   );
 }

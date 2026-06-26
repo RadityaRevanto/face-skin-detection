@@ -8,7 +8,7 @@ const steps = [
 export function StepsCard() {
   return (
     <section className='rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100'>
-      <div className='grid gap-4 md:grid-cols-4'>
+      <div className='grid gap-4 sm:grid-cols-2 md:grid-cols-4'>
         {steps.map(([title, description], index) => (
           <div key={title} className='relative flex items-center gap-4'>
             <span
