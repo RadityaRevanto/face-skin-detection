@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
+
 import { LandingHeader } from "./_components/landing-header";
 import {
   ArrowRightIcon,
@@ -203,7 +205,9 @@ function ResultPreview() {
   );
 }
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  await redirectIfAuthenticated();
+
   return (
     <div className="flex min-h-screen flex-col bg-white text-slate-900">
       <LandingHeader />

@@ -90,3 +90,10 @@ export const YOLO_CONFIG = {
 
 export const DISCLAIMER =
   "Hasil deteksi aplikasi ini merupakan prediksi awal berbasis gambar dan tidak menggantikan diagnosis medis. Untuk kondisi kulit berat, nyeri, meradang, atau tidak membaik, konsultasikan langsung dengan dokter.";
+
+// Auth session
+// Durasi cookie sesi login Supabase: 3 hari (dalam detik).
+// Karena cookie ditulis ulang setiap kali sesi di-refresh, durasi ini bersifat
+// "sliding window" — selama pengguna aktif dalam 3 hari, sesi tetap berlanjut.
+// Setelah 3 hari tanpa aktivitas, cookie kedaluwarsa dan pengguna harus login kembali.
+export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 3; // 259200
