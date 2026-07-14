@@ -2,6 +2,7 @@
 
 import { Sidebar, type SidebarNavItem } from "@/components/ui/sidebar";
 import { ROUTES } from "@/lib/constants";
+import { DoctorProfileMenu } from "@/components/doctor/doctor-profile-menu";
 
 function Icon({
   children,
@@ -96,6 +97,7 @@ export function DoctorSidebar() {
         mobileSubtitle: "Skin Detection",
       }}
       items={doctorNavItems}
+      mobileFooter={<DoctorProfileMenu variant="inline" />}
     />
   );
 }

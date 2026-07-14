@@ -2,6 +2,7 @@
 
 import { Sidebar, type SidebarNavItem } from "@/components/ui/sidebar";
 import { ROUTES } from "@/lib/constants";
+import { AdminProfileMenu } from "@/components/admin/admin-profile-menu";
 
 function Icon({
   children,
@@ -155,12 +156,12 @@ export function AdminSidebar() {
           </div>
         ),
         title: "Skin Detection",
-        subtitle: "Admin Panel",  
+        subtitle: "Admin Panel",
         mobileTitle: "Admin Panel",
         mobileSubtitle: "Skin Detection",
       }}
       items={adminNavItems}
-      
+      mobileFooter={<AdminProfileMenu variant="inline" />}
     />
   );
 }
