@@ -48,3 +48,5 @@ spesifikasi_face_skin_detection.md
 # ML Service
 ml-service/__pycache__/
 ml-service/yolov8n.pt
+face-skin-detection-final.ipynb
+face-skin-predict/

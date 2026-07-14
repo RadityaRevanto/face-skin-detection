@@ -65,13 +65,13 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
       : "Upload Image - Classification";
 
   return (
-    <main className='grid w-full items-start gap-6 px-8 py-8 sm:px-10 lg:grid-cols-[360px_1fr] lg:px-12'>
+    <main className='grid w-full items-start gap-6 px-4 py-6 sm:px-10 sm:py-8 lg:grid-cols-[360px_1fr] lg:px-12'>
       <HistorySidebar
         histories={histories}
         selectedHistoryId={selectedHistory?.id}
       />
 
-      <section className='space-y-6'>
+      <section className='min-w-0 space-y-6'>
         <HistoryResultHeader
           selectedHistory={selectedHistory}
           selectedDate={selectedDate}
@@ -79,7 +79,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
         />
 
         <div className='grid gap-6 xl:grid-cols-[1fr_430px]'>
-          <div className='space-y-6'>
+          <div className='min-w-0 space-y-6'>
             <AnalysisPhotoCard
               selectedHistory={selectedHistory}
               problemDetails={problemDetails}
@@ -91,7 +91,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
             />
           </div>
 
-          <aside className='space-y-6'>
+          <aside className='min-w-0 space-y-6'>
             <ConditionSummaryCard
               selectedHistory={selectedHistory}
               selectedConfidence={selectedConfidence}
