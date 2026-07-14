@@ -43,7 +43,7 @@ export function SkinStatusCard({
 
       {hasData ? (
         <>
-          <div className='mt-6 flex items-center gap-7'>
+          <div className='mt-6 flex flex-col items-center gap-6 text-center sm:flex-row sm:items-center sm:gap-7 sm:text-left'>
             <div
               className='grid h-28 w-28 shrink-0 place-items-center rounded-full'
               style={{
@@ -57,7 +57,7 @@ export function SkinStatusCard({
               </div>
             </div>
 
-            <div>
+            <div className='min-w-0'>
               <h3 className={`text-xl font-black ${tone.titleClassName}`}>
                 {topPredictionLabel}
               </h3>
@@ -78,11 +78,11 @@ export function SkinStatusCard({
           </div>
         </>
       ) : (
-        <div className='flex items-center gap-7'>
+        <div className='flex flex-col items-center gap-6 text-center sm:flex-row sm:items-center sm:gap-7 sm:text-left'>
           <div className='grid h-32 w-32 shrink-0 place-items-center rounded-full bg-slate-100'>
             <span className='text-3xl font-black text-slate-300'>—</span>
           </div>
-          <div>
+          <div className='min-w-0'>
             <h3 className='text-2xl font-black text-slate-400'>Belum Ada Data</h3>
             <p className='mt-2 text-sm leading-6 text-slate-500'>
               Belum ada hasil pemeriksaan. Ambil foto untuk memulai analisis.

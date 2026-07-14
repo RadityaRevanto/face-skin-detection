@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+import { SESSION_MAX_AGE_SECONDS } from "@/lib/constants";
+
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -8,6 +10,10 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
+      cookieOptions: {
+        // Sesi login bertahan 3 hari (lihat SESSION_MAX_AGE_SECONDS).
+        maxAge: SESSION_MAX_AGE_SECONDS,
+      },
       cookies: {
         getAll() {
           return cookieStore.getAll();

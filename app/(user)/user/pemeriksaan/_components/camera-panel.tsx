@@ -265,6 +265,10 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
 
   const isCameraOn = phase === "live" || phase === "countdown" || phase === "analyzing";
 
+  // Kamera depan (selfie) ditampilkan mirror agar gerakan pengguna terasa natural
+  // seperti bercermin. Kamera belakang dibiarkan apa adanya.
+  const mirrorClass = facingMode === "user" ? "-scale-x-100" : "";
+
   const statusText: Record<ScanPhase, string> = {
     idle     : "Klik tombol kamera untuk mulai, wajah akan terdeteksi otomatis",
     live     : faceDetected ? "Wajah terdeteksi! Tahan sebentar…" : "Posisikan wajah di tengah kamera",
@@ -277,7 +281,7 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
   // ── Render ──────────────────────────────────────────────────────────
   return (
     <section className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-100">
-      <div className="relative min-h-[560px] overflow-visible rounded-t-3xl bg-linear-to-br from-emerald-50 via-white to-cyan-50">
+      <div className="relative min-h-[440px] overflow-visible rounded-t-3xl bg-linear-to-br from-emerald-50 via-white to-cyan-50 sm:min-h-[520px] lg:min-h-[560px]">
 
         {/* Badge */}
         <div className="absolute left-5 top-5 z-20 rounded-xl bg-emerald-600 px-4 py-3 text-white shadow-lg shadow-emerald-100">
@@ -307,19 +311,19 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
         {/* Live video */}
         {(phase === "live" || phase === "countdown") && (
           <video ref={videoRef} autoPlay muted playsInline
-            className="absolute inset-0 h-full w-full rounded-t-3xl object-cover" />
+            className={`absolute inset-0 h-full w-full rounded-t-3xl object-cover ${mirrorClass}`} />
         )}
 
         {/* Captured frame */}
         {(phase === "analyzing" || phase === "done" || phase === "error") && capturedDataUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={capturedDataUrl} alt="Frame hasil capture"
-            className="absolute inset-0 h-full w-full rounded-t-3xl object-cover" />
+            className={`absolute inset-0 h-full w-full rounded-t-3xl object-cover ${mirrorClass}`} />
         )}
 
         {/* Idle placeholder */}
         {phase === "idle" && (
-          <div className="absolute bottom-0 left-1/2 h-[500px] w-[420px] -translate-x-1/2">
+          <div className="absolute bottom-0 left-1/2 h-[500px] w-[420px] origin-bottom -translate-x-1/2 scale-[0.7] sm:scale-90 lg:scale-100">
             <div className="absolute left-1/2 top-10 h-44 w-60 -translate-x-1/2 rounded-t-full bg-slate-950" />
             <div className="absolute left-1/2 top-[92px] h-[240px] w-[205px] -translate-x-1/2 rounded-[46%] bg-[#efc09d]" />
             <div className="absolute left-[145px] top-[200px] h-3 w-3 rounded-full bg-slate-900" />
@@ -330,12 +334,12 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
         )}
 
         {/* Face guide overlay */}
-        <div className={`pointer-events-none absolute left-1/2 top-20 h-[320px] w-[360px] -translate-x-1/2 rounded-[48px] border-4 transition-colors duration-300 ${
+        <div className={`pointer-events-none absolute left-1/2 top-16 h-[280px] w-[280px] -translate-x-1/2 rounded-[48px] border-4 transition-colors duration-300 sm:top-20 sm:h-[320px] sm:w-[360px] ${
           phase === "countdown" ? "border-emerald-400 shadow-[0_0_0_4px_rgba(52,211,153,0.3)]"
           : faceDetected        ? "border-emerald-400"
           : "border-white/95"
         }`} />
-        <div className="pointer-events-none absolute left-1/2 top-[116px] h-[250px] w-[230px] -translate-x-1/2 rounded-[48%] border border-white/70" />
+        <div className="pointer-events-none absolute left-1/2 top-[104px] h-[210px] w-[190px] -translate-x-1/2 rounded-[48%] border border-white/70 sm:top-[116px] sm:h-[250px] sm:w-[230px]" />
 
         {/* Countdown overlay */}
         {phase === "countdown" && (
@@ -383,8 +387,8 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
       </div>
 
       {/* Info bar */}
-      <div className="px-8 pb-6 pt-12">
-        <div className="mx-auto flex max-w-3xl items-center gap-4 rounded-2xl border border-emerald-100 bg-emerald-50/70 px-5 py-4">
+      <div className="px-5 pb-6 pt-12 sm:px-8">
+        <div className="mx-auto flex max-w-3xl items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-4 sm:gap-4 sm:px-5">
           <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-emerald-600 text-white">
             <CameraIcon className="h-6 w-6" />
           </div>
