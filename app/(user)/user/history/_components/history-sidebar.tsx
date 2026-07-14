@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import type { PredictionHistory } from "../_lib/history-types";
 import {
@@ -16,15 +16,88 @@ type HistorySidebarProps = {
   histories: PredictionHistory[];
   selectedHistoryId?: string;
 };
-  
+
+type StatusFilter = "all" | "redness" | "wrinkles" | "dark spots" | "inflammatory acne" | "pores" | "non-inflammatory acne" | "pigmentation";
+type SortOrder = "newest" | "oldest";
+
+const STATUS_OPTIONS: { value: StatusFilter; label: string }[] = [
+  { value: "all", label: "Semua Status" },
+  { value: "redness", label: "Redness" },
+  { value: "wrinkles", label: "Wrinkles" },
+  { value: "dark spots", label: "Dark Spots" },
+  { value: "inflammatory acne", label: "Inflammatory Acne" },
+  { value: "pores", label: "Pores" },
+  { value: "non-inflammatory acne", label: "Non-Inflammatory Acne" },
+  { value: "pigmentation", label: "Pigmentation" },
+];
+
+const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
+  { value: "newest", label: "Terbaru" },
+  { value: "oldest", label: "Terlama" },
+];
+
 const INITIAL_VISIBLE_HISTORIES = 4;
 const LOAD_MORE_STEP = 4;
+
+function useDropdown() {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return { isOpen, setIsOpen, ref };
+}
+
+function getStatusForHistory(history: PredictionHistory): StatusFilter {
+  const predictedClass = (history.predicted_class || "").toLowerCase();
+  
+  if (predictedClass.includes("non-inflammatory acne") || predictedClass.includes("non inflammatory acne")) return "non-inflammatory acne";
+  if (predictedClass.includes("inflammatory acne")) return "inflammatory acne";
+  if (predictedClass.includes("redness")) return "redness";
+  if (predictedClass.includes("wrinkles")) return "wrinkles";
+  if (predictedClass.includes("dark spots")) return "dark spots";
+  if (predictedClass.includes("pores")) return "pores";
+  if (predictedClass.includes("pigmentation")) return "pigmentation";
+
+  return "all"; // Fallback if no exact match
+}
 
 export function HistorySidebar({
   histories,
   selectedHistoryId,
 }: HistorySidebarProps) {
-  const selectedIndex = histories.findIndex(
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
+
+  const statusDropdown = useDropdown();
+  const sortDropdown = useDropdown();
+
+  const filteredAndSortedHistories = useMemo(() => {
+    let result = [...histories];
+
+    if (statusFilter !== "all") {
+      result = result.filter((h) => getStatusForHistory(h) === statusFilter);
+    }
+
+    result.sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime();
+      const dateB = new Date(b.created_at).getTime();
+      return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+    });
+
+    return result;
+  }, [histories, statusFilter, sortOrder]);
+
+  const selectedIndex = filteredAndSortedHistories.findIndex(
     (history) => history.id === selectedHistoryId,
   );
   const initialVisibleCount =
@@ -35,12 +108,18 @@ export function HistorySidebar({
   const [visibleCount, setVisibleCount] = useState(initialVisibleCount);
 
   const visibleHistories = useMemo(
-    () => histories.slice(0, visibleCount),
-    [histories, visibleCount],
+    () => filteredAndSortedHistories.slice(0, visibleCount),
+    [filteredAndSortedHistories, visibleCount],
   );
 
-  const hasMoreHistories = visibleCount < histories.length;
-  const shouldShowLoadButton = histories.length > INITIAL_VISIBLE_HISTORIES;
+  const hasMoreHistories = visibleCount < filteredAndSortedHistories.length;
+  const shouldShowLoadButton =
+    filteredAndSortedHistories.length > INITIAL_VISIBLE_HISTORIES;
+
+  const currentStatusLabel =
+    STATUS_OPTIONS.find((o) => o.value === statusFilter)?.label ?? "Semua Status";
+  const currentSortLabel =
+    SORT_OPTIONS.find((o) => o.value === sortOrder)?.label ?? "Terbaru";
 
   return (
     <aside className='h-fit rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100'>
@@ -52,25 +131,86 @@ export function HistorySidebar({
       </p>
 
       <div className='mt-6 grid grid-cols-2 gap-3'>
-        <button className='flex h-11 items-center justify-between rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600'>
-          <span className='flex items-center'>Semua Status</span>
-          <span className='grid h-4 w-4 place-items-center text-slate-400'>
-            <ChevronDownIcon />
-          </span>
-        </button>
-        <button className='flex h-11 items-center justify-between rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600'>
-          <span className='inline-flex items-center gap-2'>
-            <CalendarIcon />
-            Terbaru
-          </span>
-          <span className='grid h-4 w-4 place-items-center text-slate-400'>
-            <ChevronDownIcon />
-          </span>
-        </button>
+        {/* Status Filter Dropdown */}
+        <div className="relative" ref={statusDropdown.ref}>
+          <button
+            type="button"
+            onClick={() => statusDropdown.setIsOpen(!statusDropdown.isOpen)}
+            className='flex h-11 w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 transition-colors hover:border-emerald-300 hover:bg-emerald-50/50'
+          >
+            <span className='flex items-center truncate'>{currentStatusLabel}</span>
+            <span className={`grid h-4 w-4 shrink-0 place-items-center text-slate-400 transition-transform ${statusDropdown.isOpen ? "rotate-180" : ""}`}>
+              <ChevronDownIcon />
+            </span>
+          </button>
+
+          {statusDropdown.isOpen && (
+            <div className="absolute left-0 top-full z-20 mt-2 w-full overflow-hidden rounded-xl border border-slate-100 bg-white py-1 shadow-lg shadow-slate-200/60">
+              {STATUS_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    setStatusFilter(option.value);
+                    setVisibleCount(INITIAL_VISIBLE_HISTORIES);
+                    statusDropdown.setIsOpen(false);
+                  }}
+                  className={`flex w-full items-center px-4 py-2.5 text-left text-sm font-semibold transition-colors ${
+                    statusFilter === option.value
+                      ? "bg-emerald-50 text-emerald-600"
+                      : "text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Sort Order Dropdown */}
+        <div className="relative" ref={sortDropdown.ref}>
+          <button
+            type="button"
+            onClick={() => sortDropdown.setIsOpen(!sortDropdown.isOpen)}
+            className='flex h-11 w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 transition-colors hover:border-emerald-300 hover:bg-emerald-50/50'
+          >
+            <span className='inline-flex items-center gap-2 truncate'>
+              <CalendarIcon />
+              {currentSortLabel}
+            </span>
+            <span className={`grid h-4 w-4 shrink-0 place-items-center text-slate-400 transition-transform ${sortDropdown.isOpen ? "rotate-180" : ""}`}>
+              <ChevronDownIcon />
+            </span>
+          </button>
+
+          {sortDropdown.isOpen && (
+            <div className="absolute left-0 top-full z-20 mt-2 w-full overflow-hidden rounded-xl border border-slate-100 bg-white py-1 shadow-lg shadow-slate-200/60">
+              {SORT_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => {
+                    setSortOrder(option.value);
+                    setVisibleCount(INITIAL_VISIBLE_HISTORIES);
+                    sortDropdown.setIsOpen(false);
+                  }}
+                  className={`flex w-full items-center px-4 py-2.5 text-left text-sm font-semibold transition-colors ${
+                    sortOrder === option.value
+                      ? "bg-emerald-50 text-emerald-600"
+                      : "text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className='mt-5 space-y-4'>
-        {histories.length > 0 ? (
+        {filteredAndSortedHistories.length > 0 ? (
           visibleHistories.map((item) => {
             const itemTone = getToneBySeverity(
               item.severity_level,
@@ -130,7 +270,9 @@ export function HistorySidebar({
           })
         ) : (
           <div className='rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-sm font-semibold leading-6 text-slate-500'>
-            Belum ada riwayat pemeriksaan. Silakan lakukan scan terlebih dahulu.
+            {statusFilter !== "all"
+              ? "Tidak ada riwayat dengan status yang dipilih."
+              : "Belum ada riwayat pemeriksaan. Silakan lakukan scan terlebih dahulu."}
           </div>
         )}
       </div>
@@ -141,7 +283,7 @@ export function HistorySidebar({
           onClick={() =>
             setVisibleCount((currentCount) =>
               hasMoreHistories
-                ? Math.min(currentCount + LOAD_MORE_STEP, histories.length)
+                ? Math.min(currentCount + LOAD_MORE_STEP, filteredAndSortedHistories.length)
                 : initialVisibleCount,
             )
           }
