@@ -3,8 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { SkincareForm } from "@/app/(doctor)/doctor/skincare/_components/skincare-form";
-import { DoctorHeader } from "@/components/doctor/doctor-header";
-import { DoctorSidebar } from "@/components/doctor/doctor-sidebar";
 import { ROUTES } from "@/lib/constants";
 import { requireDoctorProfile } from "@/lib/doctor-auth";
 import { createClient } from "@/lib/supabase/server";
@@ -121,67 +119,51 @@ export default async function EditSkincarePage({ params }: PageProps) {
   const skincareProduct = product as SkincareProductRow;
 
   return (
-    <main className='min-h-screen bg-[#f7fbf8]! text-slate-950 dark:bg-[#f7fbf8]! dark:text-slate-950!'>
-      <div className='flex min-h-screen flex-col bg-[#f7fbf8]! dark:bg-[#f7fbf8]! lg:flex-row'>
-        <DoctorSidebar />
+    <div className='w-full space-y-6'>
+      <div>
+        <Link
+          href={ROUTES.DOCTOR.SKINCARE}
+          className='inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 transition-colors hover:text-emerald-800'
+        >
+          <span aria-hidden='true'>←</span>
+          Kembali ke Data Skincare
+        </Link>
 
-        <div className='min-w-0 flex-1 bg-[#f7fbf8]! dark:bg-[#f7fbf8]!'>
-          <DoctorHeader
-            title='Edit Skincare'
-            description='Perbarui data produk skincare yang digunakan untuk rekomendasi.'
-            searchPlaceholder='Cari produk skincare...'
-          />
+        <h1 className='mt-4 text-2xl font-bold tracking-tight text-slate-950'>
+          Edit Produk Skincare
+        </h1>
 
-          <div className='py-6 pl-5 pr-4 sm:pl-6 sm:pr-6 lg:pl-8 lg:pr-8'>
-            <div className='w-full space-y-6'>
-              <div>
-                <Link
-                  href={ROUTES.DOCTOR.SKINCARE}
-                  className='inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 transition-colors hover:text-emerald-800'
-                >
-                  <span aria-hidden='true'>←</span>
-                  Kembali ke Data Skincare
-                </Link>
-
-                <h1 className='mt-4 text-2xl font-bold tracking-tight text-slate-950'>
-                  Edit Produk Skincare
-                </h1>
-
-                <p className='mt-1 text-sm text-slate-500'>
-                  Perbarui informasi produk agar rekomendasi user tetap akurat.
-                </p>
-              </div>
-
-              <SkincareForm
-                mode='edit'
-                concerns={((concerns ?? []) as SkinConcernRow[]).map(
-                  (concern) => ({
-                    id: concern.id,
-                    name: concern.name ?? "-",
-                  }),
-                )}
-                skinTypes={((skinTypes ?? []) as SkinTypeRow[]).map(
-                  (skinType) => ({
-                    id: skinType.id,
-                    name: skinType.name ?? "-",
-                  }),
-                )}
-                defaultValues={{
-                  id: skincareProduct.id,
-                  concernId: skincareProduct.concern_id ?? "",
-                  skinTypeId: skincareProduct.skin_type_id ?? "",
-                  name: skincareProduct.name ?? "",
-                  category: skincareProduct.category ?? "",
-                  keyIngredients: skincareProduct.key_ingredients ?? "",
-                  usageInstruction: skincareProduct.usage_instruction ?? "",
-                  warning: skincareProduct.warning ?? "",
-                  isActive: skincareProduct.is_active ?? true,
-                }}
-              />
-            </div>
-          </div>
-        </div>
+        <p className='mt-1 text-sm text-slate-500'>
+          Perbarui informasi produk agar rekomendasi user tetap akurat.
+        </p>
       </div>
-    </main>
+
+      <SkincareForm
+        mode='edit'
+        concerns={((concerns ?? []) as SkinConcernRow[]).map(
+          (concern) => ({
+            id: concern.id,
+            name: concern.name ?? "-",
+          }),
+        )}
+        skinTypes={((skinTypes ?? []) as SkinTypeRow[]).map(
+          (skinType) => ({
+            id: skinType.id,
+            name: skinType.name ?? "-",
+          }),
+        )}
+        defaultValues={{
+          id: skincareProduct.id,
+          concernId: skincareProduct.concern_id ?? "",
+          skinTypeId: skincareProduct.skin_type_id ?? "",
+          name: skincareProduct.name ?? "",
+          category: skincareProduct.category ?? "",
+          keyIngredients: skincareProduct.key_ingredients ?? "",
+          usageInstruction: skincareProduct.usage_instruction ?? "",
+          warning: skincareProduct.warning ?? "",
+          isActive: skincareProduct.is_active ?? true,
+        }}
+      />
+    </div>
   );
 }

@@ -42,6 +42,7 @@ type SidebarProps = {
   items: SidebarNavItem[];
   callout?: SidebarCallout;
   user?: SidebarUser;
+  mobileFooter?: React.ReactNode;
   className?: string;
   activeHref?: string;
 };
@@ -190,6 +191,7 @@ function SidebarContent({
   items,
   callout,
   user,
+  mobileFooter,
   activeHref,
   onNavigate,
 }: SidebarProps & { onNavigate?: () => void }) {
@@ -198,7 +200,10 @@ function SidebarContent({
 
   return (
     <div className="flex h-full flex-col">
-      <div className="px-7 pb-5 pt-7">
+      <div className={cn(
+        "flex items-center border-b border-slate-100",
+        onNavigate ? "justify-between px-5 py-4" : "px-7 pb-5 pt-7"
+      )}>
         <Link
           href={brand.href}
           onClick={onNavigate}
@@ -214,9 +219,25 @@ function SidebarContent({
             ) : null}
           </div>
         </Link>
+
+        {onNavigate ? (
+          <button
+            type="button"
+            aria-label="Tutup menu"
+            onClick={onNavigate}
+            className="grid h-9 w-9 place-items-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-emerald-600"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+              <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        ) : null}
       </div>
 
-      <nav className="flex-1 space-y-2 px-7 py-3">
+      <nav className={cn(
+        "flex-1 space-y-1",
+        onNavigate ? "px-3 py-4" : "px-7 py-3 space-y-2"
+      )}>
         {items.map((item) => (
           <SidebarNavItemView
             key={item.href}
@@ -268,6 +289,12 @@ function SidebarContent({
           </div>
         </div>
       ) : null}
+
+      {mobileFooter ? (
+        <div className="border-t border-slate-100 p-3 lg:hidden">
+          {mobileFooter}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -277,6 +304,7 @@ export function Sidebar({
   items,
   callout,
   user,
+  mobileFooter,
   className,
   activeHref,
 }: SidebarProps) {
@@ -284,6 +312,7 @@ export function Sidebar({
 
   return (
     <>
+      {/* Desktop sidebar */}
       <aside
         className={cn(
           "hidden h-screen w-72 shrink-0 border-r border-slate-100 bg-white shadow-[12px_0_30px_rgba(15,23,42,0.04)] lg:sticky lg:top-0 lg:block",
@@ -299,46 +328,71 @@ export function Sidebar({
         />
       </aside>
 
-      <Collapsible.Root
-        open={open}
-        onOpenChange={setOpen}
-        className="border-b border-slate-100 bg-white lg:hidden"
-      >
-        <div className="flex items-center justify-between px-4 py-3">
-          <Link
-            href={brand.href}
-            className="flex items-center gap-3"
-            onClick={() => setOpen(false)}
-          >
-            {brand.logo}
-            <div>
-              <p className="text-sm font-bold text-slate-950">
-                {brand.mobileTitle ?? brand.title}
+      {/* Mobile top bar */}
+      <div className="flex items-center justify-between border-b border-slate-100 bg-white px-4 py-3 lg:hidden">
+        <Link
+          href={brand.href}
+          className="flex items-center gap-3"
+          onClick={() => setOpen(false)}
+        >
+          {brand.logo}
+          <div>
+            <p className="text-sm font-bold text-slate-950">
+              {brand.mobileTitle ?? brand.title}
+            </p>
+            {brand.mobileSubtitle ?? brand.subtitle ? (
+              <p className="text-xs text-zinc-500">
+                {brand.mobileSubtitle ?? brand.subtitle}
               </p>
-              {brand.mobileSubtitle ?? brand.subtitle ? (
-                <p className="text-xs text-zinc-500">
-                  {brand.mobileSubtitle ?? brand.subtitle}
-                </p>
-              ) : null}
-            </div>
-          </Link>
+            ) : null}
+          </div>
+        </Link>
 
-          <Collapsible.Trigger className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50">
-            {open ? "Tutup" : "Menu"}
-          </Collapsible.Trigger>
-        </div>
+        <button
+          type="button"
+          aria-label={open ? "Tutup menu" : "Buka menu"}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+        >
+          {open ? (
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+              <path d="M18 6 6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          ) : (
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
+              <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          )}
+        </button>
+      </div>
 
-        <Collapsible.Content className="border-t border-slate-100 bg-white">
-          <SidebarContent
-            brand={brand}
-            items={items}
-            callout={callout}
-            user={user}
-            activeHref={activeHref}
-            onNavigate={() => setOpen(false)}
-          />
-        </Collapsible.Content>
-      </Collapsible.Root>
+      {/* Mobile backdrop */}
+      {open ? (
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={() => setOpen(false)}
+        />
+      ) : null}
+
+      {/* Mobile drawer — slides in from the right */}
+      <div
+        className={cn(
+          "fixed inset-y-0 right-0 z-50 w-72 overflow-y-auto bg-white shadow-xl transition-transform duration-300 ease-in-out lg:hidden",
+          open ? "translate-x-0" : "translate-x-full"
+        )}
+      >
+        <SidebarContent
+          brand={brand}
+          items={items}
+          callout={callout}
+          user={user}
+          mobileFooter={mobileFooter}
+          activeHref={activeHref}
+          onNavigate={() => setOpen(false)}
+        />
+      </div>
     </>
   );
 }
