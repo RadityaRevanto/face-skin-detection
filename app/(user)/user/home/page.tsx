@@ -4,7 +4,6 @@ import { HealthScoreCard } from "./_components/health-score-card";
 import { LatestProblemsCard } from "./_components/latest-problems-card";
 import { RecommendationCard } from "./_components/recommendation-card";
 import { RecentHistoryCard } from "./_components/recent-history-card";
-import { TodayTipCard } from "./_components/today-tip-card";
 import {
   getCurrentUserProfile,
   getRecommendationsByPredictedClass,
@@ -62,10 +61,8 @@ export default async function HomePage() {
         </div>
       </div>
 
-      <div className='mt-5 grid gap-5 lg:grid-cols-[0.95fr_0.65fr_0.95fr]'>
+      <div className='mt-5 grid gap-5 lg:grid-cols-2'>
         <RecentHistoryCard histories={histories} />
-
-        <TodayTipCard />
 
         <RecommendationCard recommendations={recommendations} />
       </div>
