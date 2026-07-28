@@ -191,14 +191,6 @@ export default function NavbarUsers() {
         </div>
 
         <div className="flex shrink-0 items-center gap-3 md:gap-5">
-          <button
-            type="button"
-            aria-label="Notifikasi"
-            className="grid h-10 w-10 place-items-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-emerald-600"
-          >
-            <BellIcon />
-          </button>
-
           {/* Desktop Profile */}
           <div className="relative hidden md:block">
             <button
