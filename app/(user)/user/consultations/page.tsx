@@ -24,6 +24,7 @@ import {
   Message 
 } from "@/lib/api/consultations-query";
 import { DoctorSearchModal } from "./_components/doctor-search-modal";
+import { getEcho } from "@/lib/echo";
 
 export default function UserConsultationsPage() {
   
@@ -43,8 +44,6 @@ export default function UserConsultationsPage() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  const pollingInterval = useRef<NodeJS.Timeout | null>(null);
 
   // Auto-scroll ke bawah saat pesan baru muncul
   useEffect(() => {
@@ -61,17 +60,38 @@ export default function UserConsultationsPage() {
     if (activeConversation) {
       fetchMessages(activeConversation.uuid);
       
-      // Start polling
-      pollingInterval.current = setInterval(() => {
-        fetchMessages(activeConversation.uuid, true); // silent fetch
-      }, 5000);
+      const echo = getEcho();
+      if (echo) {
+        const channelName = `conversation.${activeConversation.uuid}`;
+        
+        echo.private(channelName)
+          .listen('.chat_message_received', (e: any) => {
+            if (e.message) {
+              setMessages((prev) => {
+                // Prevent duplicate messages if we also just sent one locally
+                if (prev.some(m => m.uuid === e.message.uuid)) return prev;
+                return [...prev, e.message];
+              });
+              
+              // Update last message in the sidebar
+              setConversations((prev) => 
+                prev.map((c) => {
+                  if (c.uuid === activeConversation.uuid) {
+                    return { ...c, last_message: e.message };
+                  }
+                  return c;
+                })
+              );
+            }
+          });
+          
+        return () => {
+          echo.leave(channelName);
+        };
+      }
     } else {
       setMessages([]);
     }
-
-    return () => {
-      if (pollingInterval.current) clearInterval(pollingInterval.current);
-    };
   }, [activeConversation]);
 
   const fetchConversations = async () => {
