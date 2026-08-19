@@ -83,11 +83,11 @@ export async function getMessages(conversationId: string, page: number = 1) {
 }
 
 export async function sendMessage(conversationId: string, payload: FormData | { content: string }) {
-  const isFormData = payload instanceof FormData;
+  const isFormData = payload && typeof (payload as any).append === 'function';
   
   const options: RequestInit = {
     method: "POST",
-    body: isFormData ? payload : JSON.stringify(payload),
+    body: isFormData ? (payload as FormData) : JSON.stringify(payload),
   };
 
   if (!isFormData) {

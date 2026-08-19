@@ -28,7 +28,7 @@ export async function fetchApi<T = unknown>(
     }
   }
 
-  const isFormData = restOptions.body instanceof FormData;
+  const isFormData = restOptions.body && typeof (restOptions.body as any).append === 'function';
   const defaultHeaders: Record<string, string> = {
     Accept: "application/json",
   };
