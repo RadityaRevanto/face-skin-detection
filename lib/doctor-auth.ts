@@ -1,36 +1,30 @@
 import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
+import { removeAuthToken } from "@/lib/auth/token";
+
+interface ProfileApi {
+  id: string;
+  uuid: string;
+  role: string;
+  is_active?: boolean;
+}
 
 export async function requireDoctorProfile() {
-  const supabase = await createClient();
+  try {
+    const res = await fetchApi<ProfileApi>("/profile");
+    const profile = res.data;
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+    if (!profile || profile.role !== "doctor") {
+      redirect("/login?clear_session=true");
+    }
 
-  if (userError || !user) {
-    redirect("/login");
+    if (profile.is_active === false) {
+      redirect("/doctor/verification-status");
+    }
+
+    return profile;
+  } catch (error) {
+    redirect("/login?clear_session=true");
   }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, full_name, email, role, is_active")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (profileError || !profile) {
-    redirect("/login");
-  }
-
-  if (profile.role !== "doctor") {
-    redirect("/login");
-  }
-
-  if (profile.is_active === false) {
-    redirect("/doctor/verification-status");
-  }
-
-  return profile;
 }

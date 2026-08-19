@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 
-import { createClient } from "@/lib/supabase/client";
+import { logoutAction } from "@/lib/auth/actions";
 
 type NavItem = {
   label: string;
@@ -62,6 +62,14 @@ function LogoutIcon() {
   );
 }
 
+function ChatIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 function MenuIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-6 w-6">
@@ -101,49 +109,25 @@ const navItems: NavItem[] = [
   { label: "Beranda", href: "/user/home", icon: <HomeIcon /> },
   { label: "Pemeriksaan", href: "/user/pemeriksaan", icon: <CalendarIcon /> },
   { label: "History", href: "/user/history", icon: <ClockIcon /> },
+  { label: "Konsultasi", href: "/user/consultations", icon: <ChatIcon /> },
 ];
 
-export default function NavbarUsers() {
+interface NavbarUsersProps {
+  initialDisplayName?: string;
+}
+
+export default function NavbarUsers({
+  initialDisplayName = "Pengguna",
+}: NavbarUsersProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const [displayName, setDisplayName] = useState("Pengguna");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  useEffect(() => {
-    const supabase = createClient();
-
-    async function loadProfile() {
-      const { data: { user } } = await supabase.auth.getUser();
-
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", user.id)
-        .single();
-
-      if (profile?.full_name) {
-        setDisplayName(profile.full_name);
-        return;
-      }
-
-      if (user.email) {
-        setDisplayName(user.email.split("@")[0] ?? "Pengguna");
-      }
-    }
-
-    void loadProfile();
-  }, []);
-
   async function handleLogout() {
     setIsLoggingOut(true);
-
-    const supabase = createClient();
-    await supabase.auth.signOut();
-
+    await logoutAction();
     router.replace("/login");
     router.refresh();
   }
@@ -201,7 +185,7 @@ export default function NavbarUsers() {
               className="flex items-center gap-3 rounded-full py-1 pl-3 pr-1 transition-colors hover:bg-slate-50"
             >
               <span className="text-sm font-medium text-slate-500">
-                Halo, <strong className="font-bold text-slate-700">{displayName}</strong>
+                Halo, <strong className="font-bold text-slate-700">{initialDisplayName}</strong>
               </span>
               <Avatar />
               <span className={`grid h-5 w-5 place-items-center text-slate-400 transition-transform ${isProfileOpen ? "rotate-180" : ""}`}>
@@ -213,7 +197,7 @@ export default function NavbarUsers() {
               <div role="menu" className="absolute right-0 top-full mt-3 w-64 overflow-hidden rounded-2xl border border-slate-100 bg-white p-2 shadow-xl shadow-slate-200/70">
                 <div className="border-b border-slate-100 px-3 py-3">
                   <p className="text-xs font-medium text-slate-500">Masuk sebagai</p>
-                  <p className="mt-1 truncate text-sm font-bold text-slate-800">{displayName}</p>
+                  <p className="mt-1 truncate text-sm font-bold text-slate-800">{initialDisplayName}</p>
                 </div>
                 <button
                   type="button"
@@ -255,7 +239,7 @@ export default function NavbarUsers() {
               <Avatar />
               <div className="flex flex-col">
                 <span className="text-xs font-medium text-slate-500">Masuk sebagai</span>
-                <span className="text-sm font-bold text-slate-800">{displayName}</span>
+                <span className="text-sm font-bold text-slate-800">{initialDisplayName}</span>
               </div>
             </div>
             <button

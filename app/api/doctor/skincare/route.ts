@@ -11,6 +11,7 @@ type CreateSkincareBody = {
   usageInstruction?: string;
   warning?: string | null;
   isActive?: boolean;
+  genderSuitability?: string;
 };
 
 async function getDoctorProfile() {
@@ -110,6 +111,7 @@ export async function POST(request: NextRequest) {
     const usageInstruction = body.usageInstruction?.trim();
     const warning = body.warning?.trim() || null;
     const isActive = body.isActive ?? true;
+    const genderSuitability = body.genderSuitability?.trim() || "unisex";
 
     if (!concernId) {
       return NextResponse.json(
@@ -233,6 +235,7 @@ export async function POST(request: NextRequest) {
         usage_instruction: usageInstruction,
         warning,
         is_active: isActive,
+        gender_suitability: genderSuitability,
         created_at: now,
         updated_at: now,
       })

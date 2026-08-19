@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { createClient } from "@/lib/supabase/client";
+import { logoutAction } from "@/lib/auth/actions";
 
 function getInitials(name: string) {
   return name
@@ -27,41 +27,19 @@ type DoctorProfileMenuProps = {
   variant?: "dropdown" | "inline";
 };
 
-export function DoctorProfileMenu({ variant = "dropdown" }: DoctorProfileMenuProps) {
+export function DoctorProfileMenu({ 
+  variant = "dropdown",
+  initialDisplayName = "Dokter",
+}: DoctorProfileMenuProps & { initialDisplayName?: string }) {
   const router = useRouter();
-  const [displayName, setDisplayName] = useState("Dokter");
-  const [initials, setInitials] = useState("DR");
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  useEffect(() => {
-    const supabase = createClient();
-
-    async function loadProfile() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", user.id)
-        .single();
-
-      const name = profile?.full_name ?? user.email?.split("@")[0] ?? "Dokter";
-      setDisplayName(name);
-      setInitials(getInitials(name) || "DR");
-    }
-
-    void loadProfile();
-  }, []);
+  const initials = getInitials(initialDisplayName) || "DR";
 
   async function handleLogout() {
     setIsLoggingOut(true);
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    await logoutAction();
     router.replace("/login");
     router.refresh();
   }
@@ -75,7 +53,7 @@ export function DoctorProfileMenu({ variant = "dropdown" }: DoctorProfileMenuPro
           </div>
           <div className="flex min-w-0 flex-col">
             <span className="text-xs font-medium text-slate-500">Masuk sebagai</span>
-            <span className="truncate text-sm font-bold text-slate-800">{displayName}</span>
+            <span className="truncate text-sm font-bold text-slate-800">{initialDisplayName}</span>
           </div>
         </div>
 
@@ -114,7 +92,7 @@ export function DoctorProfileMenu({ variant = "dropdown" }: DoctorProfileMenuPro
         >
           <div className="border-b border-slate-100 px-3 py-3">
             <p className="text-xs font-medium text-slate-500">Masuk sebagai</p>
-            <p className="mt-1 truncate text-sm font-bold text-slate-800">{displayName}</p>
+            <p className="mt-1 truncate text-sm font-bold text-slate-800">{initialDisplayName}</p>
           </div>
 
           <button

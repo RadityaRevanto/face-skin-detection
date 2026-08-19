@@ -4,6 +4,8 @@ export type UserRow = {
   username: string;
   email: string;
   join: string;
+  gender: string;
+  age: number | string;
 };
 
 export type UsersPageData = {

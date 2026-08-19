@@ -43,6 +43,10 @@ export function UsersTable({ users, pagination }: UsersTableProps) {
                 Email
               </TableHead>
 
+              <TableHead className='px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-6 lg:px-8'>
+                Profil
+              </TableHead>
+
               <TableHead className='hidden px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-gray-500 lg:table-cell lg:px-8'>
                 Join
               </TableHead>
@@ -74,6 +78,15 @@ export function UsersTable({ users, pagination }: UsersTableProps) {
 
                 <TableCell className='hidden whitespace-nowrap px-4 py-4 text-sm text-gray-500 md:table-cell sm:px-6 lg:px-8'>
                   {user.email}
+                </TableCell>
+
+                <TableCell className='whitespace-nowrap px-4 py-4 sm:px-6 lg:px-8'>
+                  <p className='text-sm font-medium text-gray-700'>
+                    {user.gender === "-" ? "Belum diisi" : user.gender}
+                  </p>
+                  <p className='mt-0.5 text-xs text-gray-500'>
+                    {user.age === "-" ? "-" : `${user.age} tahun`}
+                  </p>
                 </TableCell>
 
                 <TableCell className='hidden whitespace-nowrap px-4 py-4 lg:table-cell lg:px-8'>

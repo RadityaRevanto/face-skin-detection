@@ -1,66 +1,54 @@
 import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 
 import type { PredictionHistory, Recommendation } from "./pemeriksaan-types";
 
+import { requireUserRole } from "@/lib/auth";
+
 export async function getCurrentUserId() {
-  const supabase = await createClient();
+  const profile = await requireUserRole();
+  return profile.uuid || profile.id;
+}
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+interface PredictionHistoryApi {
+  id: string;
+  uuid?: string;
+  user_id: string;
+  predicted_class: string;
+  confidence: number;
+  severity_level: "mild" | "moderate" | "severe";
+  severity_score: number;
+  probabilities: Record<string, number>;
+  image_url: string;
+  cropped_image_url?: string | null;
+  created_at: string;
+}
 
-  if (error || !user) {
-    redirect("/login");
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, role, is_active")
-    .eq("id", user.id)
-    .eq("role", "user")
-    .single();
-
-  if (profileError || !profile || !profile.is_active) {
-    redirect("/login");
-  }
-
-  return user.id;
+interface RecommendationApi {
+  id: string;
+  uuid?: string;
+  concern_id: string;
+  title: string;
+  priority_level: string;
+  recommendation_text: string;
+  product?: {
+    id: string;
+    uuid?: string;
+    name: string;
+    category: string;
+  };
 }
 
 export async function getLatestPrediction(userId: string) {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("prediction_histories")
-    .select(
-      `
-      id,
-      scan_mode,
-      image_url,
-      cropped_image_url,
-      predicted_class,
-      confidence,
-      probabilities,
-      severity_score,
-      severity_level,
-      model_used,
-      created_at
-    `,
-    )
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Failed to fetch latest prediction:", error);
+  try {
+    const response = await fetchApi<PredictionHistoryApi[]>("scans");
+    const scans = response.data || [];
+    return (scans[0] as unknown as PredictionHistory) || null;
+  } catch (error) {
+    console.error("Failed to fetch latest prediction from Laravel:", error);
     return null;
   }
-
-  return data as PredictionHistory | null;
 }
 
 export async function getRecommendationsByPredictedClass(
@@ -69,47 +57,23 @@ export async function getRecommendationsByPredictedClass(
   if (!predictedClass) {
     return [];
   }
+  
+  try {
+    const encoded = encodeURIComponent(predictedClass);
+    const response = await fetchApi<RecommendationApi[]>(`skin-recommendations?ml_label=${encoded}`);
+    
+    const recommendations = response.data || [];
 
-  const supabase = await createClient();
+    const sorted = recommendations.sort((a: RecommendationApi, b: RecommendationApi) => {
+      const priorityWeight: Record<string, number> = { high: 1, medium: 2, low: 3 };
+      const weightA = priorityWeight[a.priority_level] || 3;
+      const weightB = priorityWeight[b.priority_level] || 3;
+      return weightA - weightB;
+    });
 
-  const { data: concern, error: concernError } = await supabase
-    .from("skin_concerns")
-    .select("id, name")
-    .ilike("name", predictedClass)
-    .eq("is_active", true)
-    .maybeSingle();
-
-  if (concernError || !concern) {
+    return sorted.slice(0, 4) as unknown as Recommendation[];
+  } catch (error) {
+    console.error("Failed to fetch recommendations from Laravel:", error);
     return [];
   }
-
-  const { data, error } = await supabase
-    .from("skin_recommendations")
-    .select(
-      `
-      id,
-      title,
-      recommendation_text,
-      priority_level
-    `,
-    )
-    .eq("concern_id", concern.id)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false })
-    .limit(4);
-
-  if (error) {
-    console.error("Failed to fetch recommendations:", error);
-    return [];
-  }
-
-  const priorityOrder = {
-    high: 1,
-    medium: 2,
-    low: 3,
-  };
-
-  return ((data ?? []) as Recommendation[]).sort(
-    (a, b) => priorityOrder[a.priority_level] - priorityOrder[b.priority_level],
-  );
 }

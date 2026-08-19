@@ -1,8 +1,7 @@
 import "server-only";
 
 import { redirect } from "next/navigation";
-
-import { createClient } from "@/lib/supabase/server";
+import { cookies } from "next/headers";
 
 /**
  * Menentukan halaman dashboard tujuan berdasarkan role & status akun yang
@@ -11,45 +10,25 @@ import { createClient } from "@/lib/supabase/server";
  * redirect loop dengan guard di middleware.
  */
 export async function getDashboardPathForCurrentUser(): Promise<string | null> {
-  const supabase = await createClient();
+  const cookieStore = await cookies();
+  const authToken = cookieStore.get("auth_token")?.value;
+  const userRole = cookieStore.get("user_role")?.value;
+  const userStatus = cookieStore.get("user_status")?.value;
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
+  if (!authToken || !userRole) {
     return null;
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, is_active")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (!profile) {
-    return null;
+  if (userRole === "admin") {
+    return userStatus === "inactive" ? null : "/admin/dashboard";
   }
 
-  if (profile.role === "admin") {
-    return profile.is_active === false ? null : "/admin/dashboard";
+  if (userRole === "user") {
+    return userStatus === "inactive" ? null : "/user/home";
   }
 
-  if (profile.role === "user") {
-    return profile.is_active === false ? null : "/user/home";
-  }
-
-  if (profile.role === "doctor") {
-    const { data: verification } = await supabase
-      .from("doctor_verifications")
-      .select("verification_status")
-      .eq("doctor_id", user.id)
-      .maybeSingle();
-
-    const status =
-      verification?.verification_status?.toLowerCase().trim() || "pending";
-
-    if (status === "approved" && profile.is_active !== false) {
+  if (userRole === "doctor") {
+    if (userStatus === "approved") {
       return "/doctor/dashboard";
     }
 

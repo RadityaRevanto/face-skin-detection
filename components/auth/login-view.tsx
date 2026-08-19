@@ -7,13 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/lib/constants";
-import { createClient } from "@/lib/supabase/client";
+import { loginAction } from "@/lib/auth/actions";
 import { useRouter } from "next/navigation";
-type LoginResponse = {
-  success?: boolean;
-  message?: string;
-  redirectTo?: string;
-};
 
 function MailIcon() {
   return (
@@ -148,92 +143,31 @@ export function LoginView() {
     }
 
     try {
-      const supabase = createClient();
+      const result = await loginAction(formData);
 
-      const { data: loginData, error: loginError } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-      if (loginError || !loginData.user) {
-        setErrorMessage(loginError?.message || "Email atau password salah.");
+      if (!result.success || !result.user) {
+        setErrorMessage(result.message || "Email atau password salah.");
         return;
       }
 
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("id, full_name, email, role, is_active")
-        .eq("id", loginData.user.id)
-        .maybeSingle();
-
-      if (profileError) {
-        console.error("Failed to fetch profile after login:", {
-          message: profileError.message,
-          details: profileError.details,
-          hint: profileError.hint,
-          code: profileError.code,
-        });
-
-        setErrorMessage("Gagal mengambil data profil.");
-        return;
-      }
-
-      if (!profile) {
-        await supabase.auth.signOut();
-        setErrorMessage("Profil akun tidak ditemukan.");
-        return;
-      }
+      const profile = result.user;
 
       if (profile.role === "admin") {
         window.location.href = "/admin/dashboard";
         return;
       }
 
-      if (profile.role === "user") {
-        if (profile.is_active === false) {
-          await supabase.auth.signOut();
-          setErrorMessage("Akun user belum aktif.");
-          return;
-        }
-
-        window.location.href = "/user/home";
-        return;
-      }
-
       if (profile.role === "doctor") {
-        const { data: verification, error: verificationError } = await supabase
-          .from("doctor_verifications")
-          .select("doctor_id, verification_status")
-          .eq("doctor_id", profile.id)
-          .maybeSingle();
-
-        if (verificationError) {
-          console.error("Failed to fetch doctor verification after login:", {
-            message: verificationError.message,
-            details: verificationError.details,
-            hint: verificationError.hint,
-            code: verificationError.code,
-          });
-
-          setErrorMessage("Gagal mengambil status verifikasi dokter.");
-          return;
-        }
-
-        const verificationStatus =
-          verification?.verification_status?.toLowerCase().trim() || "pending";
-
-        if (verificationStatus === "approved" && profile.is_active !== false) {
+        if (profile.verification_status === "approved") {
           window.location.href = "/doctor/dashboard";
-          return;
+        } else {
+          window.location.href = "/doctor/verification-status";
         }
-
-        window.location.href = "/doctor/verification-status";
         return;
       }
 
-      await supabase.auth.signOut();
-      setErrorMessage("Role akun tidak dikenali.");
+      window.location.href = "/user/home";
+
     } catch (error) {
       console.error("Login submit error:", error);
       setErrorMessage("Terjadi kesalahan saat login.");

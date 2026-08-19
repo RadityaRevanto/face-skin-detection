@@ -1,49 +1,44 @@
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 import { redirect } from "next/navigation";
+import { getAuthToken, removeAuthToken } from "./auth/token";
 
 export type AppRole = "user" | "doctor" | "admin";
 
-export async function getCurrentUser() {
-  const supabase = await createClient();
+interface ProfileApi {
+  id: string;
+  uuid?: string;
+  full_name: string;
+  email: string;
+  role: string;
+  avatar_url?: string;
+  is_active?: boolean;
+  verification_status?: string;
+}
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+export async function getCurrentUser(): Promise<ProfileApi | null> {
+  const token = await getAuthToken();
+  if (!token) return null;
 
-  if (error || !user) {
+  try {
+    const response = await fetchApi<ProfileApi>("profile");
+    if (!response || !response.data) return null;
+    return response.data;
+  } catch (error) {
     return null;
   }
-
-  return user;
 }
 
 export async function getCurrentProfile() {
-  const supabase = await createClient();
-  const user = await getCurrentUser();
-
-  if (!user) {
-    return null;
-  }
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id, full_name, email, role, avatar_url, is_active, created_at")
-    .eq("id", user.id)
-    .single();
-
-  if (error || !data) {
-    return null;
-  }
-
-  return data;
+  // Karena API Laravel /profile mengembalikan seluruh data (uuid, email, role, avatar),
+  // getCurrentUser dan getCurrentProfile identik.
+  return await getCurrentUser();
 }
 
 export async function requireAuth() {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/login?clear_session=true");
   }
 
   return user;
@@ -53,11 +48,11 @@ export async function requireProfile() {
   const profile = await getCurrentProfile();
 
   if (!profile) {
-    redirect("/login");
+    redirect("/login?clear_session=true");
   }
 
-  if (!profile.is_active) {
-    redirect("/login?error=account_inactive");
+  if (profile.is_active === false) {
+    redirect("/login?error=account_inactive&clear_session=true");
   }
 
   return profile;
@@ -86,20 +81,9 @@ export async function requireDoctor() {
 }
 
 export async function requireApprovedDoctor() {
-  const supabase = await createClient();
   const profile = await requireDoctor();
 
-  const { data, error } = await supabase
-    .from("doctor_verifications")
-    .select("verification_status")
-    .eq("doctor_id", profile.id)
-    .single();
-
-  if (error || !data) {
-    redirect("/doctor/verification-status");
-  }
-
-  if (data.verification_status !== "approved") {
+  if (profile.verification_status !== "approved") {
     redirect("/doctor/verification-status");
   }
 

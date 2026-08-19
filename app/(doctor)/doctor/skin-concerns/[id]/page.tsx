@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { ROUTES } from "@/lib/constants";
 import { requireDoctorProfile } from "@/lib/doctor-auth";
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 
 export const dynamic = "force-dynamic";
 
@@ -18,15 +18,6 @@ type PageProps = {
   params: Promise<{
     id: string;
   }>;
-};
-
-type SkinConcernRow = {
-  id: string;
-  name: string | null;
-  description: string | null;
-  default_severity_score: number | null;
-  created_at: string | null;
-  updated_at: string | null;
 };
 
 function formatDate(date: string | null | undefined) {
@@ -46,37 +37,18 @@ export default async function SkinConcernDetailPage({ params }: PageProps) {
 
   await requireDoctorProfile();
 
-  const supabase = await createClient();
+  let skinConcern: any = null;
 
-  const { data: concern, error } = await supabase
-    .from("skin_concerns")
-    .select(
-      `
-      id,
-      name,
-      description,
-      default_severity_score,
-      created_at,
-      updated_at
-      `,
-    )
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Failed to fetch skin concern detail:", {
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-      code: error.code,
-    });
+  try {
+    const res = await fetchApi<{ data: any }>(`/skin-concerns/${id}`);
+    skinConcern = res.data;
+  } catch (error) {
+    console.error("Failed to fetch skin concern detail:", error);
   }
 
-  if (!concern || error) {
+  if (!skinConcern) {
     notFound();
   }
-
-  const skinConcern = concern as SkinConcernRow;
 
   return (
     <div className='w-full space-y-6'>

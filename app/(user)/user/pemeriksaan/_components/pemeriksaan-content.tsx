@@ -20,9 +20,12 @@ import { SkinStatusCard } from "./skin-status-card";
 import { StepsCard } from "./steps-card";
 import { UploadImagePanel } from "./upload-image-panel";
 
+import { ProfileIncompleteModal } from "./profile-incomplete-modal";
+
 type PemeriksaanContentProps = {
   initialPrediction?: PredictionHistory | null;
   initialRecommendations?: Recommendation[];
+  initialProfile?: any;
 };
 
 function toPredictionHistory(result: LiveScanResult): PredictionHistory {
@@ -44,8 +47,17 @@ function toPredictionHistory(result: LiveScanResult): PredictionHistory {
 export function PemeriksaanContent({
   initialPrediction = null,
   initialRecommendations = [],
+  initialProfile = null,
 }: PemeriksaanContentProps) {
   const [liveScan, setLiveScan] = useState<LiveScanResult | null>(null);
+  
+  // Periksa apakah profile memiliki gender dan date_of_birth
+  const isProfileComplete = 
+    initialProfile && 
+    initialProfile.gender && 
+    initialProfile.date_of_birth;
+    
+  const [showProfileModal, setShowProfileModal] = useState(!isProfileComplete);
 
   const activePrediction = liveScan
     ? toPredictionHistory(liveScan)
@@ -60,8 +72,12 @@ export function PemeriksaanContent({
   const skinProblems = getSkinProblemsFromPrediction(activePrediction);
 
   return (
-    <div className='grid gap-6 xl:grid-cols-[1.65fr_0.75fr] xl:gap-8'>
-      <div className='min-w-0 space-y-6'>
+    <>
+      {showProfileModal && (
+        <ProfileIncompleteModal onSuccess={() => setShowProfileModal(false)} />
+      )}
+      <div className='grid gap-6 xl:grid-cols-[1.65fr_0.75fr] xl:gap-8'>
+        <div className='min-w-0 space-y-6'>
         <CameraPanel
           onScanComplete={setLiveScan}
           onReset={() => setLiveScan(null)}
@@ -89,5 +105,6 @@ export function PemeriksaanContent({
         <RecommendationCard recommendations={recommendations} />
       </aside>
     </div>
+    </>
   );
 }

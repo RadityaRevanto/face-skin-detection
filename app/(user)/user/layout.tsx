@@ -1,11 +1,14 @@
 import type { ReactNode } from "react";
 
 import NavbarUsers from "@/components/users/navbar-users";
+import { requireUserRole } from "@/lib/auth";
 
-export default function UserLayout({ children }: { children: ReactNode }) {
+export default async function UserLayout({ children }: { children: ReactNode }) {
+  const profile = await requireUserRole();
+
   return (
     <div className="min-h-screen bg-slate-50">
-      <NavbarUsers />
+      <NavbarUsers initialDisplayName={profile.full_name || "Pengguna"} />
       {children}
     </div>
   );

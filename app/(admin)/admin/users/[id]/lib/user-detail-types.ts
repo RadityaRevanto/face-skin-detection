@@ -1,9 +1,9 @@
 export type UserDetail = {
   id: string;
-  username: string;
+  name: string;
   email: string;
-  role: "user";
+  role: "user" | "doctor" | "admin";
   avatarUrl: string | null;
   isActive: boolean;
-  joinedAt: string;
+  createdAt: string;
 };

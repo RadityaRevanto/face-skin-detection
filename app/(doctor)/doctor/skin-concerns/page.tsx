@@ -13,7 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { requireDoctorProfile } from "@/lib/doctor-auth";
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 
 export const dynamic = "force-dynamic";
 
@@ -30,14 +30,6 @@ type PageProps = {
   }>;
 };
 
-type SkinConcernDatabaseRow = {
-  id: string;
-  name: string | null;
-  description: string | null;
-  default_severity_score: number | null;
-  created_at: string | null;
-};
-
 function DetailIcon() {
   return (
     <svg className='h-5 w-5' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
@@ -45,6 +37,15 @@ function DetailIcon() {
       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth='1.5' d='M12 15.25A3.25 3.25 0 1 0 12 8.75a3.25 3.25 0 0 0 0 6.5Z' />
     </svg>
   );
+}
+
+interface SkinConcernApi {
+  id: string;
+  uuid: string;
+  name: string;
+  description?: string;
+  default_severity_score?: number | string;
+  is_active?: boolean;
 }
 
 export default async function DoctorSkinConcernsPage({ searchParams }: PageProps) {
@@ -55,23 +56,20 @@ export default async function DoctorSkinConcernsPage({ searchParams }: PageProps
   const currentPage = Number.isNaN(pageNumber) || pageNumber < 1 ? 1 : pageNumber;
 
   const from = (currentPage - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE - 1;
 
-  const supabase = await createClient();
+  let concerns: SkinConcernApi[] = [];
+  let totalItems = 0;
+  let totalPages = 1;
 
-  const { data: concernsData, error: concernsError, count } = await supabase
-    .from("skin_concerns")
-    .select(`id, name, description, default_severity_score, created_at`, { count: "exact" })
-    .order("name", { ascending: true })
-    .range(from, to);
+  try {
+    const res = await fetchApi<SkinConcernApi[]>(`/skin-concerns?page=${currentPage}&per_page=${PAGE_SIZE}`);
 
-  if (concernsError) {
-    console.error("Failed to fetch skin concerns:", concernsError);
+    concerns = res.data ?? [];
+    totalItems = res.meta?.total ?? 0;
+    totalPages = res.meta?.last_page ?? 1;
+  } catch (error) {
+    console.error("Failed to fetch skin concerns:", error);
   }
-
-  const concerns = (concernsData ?? []) as SkinConcernDatabaseRow[];
-  const totalItems = count ?? 0;
-  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
 
   const summaryCards = [
     { label: "Total Concern", value: String(totalItems), helper: "Concern yang tersedia di sistem" },

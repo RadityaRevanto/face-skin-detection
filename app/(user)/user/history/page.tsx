@@ -49,7 +49,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
 
   const problemDetails = getProblemDetails(selectedHistory);
 
-  const recommendations = await getRecommendations(
+  const { recommendations, concernId, hasMore } = await getRecommendations(
     selectedHistory?.predicted_class ?? null,
   );
 
@@ -100,7 +100,12 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
 
             <ProblemDetailsCard problemDetails={problemDetails} />
 
-            <RecommendationCard recommendations={recommendations} />
+            <RecommendationCard 
+              recommendations={recommendations} 
+              concernId={concernId}
+              hasMore={hasMore}
+              historyId={selectedHistory?.id}
+            />
           </aside>
         </div>
 

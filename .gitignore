@@ -50,3 +50,9 @@ ml-service/__pycache__/
 ml-service/yolov8n.pt
 face-skin-detection-final.ipynb
 face-skin-predict/
+
+# ---gitignore untuk testing---
+app/api/seed/route.ts
+
+# ---gitignore untuk sementara---
+buat_sementara/

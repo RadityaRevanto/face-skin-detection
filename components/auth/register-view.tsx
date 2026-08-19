@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/lib/constants";
+import { registerAction } from "@/lib/auth/actions";
 
 function UserIcon() {
   return (
@@ -219,39 +220,13 @@ export function RegisterView() {
     }
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          fullName,
-          email,
-          password,
-        }),
-      });
+      // Menambahkan privacy_consent karena API Laravel membutuhkannya
+      formData.set("full_name", fullName);
+      formData.set("privacy_consent", "on");
+      
+      const result = await registerAction(formData);
 
-      const contentType = response.headers.get("content-type");
-
-      if (!contentType?.includes("application/json")) {
-        const text = await response.text();
-
-        console.error("Non JSON register response:", {
-          status: response.status,
-          statusText: response.statusText,
-          body: text,
-        });
-
-        setMessage(
-          `API register tidak mengembalikan JSON. Status: ${response.status}.`,
-        );
-        setIsSuccess(false);
-        return;
-      }
-
-      const result = (await response.json()) as RegisterResponse;
-
-      if (!response.ok) {
+      if (!result.success) {
         setMessage(result.message || "Registrasi gagal.");
         setIsSuccess(false);
         return;

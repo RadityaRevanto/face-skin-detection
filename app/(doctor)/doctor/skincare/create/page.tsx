@@ -4,7 +4,7 @@ import Link from "next/link";
 import { SkincareForm } from "@/app/(doctor)/doctor/skincare/_components/skincare-form";
 import { ROUTES } from "@/lib/constants";
 import { requireDoctorProfile } from "@/lib/doctor-auth";
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 
 export const dynamic = "force-dynamic";
 
@@ -13,42 +13,34 @@ export const metadata: Metadata = {
   description: "Tambah produk skincare baru - Dashboard Dokter",
 };
 
+interface ConcernApi {
+  id: string;
+  uuid: string;
+  name: string;
+}
+
+interface SkinTypeApi {
+  id: string;
+  uuid: string;
+  name: string;
+}
+
 export default async function CreateSkincarePage() {
   await requireDoctorProfile();
 
-  const supabase = await createClient();
+  let concerns: ConcernApi[] = [];
+  let skinTypes: SkinTypeApi[] = [];
 
-  const [
-    { data: concerns, error: concernError },
-    { data: skinTypes, error: skinTypeError },
-  ] = await Promise.all([
-    supabase
-      .from("skin_concerns")
-      .select("id, name")
-      .order("name", { ascending: true }),
+  try {
+    const [resConcerns, resSkinTypes] = await Promise.all([
+      fetchApi<ConcernApi[]>("/skin-concerns?per_page=100"),
+      fetchApi<SkinTypeApi[]>("/skin-types?per_page=100"),
+    ]);
 
-    supabase
-      .from("skin_types")
-      .select("id, name")
-      .order("name", { ascending: true }),
-  ]);
-
-  if (concernError) {
-    console.error("Failed to fetch skin concerns for skincare form:", {
-      message: concernError.message,
-      details: concernError.details,
-      hint: concernError.hint,
-      code: concernError.code,
-    });
-  }
-
-  if (skinTypeError) {
-    console.error("Failed to fetch skin types for skincare form:", {
-      message: skinTypeError.message,
-      details: skinTypeError.details,
-      hint: skinTypeError.hint,
-      code: skinTypeError.code,
-    });
+    concerns = (resConcerns as any).data ?? resConcerns ?? [];
+    skinTypes = (resSkinTypes as any).data ?? resSkinTypes ?? [];
+  } catch (error) {
+    console.error("Failed to fetch skin concerns and types for skincare form:", error);
   }
 
   return (
@@ -74,16 +66,16 @@ export default async function CreateSkincarePage() {
 
       <SkincareForm
         concerns={
-          concerns?.map((concern) => ({
+          concerns.map((concern: ConcernApi) => ({
             id: concern.id,
             name: concern.name ?? "-",
-          })) ?? []
+          }))
         }
         skinTypes={
-          skinTypes?.map((skinType) => ({
+          skinTypes.map((skinType: SkinTypeApi) => ({
             id: skinType.id,
             name: skinType.name ?? "-",
-          })) ?? []
+          }))
         }
       />
     </div>

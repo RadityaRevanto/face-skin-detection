@@ -9,6 +9,7 @@ type RecommendationBody = {
   recommendationText?: string;
   priorityLevel?: "low" | "medium" | "high";
   isActive?: boolean;
+  genderSuitability?: string;
 };
 
 type RouteContext = {
@@ -111,6 +112,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const recommendationText = body.recommendationText?.trim();
     const priorityLevel = body.priorityLevel ?? "medium";
     const isActive = body.isActive ?? true;
+    const genderSuitability = body.genderSuitability?.trim() || "unisex";
 
     if (!concernId) {
       return NextResponse.json(
@@ -215,6 +217,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         recommendation_text: recommendationText,
         priority_level: priorityLevel,
         is_active: isActive,
+        gender_suitability: genderSuitability,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)

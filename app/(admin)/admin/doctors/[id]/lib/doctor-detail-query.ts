@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { requireAdminProfile } from "@/lib/admin-auth";
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 
 import type {
   DoctorDetail,
@@ -13,96 +13,66 @@ import {
   mapVerificationStatus,
 } from "./doctor-detail-utils";
 
+interface DoctorDetailApi {
+  id: string;
+  uuid: string;
+  full_name: string;
+  email: string;
+  role: string;
+  is_active?: boolean;
+  avatar_url?: string;
+  created_at: string;
+  doctor_verification?: {
+    id: string;
+    uuid: string;
+    str_number: string;
+    specialization: string;
+    document_url: string;
+    verification_status: DoctorVerificationStatus;
+    created_at: string;
+    reviewed_at?: string;
+    rejection_reason?: string;
+  };
+}
+
 export async function getDoctorDetail(id: string): Promise<DoctorDetail> {
   await requireAdminProfile();
 
-  const supabase = await createClient();
+  try {
+    const res = await fetchApi<DoctorDetailApi>(`/admin/users/${id}`);
+    const profile = res.data;
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, full_name, email, role, avatar_url, is_active, created_at")
-    .eq("id", id)
-    .eq("role", "doctor")
-    .maybeSingle();
+    if (!profile || profile.role !== "doctor") {
+      notFound();
+    }
 
-  if (profileError) {
-    console.error("Failed to fetch doctor profile:", {
-      message: profileError.message,
-      details: profileError.details,
-      hint: profileError.hint,
-      code: profileError.code,
-    });
+    const latestVerification = profile.doctor_verification;
+
+    return {
+      id: profile.id,
+      name: profile.full_name ?? "Dokter",
+      email: profile.email ?? "-",
+      role: "doctor",
+      isActive: profile.is_active ?? true,
+      joinedAt: formatDate(profile.created_at),
+      avatarUrl: profile.avatar_url ?? null,
+      latestVerification: latestVerification
+        ? {
+            id: latestVerification.id,
+            identity: latestVerification.str_number ?? "-",
+            specialization: latestVerification.specialization ?? "-",
+            document: getDocumentLabel(latestVerification.document_url),
+            documentUrl: latestVerification.document_url || null,
+            status: mapVerificationStatus(latestVerification.verification_status),
+            rawStatus: latestVerification.verification_status,
+            submittedAt: formatDate(latestVerification.created_at),
+            reviewedAt: formatDate(latestVerification.reviewed_at),
+            rejectionReason: latestVerification.rejection_reason ?? null,
+          }
+        : null,
+    };
+  } catch (error) {
+    console.error("Failed to fetch doctor profile:", error);
     notFound();
   }
-
-  if (!profile) {
-    notFound();
-  }
-
-  const { data: verificationRows, error: verificationError } = await supabase
-    .from("doctor_verifications")
-    .select(
-      `
-      id,
-      doctor_id,
-      str_number,
-      specialization,
-      document_url,
-      verification_status,
-      rejection_reason,
-      reviewed_at,
-      created_at
-    `,
-    )
-    .eq("doctor_id", profile.id)
-    .order("created_at", { ascending: false })
-    .limit(1);
-
-  if (verificationError) {
-    console.error("Failed to fetch doctor verification:", {
-      message: verificationError.message,
-      details: verificationError.details,
-      hint: verificationError.hint,
-      code: verificationError.code,
-    });
-  }
-
-  const latestVerification =
-    (verificationRows?.[0] as
-      | {
-          id: string;
-          doctor_id: string;
-          str_number: string | null;
-          specialization: string | null;
-          document_url: string | null;
-          verification_status: DoctorVerificationStatus;
-          rejection_reason: string | null;
-          reviewed_at: string | null;
-          created_at: string | null;
-        }
-      | undefined) ?? null;
-
-  return {
-    id: profile.id,
-    name: profile.full_name ?? "Dokter",
-    email: profile.email ?? "-",
-    role: "doctor",
-    isActive: profile.is_active ?? true,
-    joinedAt: formatDate(profile.created_at),
-    avatarUrl: profile.avatar_url ?? null,
-    latestVerification: latestVerification
-      ? {
-          id: latestVerification.id,
-          identity: latestVerification.str_number ?? "-",
-          specialization: latestVerification.specialization ?? "-",
-          document: getDocumentLabel(latestVerification.document_url),
-          documentUrl: latestVerification.document_url,
-          status: mapVerificationStatus(latestVerification.verification_status),
-          rawStatus: latestVerification.verification_status,
-          submittedAt: formatDate(latestVerification.created_at),
-          reviewedAt: formatDate(latestVerification.reviewed_at),
-          rejectionReason: latestVerification.rejection_reason,
-        }
-      : null,
-  };
 }

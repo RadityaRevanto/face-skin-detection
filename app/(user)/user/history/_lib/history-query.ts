@@ -1,122 +1,92 @@
 import { redirect } from "next/navigation";
 
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 
 import type { PredictionHistory, SkinRecommendation } from "./history-types";
 
+import { requireUserRole } from "@/lib/auth";
+
 export async function getCurrentUserId() {
-  const supabase = await createClient();
+  const profile = await requireUserRole();
+  return profile.uuid || profile.id;
+}
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
+interface PredictionHistoryApi {
+  id: string;
+  uuid?: string;
+  user_id: string;
+  predicted_class: string;
+  confidence: number;
+  severity_level: "mild" | "moderate" | "severe";
+  severity_score: number;
+  probabilities: Record<string, number>;
+  image_url: string;
+  cropped_image_url?: string | null;
+  created_at: string;
+}
 
-  if (error || !user) {
-    redirect("/login");
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, role, is_active")
-    .eq("id", user.id)
-    .single();
-
-  if (
-    profileError ||
-    !profile ||
-    profile.role !== "user" ||
-    !profile.is_active
-  ) {
-    redirect("/login");
-  }
-
-  return user.id;
+interface RecommendationApi {
+  id: string;
+  uuid?: string;
+  concern_id: string;
+  title: string;
+  priority_level: string;
+  recommendation_text: string;
+  product?: {
+    id: string;
+    uuid?: string;
+    name: string;
+    category: string;
+    key_ingredients?: string;
+    usage_instruction?: string;
+    warning?: string;
+  };
 }
 
 export async function getPredictionHistories(userId: string) {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("prediction_histories")
-    .select(
-      `
-      id,
-      scan_mode,
-      image_url,
-      cropped_image_url,
-      predicted_class,
-      confidence,
-      probabilities,
-      severity_score,
-      severity_level,
-      model_used,
-      created_at
-    `,
-    )
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Failed to fetch prediction histories:", error);
+  try {
+    const response = await fetchApi<PredictionHistoryApi[]>("scans");
+    const scans = response.data || [];
+    return scans.map((scan: PredictionHistoryApi) => ({
+      ...scan,
+      id: scan.uuid || scan.id,
+    })) as unknown as PredictionHistory[];
+  } catch (error) {
+    console.error("Failed to fetch prediction histories from Laravel:", error);
     return [];
   }
-
-  return (data ?? []) as PredictionHistory[];
 }
 
 export async function getRecommendations(predictedClass: string | null) {
   if (!predictedClass) {
-    return [];
+    return { recommendations: [], concernId: null, hasMore: false };
   }
+  
+  try {
+    const encoded = encodeURIComponent(predictedClass);
+    const response = await fetchApi<RecommendationApi[]>(`skin-recommendations?ml_label=${encoded}`);
+    const recommendations = response.data || [];
 
-  const supabase = await createClient();
+    const hasMore = recommendations && recommendations.length > 5;
+    const itemsToDisplay = recommendations ? recommendations.slice(0, 5) : [];
 
-  const { data: concern, error: concernError } = await supabase
-    .from("skin_concerns")
-    .select("id, name")
-    .ilike("name", predictedClass)
-    .eq("is_active", true)
-    .maybeSingle();
+    const sorted = itemsToDisplay.sort((a: RecommendationApi, b: RecommendationApi) => {
+      const priorityWeight: Record<string, number> = { high: 1, medium: 2, low: 3 };
+      const weightA = priorityWeight[a.priority_level] || 3;
+      const weightB = priorityWeight[b.priority_level] || 3;
+      return weightA - weightB;
+    });
 
-  if (concernError || !concern) {
-    return [];
+    return {
+      recommendations: sorted.map((rec: RecommendationApi) => ({
+        ...rec,
+        id: rec.uuid || rec.id,
+      })) as unknown as SkinRecommendation[],
+      concernId: recommendations[0]?.concern_id || "laravel-concern",
+      hasMore,
+    };
+  } catch (error) {
+    console.error("Failed to fetch recommendations from Laravel:", error);
+    return { recommendations: [], concernId: null, hasMore: false };
   }
-
-  const { data, error } = await supabase
-    .from("skin_recommendations")
-    .select(
-      `
-      id,
-      title,
-      recommendation_text,
-      priority_level,
-      skincare_products (
-        id,
-        name,
-        category,
-        key_ingredients,
-        usage_instruction,
-        warning
-      )
-    `,
-    )
-    .eq("concern_id", concern.id)
-    .eq("is_active", true)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Failed to fetch recommendations:", error);
-    return [];
-  }
-
-  const priorityOrder = {
-    high: 1,
-    medium: 2,
-    low: 3,
-  };
-
-  return ((data ?? []) as unknown as SkinRecommendation[]).sort(
-    (a, b) => priorityOrder[a.priority_level] - priorityOrder[b.priority_level],
-  );
 }

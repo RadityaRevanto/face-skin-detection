@@ -29,6 +29,7 @@ type RecommendationFormProps = {
     recommendationText?: string;
     priorityLevel?: "low" | "medium" | "high";
     isActive?: boolean;
+    genderSuitability?: string;
   };
   mode?: "create" | "edit";
 };
@@ -57,6 +58,9 @@ export function RecommendationForm({
     defaultValues?.priorityLevel ?? "medium",
   );
   const [isActive, setIsActive] = useState(defaultValues?.isActive ?? true);
+  const [genderSuitability, setGenderSuitability] = useState(
+    defaultValues?.genderSuitability ?? "unisex",
+  );
 
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -103,6 +107,7 @@ export function RecommendationForm({
           recommendationText: trimmedRecommendationText,
           priorityLevel,
           isActive,
+          genderSuitability,
         }),
       });
 
@@ -259,6 +264,26 @@ export function RecommendationForm({
             placeholder='Tulis rekomendasi dokter untuk user...'
             className='w-full resize-none rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3 text-sm font-medium leading-6 text-gray-700 outline-none transition-colors placeholder:text-gray-400 focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100'
           />
+        </div>
+
+        <div>
+          <label
+            htmlFor='genderSuitability'
+            className='mb-2 block text-sm font-semibold text-gray-700'
+          >
+            Peruntukan Gender
+          </label>
+
+          <select
+            id='genderSuitability'
+            value={genderSuitability}
+            onChange={(event) => setGenderSuitability(event.target.value)}
+            className='h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 text-sm font-medium text-gray-700 outline-none transition-colors focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+          >
+            <option value='unisex'>Unisex</option>
+            <option value='laki_laki'>Laki-laki</option>
+            <option value='perempuan'>Perempuan</option>
+          </select>
         </div>
 
         <label className='flex cursor-pointer items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/80 px-4 py-3'>

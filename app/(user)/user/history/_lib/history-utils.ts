@@ -9,7 +9,26 @@ export function getHistoryImageUrl(history: PredictionHistory | null) {
     return null;
   }
 
-  return history.cropped_image_url ?? history.image_url ?? null;
+  const url = history.cropped_image_url ?? history.image_url ?? null;
+  if (!url) {
+    return null;
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") || "https://be-skincek.test";
+
+  if (url.startsWith("http")) {
+    try {
+      const parsedUrl = new URL(url);
+      if (parsedUrl.pathname.startsWith("/storage/")) {
+        return `${baseUrl.replace(/\/$/, "")}${parsedUrl.pathname}`;
+      }
+    } catch (e) {
+      // Ignore parsing errors
+    }
+    return url;
+  }
+
+  return `${baseUrl.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
 }
 
 export function formatDate(date: string) {
