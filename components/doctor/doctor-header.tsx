@@ -4,6 +4,8 @@ import { DoctorProfileMenu } from "@/components/doctor/doctor-profile-menu";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
+import { NotificationBell } from "@/components/shared/notification-bell";
+
 type DoctorHeaderProps = {
   title: string;
   description?: string;
@@ -12,6 +14,7 @@ type DoctorHeaderProps = {
   avatar?: ReactNode;
   className?: string;
   initialDisplayName?: string;
+  userId?: string | null;
 };
 
 function SearchIcon() {
@@ -36,6 +39,7 @@ export function DoctorHeader({
   avatar,
   className,
   initialDisplayName,
+  userId,
 }: DoctorHeaderProps) {
   return (
     <header
@@ -53,6 +57,7 @@ export function DoctorHeader({
       {/* Desktop: actions + profile */}
       <div className="hidden items-center gap-2 md:flex sm:gap-4">
         {actions}
+        <NotificationBell userId={userId} />
         {avatar ?? <DoctorProfileMenu initialDisplayName={initialDisplayName} />}
       </div>
     </header>

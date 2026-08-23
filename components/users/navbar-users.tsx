@@ -126,14 +126,18 @@ const navItems: NavItem[] = [
   { label: "Konsultasi", href: "/user/consultations", icon: <ChatIcon /> },
 ];
 
+import { NotificationBell } from "@/components/shared/notification-bell";
+
 interface NavbarUsersProps {
   initialDisplayName?: string;
   initialAvatarUrl?: string | null;
+  userId?: string | null;
 }
 
 export default function NavbarUsers({
   initialDisplayName = "Pengguna",
   initialAvatarUrl = null,
+  userId = null,
 }: NavbarUsersProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -191,7 +195,9 @@ export default function NavbarUsers({
         </div>
 
         <div className="flex shrink-0 items-center gap-3 md:gap-5">
-          {/* Desktop Profile */}
+          <NotificationBell userId={userId} />
+
+          {/* Profile Menu */}
           <div className="relative hidden md:block">
             <button
               type="button"
