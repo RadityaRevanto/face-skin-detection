@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchApi } from "@/lib/api/server-client";
+import { removeAuthToken } from "@/lib/auth/token";
 
 export async function GET(request: NextRequest) {
   try {
@@ -49,6 +50,29 @@ export async function PATCH(request: NextRequest) {
       { 
         success: false, 
         message: error.message || "Gagal menyimpan profil" 
+      },
+      { status: error.status || 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const result = await fetchApi("/profile", {
+      method: "DELETE",
+    });
+
+    // Clear local auth token if successful
+    await removeAuthToken();
+
+    return NextResponse.json(result);
+  } catch (error: any) {
+    console.error("Profile delete error:", error);
+    
+    return NextResponse.json(
+      { 
+        success: false, 
+        message: error.message || "Gagal menghapus akun" 
       },
       { status: error.status || 500 }
     );

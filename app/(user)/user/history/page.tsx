@@ -8,6 +8,7 @@ import { HistorySidebar } from "./_components/history-sidebar";
 import { NoteCard } from "./_components/note-card";
 import { ProblemDetailsCard } from "./_components/problem-details-card";
 import { RecommendationCard } from "./_components/recommendation-card";
+import { ScanFeedbackCard } from "./_components/scan-feedback-card";
 import {
   getCurrentUserId,
   getPredictionHistories,
@@ -97,6 +98,8 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
               selectedConfidence={selectedConfidence}
               tone={tone}
             />
+
+            <ScanFeedbackCard historyId={selectedHistory?.id} />
 
             <ProblemDetailsCard problemDetails={problemDetails} />
 
