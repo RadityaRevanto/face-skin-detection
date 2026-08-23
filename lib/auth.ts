@@ -4,13 +4,14 @@ import { getAuthToken, removeAuthToken } from "./auth/token";
 
 export type AppRole = "user" | "doctor" | "admin";
 
-interface ProfileApi {
+export interface ProfileApi {
   id: string;
   uuid?: string;
   full_name: string;
   email: string;
   role: string;
-  avatar_url?: string;
+  avatar_url?: string | null;
+  google_avatar_url?: string | null;
   is_active?: boolean;
   verification_status?: string;
 }

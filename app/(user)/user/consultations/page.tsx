@@ -24,7 +24,9 @@ import {
   Message 
 } from "@/lib/api/consultations-query";
 import { DoctorSearchModal } from "./_components/doctor-search-modal";
+import { ScanHistoryModal } from "./_components/scan-history-modal";
 import { getEcho } from "@/lib/echo";
+import { ScanHistory } from "@/lib/api/scans-query";
 
 export default function UserConsultationsPage() {
   
@@ -38,6 +40,7 @@ export default function UserConsultationsPage() {
   const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isScanModalOpen, setIsScanModalOpen] = useState(false);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -163,10 +166,8 @@ export default function UserConsultationsPage() {
 
       const res = await sendMessage(activeConversation.uuid, payload);
       
-      // Add message locally to feel fast
       setMessages((prev) => [...prev, res.data]);
       
-      // Update last message in conversation list
       setConversations((prev) => prev.map((c) => {
         if (c.uuid === activeConversation.uuid) {
           return { ...c, last_message: res.data };
@@ -177,6 +178,30 @@ export default function UserConsultationsPage() {
       setInputText("");
       setSelectedImageFile(null);
       setSelectedImagePreview(null);
+    } catch (error: any) {
+      setErrorMsg(error.message);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleSendScanHistory = async (scan: ScanHistory) => {
+    setIsScanModalOpen(false);
+    if (!activeConversation) return;
+    setIsSending(true);
+
+    try {
+      const payload = { prediction_history_id: scan.uuid };
+      const res = await sendMessage(activeConversation.uuid, payload);
+      
+      setMessages((prev) => [...prev, res.data]);
+      
+      setConversations((prev) => prev.map((c) => {
+        if (c.uuid === activeConversation.uuid) {
+          return { ...c, last_message: res.data };
+        }
+        return c;
+      }));
     } catch (error: any) {
       setErrorMsg(error.message);
     } finally {
@@ -199,7 +224,7 @@ export default function UserConsultationsPage() {
       
       {/* Error Popup */}
       {errorMsg && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl w-full max-w-sm flex flex-col shadow-2xl overflow-hidden transform transition-all">
             <div className="bg-rose-50 p-4 border-b border-rose-100 flex items-center gap-3">
               <div className="bg-rose-100 text-rose-600 p-2 rounded-full">
@@ -228,7 +253,13 @@ export default function UserConsultationsPage() {
         onSelectDoctor={handleCreateOrOpenConversation} 
       />
 
-      <div className={`mx-auto w-full max-w-[1400px] flex-1 flex flex-col lg:flex-row gap-6 ${showSidebar ? '' : 'min-h-0'}`}>
+      <ScanHistoryModal
+        isOpen={isScanModalOpen}
+        onClose={() => setIsScanModalOpen(false)}
+        onSelectScan={handleSendScanHistory}
+      />
+
+      <div className={`mx-auto w-full max-w-350 flex-1 flex flex-col lg:flex-row gap-6 ${showSidebar ? '' : 'min-h-0'}`}>
         
         {/* Left Column (Info Section) */}
         <div className={`flex flex-col gap-5 lg:w-64 xl:w-72 shrink-0 ${showSidebar ? 'flex' : 'hidden lg:flex'}`}>
@@ -251,7 +282,7 @@ export default function UserConsultationsPage() {
         </div>
 
         {/* Right Column (Main Chat Layout) */}
-        <div className={`flex flex-1 min-w-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60 ${showSidebar ? 'min-h-[400px] lg:min-h-0' : 'min-h-0'}`}>
+        <div className={`flex flex-1 min-w-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60 ${showSidebar ? 'min-h-100 lg:min-h-0' : 'min-h-0'}`}>
           
           {/* Sidebar Daftar Dokter */}
           <div className={`${showSidebar ? 'flex' : 'hidden'} md:flex w-full md:w-80 lg:w-96 border-r border-zinc-100 flex-col`}>
@@ -325,7 +356,9 @@ export default function UserConsultationsPage() {
                           <div className="flex justify-between items-center">
                             <p className="text-xs truncate text-zinc-500">
                               {conv.last_message ? (
-                                conv.last_message.type === 'image' ? '📷 Foto' : conv.last_message.content
+                                conv.last_message.type === 'image' ? '📷 Foto' : 
+                                conv.last_message.type === 'scan_result' ? '📋 Hasil Scan' : 
+                                conv.last_message.content
                               ) : (
                                 "Belum ada pesan"
                               )}
@@ -398,8 +431,20 @@ export default function UserConsultationsPage() {
                               <img 
                                 src={message.media_url} 
                                 alt="Uploaded content" 
-                                className="max-w-full sm:max-w-[280px] max-h-[300px] object-cover"
+                                className="max-w-full sm:max-w-70 max-h-75 object-cover"
                               />
+                            </div>
+                          )}
+
+                          {message.type === 'scan_result' && (
+                            <div className="mb-2 w-full max-w-xs sm:max-w-sm rounded-xl overflow-hidden border border-zinc-200 bg-zinc-50 shadow-sm mt-1">
+                              <div className="bg-[#00a884] text-white px-3 py-1.5 flex items-center gap-2">
+                                <CheckCheck size={16} />
+                                <span className="font-semibold text-xs tracking-wide">LAPORAN SCAN KULIT</span>
+                              </div>
+                              <div className="p-3 pb-1 text-sm text-zinc-700 leading-relaxed border-b border-zinc-100">
+                                {message.content}
+                              </div>
                             </div>
                           )}
                           
@@ -408,7 +453,7 @@ export default function UserConsultationsPage() {
                               <p className="text-[14.5px] leading-snug break-words">
                                 {message.content}
                                 {/* Invisible placeholder for timestamp to wrap text correctly */}
-                                <span className="inline-block w-[60px]" aria-hidden="true"></span>
+                                <span className="inline-block w-15" aria-hidden="true"></span>
                               </p>
                             )}
                             
@@ -451,7 +496,8 @@ export default function UserConsultationsPage() {
                       <button 
                         type="button" 
                         onClick={() => fileInputRef.current?.click()}
-                        className="p-2.5 text-zinc-400 hover:text-zinc-600 transition-colors shrink-0"
+                        className="p-2.5 text-zinc-400 hover:text-emerald-600 transition-colors shrink-0"
+                        title="Lampirkan Foto"
                       >
                         <ImageIcon size={22} />
                       </button>
@@ -463,8 +509,13 @@ export default function UserConsultationsPage() {
                         onChange={handleImageUpload}
                       />
                       
-                      <button type="button" className="p-2.5 text-zinc-400 hover:text-zinc-600 transition-colors shrink-0 hidden sm:block">
-                        <Paperclip size={20} />
+                      <button 
+                        type="button" 
+                        onClick={() => setIsScanModalOpen(true)}
+                        className="p-2.5 text-zinc-400 hover:text-emerald-600 transition-colors shrink-0 hidden sm:block"
+                        title="Lampirkan Hasil Scan"
+                      >
+                        <CheckCheck size={20} />
                       </button>
 
                       <textarea 
@@ -477,7 +528,7 @@ export default function UserConsultationsPage() {
                           }
                         }}
                         placeholder="Ketik pesan..." 
-                        className="flex-1 max-h-32 min-h-[44px] bg-transparent border-none focus:ring-0 resize-none py-3 px-2 text-[15px] text-zinc-800 placeholder-zinc-400"
+                        className="flex-1 max-h-32 min-h-11 bg-transparent border-none focus:ring-0 resize-none py-3 px-2 text-[15px] text-zinc-800 placeholder-zinc-400"
                         rows={1}
                       />
                     </div>

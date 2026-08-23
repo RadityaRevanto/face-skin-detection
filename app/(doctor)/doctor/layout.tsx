@@ -14,7 +14,10 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
   return (
     <main className='min-h-screen bg-[#f7fbf8]! text-slate-950 dark:bg-[#f7fbf8]! dark:text-slate-950!'>
       <div className='flex min-h-screen flex-col bg-[#f7fbf8]! dark:bg-[#f7fbf8]! lg:flex-row'>
-        <DoctorSidebar />
+        <DoctorSidebar 
+          initialDisplayName={profile.full_name || "Dokter"} 
+          initialAvatarUrl={profile.avatar_url || profile.google_avatar_url || null}
+        />
 
         <div className='min-w-0 flex-1 bg-[#f7fbf8]! dark:bg-[#f7fbf8]!'>
           <DoctorLayoutHeader initialDisplayName={profile.full_name || "Dokter"} />

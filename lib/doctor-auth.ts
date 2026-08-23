@@ -1,14 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { fetchApi } from "@/lib/api/server-client";
-import { removeAuthToken } from "@/lib/auth/token";
-
-interface ProfileApi {
-  id: string;
-  uuid: string;
-  role: string;
-  is_active?: boolean;
-}
+import { ProfileApi } from "@/lib/auth";
 
 export async function requireDoctorProfile() {
   try {

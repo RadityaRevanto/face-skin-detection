@@ -30,21 +30,21 @@ export async function getCreateRecommendationPageData(): Promise<CreateRecommend
       fetchApi<ProductApi[]>("/doctor/products?per_page=100"),
     ]);
 
-    concerns = resConcerns.data ?? [];
-    products = resProducts.data ?? [];
+    concerns = Array.isArray(resConcerns.data) ? resConcerns.data : (resConcerns.data as any)?.data ?? [];
+    products = Array.isArray(resProducts.data) ? resProducts.data : (resProducts.data as any)?.data ?? [];
   } catch (error) {
     console.error("Failed to fetch data for create recommendation form:", error);
   }
 
   return {
-    concerns: concerns.map((concern: ConcernApi) => ({
-      id: concern.id,
+    concerns: concerns.map((concern: ConcernApi, i: number) => ({
+      id: concern.id || concern.uuid || `concern-${i}`,
       name: concern.name ?? "-",
     })),
     products: products
-      .filter((product: ProductApi) => product.is_active)
-      .map((product: ProductApi) => ({
-        id: product.id,
+      .filter((product: ProductApi) => product.is_active !== false)
+      .map((product: ProductApi, i: number) => ({
+        id: product.id || product.uuid || `product-${i}`,
         name: product.name ?? "-",
         category: product.category ?? "-",
       })),

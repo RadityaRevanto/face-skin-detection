@@ -60,8 +60,8 @@ export async function getEditRecommendationPageData(
     ]);
 
     recommendation = (resRecommendation as any).data ?? resRecommendation;
-    concerns = (concernsRes as any).data ?? concernsRes ?? [];
-    products = (productsRes as any).data ?? productsRes ?? [];
+    concerns = Array.isArray((concernsRes as any).data) ? (concernsRes as any).data : (concernsRes as any).data?.data ?? concernsRes ?? [];
+    products = Array.isArray((productsRes as any).data) ? (productsRes as any).data : (productsRes as any).data?.data ?? productsRes ?? [];
   } catch (error: any) {
     console.error("Failed to fetch recommendation detail or dependencies:", error);
     if (error?.status === 404 || !recommendation) {
@@ -88,14 +88,14 @@ export async function getEditRecommendationPageData(
       priorityLevel: normalizePriorityLevel(recommendation.priority_level),
       isActive: recommendation.is_active ?? true,
     },
-    concerns: concerns.map((concern: ConcernApi) => ({
-      id: concern.id,
+    concerns: concerns.map((concern: ConcernApi, i: number) => ({
+      id: concern.id || concern.uuid || `concern-${i}`,
       name: concern.name ?? "-",
     })),
     products: products
-      .filter((product: ProductApi) => product.is_active)
-      .map((product: ProductApi) => ({
-        id: product.id,
+      .filter((product: ProductApi) => product.is_active !== false)
+      .map((product: ProductApi, i: number) => ({
+        id: product.id || product.uuid || `product-${i}`,
         name: product.name ?? "-",
         category: product.category ?? "-",
       })),

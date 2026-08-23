@@ -96,11 +96,25 @@ function LogoMark() {
   );
 }
 
-function Avatar() {
+function Avatar({ url, name }: { url?: string | null, name: string }) {
+  if (url) {
+    return (
+      <div className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-white" aria-hidden="true">
+        <img src={url} alt={name} className="h-full w-full object-cover" />
+      </div>
+    );
+  }
+
+  const initials = name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+
   return (
-    <div className="relative h-11 w-11 overflow-hidden rounded-full bg-gradient-to-br from-amber-300 via-orange-400 to-emerald-700 ring-2 ring-white" aria-hidden="true">
-      <div className="absolute left-1/2 top-2 h-4 w-4 -translate-x-1/2 rounded-full bg-amber-100" />
-      <div className="absolute bottom-0 left-1/2 h-7 w-8 -translate-x-1/2 rounded-t-full bg-emerald-800" />
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-900 text-sm font-bold text-white ring-2 ring-white">
+      {initials}
     </div>
   );
 }
@@ -114,10 +128,12 @@ const navItems: NavItem[] = [
 
 interface NavbarUsersProps {
   initialDisplayName?: string;
+  initialAvatarUrl?: string | null;
 }
 
 export default function NavbarUsers({
   initialDisplayName = "Pengguna",
+  initialAvatarUrl = null,
 }: NavbarUsersProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -134,7 +150,7 @@ export default function NavbarUsers({
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-100 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
-      <nav aria-label="Navigasi pengguna" className="relative flex h-[72px] w-full items-center justify-between gap-6 px-6 md:px-10">
+      <nav aria-label="Navigasi pengguna" className="relative flex h-18 w-full items-center justify-between gap-6 px-6 md:px-10">
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -187,7 +203,7 @@ export default function NavbarUsers({
               <span className="text-sm font-medium text-slate-500">
                 Halo, <strong className="font-bold text-slate-700">{initialDisplayName}</strong>
               </span>
-              <Avatar />
+              <Avatar url={initialAvatarUrl} name={initialDisplayName} />
               <span className={`grid h-5 w-5 place-items-center text-slate-400 transition-transform ${isProfileOpen ? "rotate-180" : ""}`}>
                 <ChevronDownIcon />
               </span>
@@ -195,10 +211,10 @@ export default function NavbarUsers({
 
             {isProfileOpen && (
               <div role="menu" className="absolute right-0 top-full mt-3 w-64 overflow-hidden rounded-2xl border border-slate-100 bg-white p-2 shadow-xl shadow-slate-200/70">
-                <div className="border-b border-slate-100 px-3 py-3">
+                <Link href="/user/profile" onClick={() => setIsProfileOpen(false)} className="block border-b border-slate-100 px-3 py-3 hover:bg-slate-50 transition-colors">
                   <p className="text-xs font-medium text-slate-500">Masuk sebagai</p>
                   <p className="mt-1 truncate text-sm font-bold text-slate-800">{initialDisplayName}</p>
-                </div>
+                </Link>
                 <button
                   type="button"
                   role="menuitem"
@@ -235,13 +251,13 @@ export default function NavbarUsers({
             })}
           </div>
           <div className="border-t border-slate-100 pt-4 pb-2">
-            <div className="flex items-center gap-3 px-4 mb-4">
-              <Avatar />
+            <Link href="/user/profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 mb-4 hover:bg-slate-50 p-2 rounded-xl transition-colors">
+              <Avatar url={initialAvatarUrl} name={initialDisplayName} />
               <div className="flex flex-col">
                 <span className="text-xs font-medium text-slate-500">Masuk sebagai</span>
                 <span className="text-sm font-bold text-slate-800">{initialDisplayName}</span>
               </div>
-            </div>
+            </Link>
             <button
               type="button"
               disabled={isLoggingOut}

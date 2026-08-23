@@ -90,7 +90,15 @@ const doctorNavItems: SidebarNavItem[] = [
   },
 ];
 
-export function DoctorSidebar() {
+interface DoctorSidebarProps {
+  initialDisplayName?: string;
+  initialAvatarUrl?: string | null;
+}
+
+export function DoctorSidebar({
+  initialDisplayName = "Dokter",
+  initialAvatarUrl = null,
+}: DoctorSidebarProps) {
   return (
     <Sidebar
       brand={{
@@ -106,7 +114,7 @@ export function DoctorSidebar() {
         mobileSubtitle: "Skin Detection",
       }}
       items={doctorNavItems}
-      mobileFooter={<DoctorProfileMenu variant="inline" />}
+      mobileFooter={<DoctorProfileMenu variant="inline" initialDisplayName={initialDisplayName} initialAvatarUrl={initialAvatarUrl} />}
     />
   );
 }

@@ -18,7 +18,7 @@ export type Message = {
     role: string;
   };
   content: string | null;
-  type: "text" | "image" | "video";
+  type: "text" | "image" | "video" | "scan_result";
   media_url?: string | null;
   created_at: string;
 };
@@ -82,7 +82,7 @@ export async function getMessages(conversationId: string, page: number = 1) {
   return res.json();
 }
 
-export async function sendMessage(conversationId: string, payload: FormData | { content: string }) {
+export async function sendMessage(conversationId: string, payload: FormData | { content?: string, prediction_history_id?: string }) {
   const isFormData = payload && typeof (payload as any).append === 'function';
   
   const options: RequestInit = {

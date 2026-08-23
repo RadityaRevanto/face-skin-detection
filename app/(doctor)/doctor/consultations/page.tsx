@@ -181,7 +181,7 @@ export default function DoctorConsultationsPage() {
       
       {/* Error Popup */}
       {errorMsg && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl w-full max-w-sm flex flex-col shadow-2xl overflow-hidden transform transition-all">
             <div className="bg-rose-50 p-4 border-b border-rose-100 flex items-center gap-3">
               <div className="bg-rose-100 text-rose-600 p-2 rounded-full">
@@ -273,7 +273,9 @@ export default function DoctorConsultationsPage() {
                         <div className="flex justify-between items-center">
                           <p className="text-xs truncate text-zinc-500">
                             {conv.last_message ? (
-                              conv.last_message.type === 'image' ? '📷 Foto' : conv.last_message.content
+                              conv.last_message.type === 'image' ? '📷 Foto' : 
+                              conv.last_message.type === 'scan_result' ? '📋 Hasil Scan' : 
+                              conv.last_message.content
                             ) : (
                               "Belum ada pesan"
                             )}
@@ -293,7 +295,7 @@ export default function DoctorConsultationsPage() {
           {activeConversation ? (
             <>
               {/* Chat Header */}
-              <div className="h-[72px] border-b border-zinc-100 bg-white/80 backdrop-blur-md px-4 sm:px-6 flex justify-between items-center shrink-0">
+              <div className="h-18 border-b border-zinc-100 bg-white/80 backdrop-blur-md px-4 sm:px-6 flex justify-between items-center shrink-0">
                 <div className="flex items-center gap-2 sm:gap-4">
                   <button 
                     onClick={() => setShowSidebar(true)} 
@@ -351,8 +353,20 @@ export default function DoctorConsultationsPage() {
                             <img 
                               src={message.media_url} 
                               alt="Uploaded content" 
-                              className="max-w-full sm:max-w-[280px] max-h-[300px] object-cover"
+                              className="max-w-full sm:max-w-70 max-h-75 object-cover"
                             />
+                          </div>
+                        )}
+
+                        {message.type === 'scan_result' && (
+                          <div className="mb-2 w-full max-w-xs sm:max-w-sm rounded-xl overflow-hidden border border-zinc-200 bg-zinc-50 shadow-sm mt-1">
+                            <div className="bg-[#00a884] text-white px-3 py-1.5 flex items-center gap-2">
+                              <CheckCheck size={16} />
+                              <span className="font-semibold text-xs tracking-wide">LAPORAN SCAN KULIT PASIEN</span>
+                            </div>
+                            <div className="p-3 pb-1 text-sm text-zinc-700 leading-relaxed border-b border-zinc-100">
+                              {message.content}
+                            </div>
                           </div>
                         )}
                         
@@ -361,7 +375,7 @@ export default function DoctorConsultationsPage() {
                             <p className="text-[14.5px] leading-snug break-words">
                               {message.content}
                               {/* Invisible placeholder for timestamp to wrap text correctly */}
-                              <span className="inline-block w-[60px]" aria-hidden="true"></span>
+                              <span className="inline-block w-15" aria-hidden="true"></span>
                             </p>
                           )}
                           
@@ -430,7 +444,7 @@ export default function DoctorConsultationsPage() {
                         }
                       }}
                       placeholder="Tulis balasan medis..." 
-                      className="flex-1 max-h-32 min-h-[44px] bg-transparent border-none focus:ring-0 resize-none py-3 px-2 text-[15px] text-zinc-800 placeholder-zinc-400"
+                      className="flex-1 max-h-32 min-h-11 bg-transparent border-none focus:ring-0 resize-none py-3 px-2 text-[15px] text-zinc-800 placeholder-zinc-400"
                       rows={1}
                     />
                   </div>
