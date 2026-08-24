@@ -11,7 +11,8 @@ export default async function UserLayout({ children }: { children: ReactNode }) 
       <NavbarUsers 
         initialDisplayName={profile.full_name || "Pengguna"} 
         initialAvatarUrl={profile.avatar_url || profile.google_avatar_url || null}
-        userId={profile.uuid || profile.id}
+        userId={profile.id}
+        userUuid={profile.uuid}
       />
       {children}
     </div>

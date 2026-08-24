@@ -450,7 +450,7 @@ export default function UserConsultationsPage() {
                           
                           <div className="flex flex-wrap items-end gap-x-2 gap-y-0.5">
                             {message.content && (
-                              <p className="text-[14.5px] leading-snug break-words">
+                              <p className="text-[14.5px] leading-snug wrap-break-word">
                                 {message.content}
                                 {/* Invisible placeholder for timestamp to wrap text correctly */}
                                 <span className="inline-block w-15" aria-hidden="true"></span>

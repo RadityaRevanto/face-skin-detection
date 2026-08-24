@@ -131,13 +131,15 @@ import { NotificationBell } from "@/components/shared/notification-bell";
 interface NavbarUsersProps {
   initialDisplayName?: string;
   initialAvatarUrl?: string | null;
-  userId?: string | null;
+  userId?: number | string | null;
+  userUuid?: string | null;
 }
 
 export default function NavbarUsers({
   initialDisplayName = "Pengguna",
   initialAvatarUrl = null,
   userId = null,
+  userUuid = null,
 }: NavbarUsersProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -195,7 +197,7 @@ export default function NavbarUsers({
         </div>
 
         <div className="flex shrink-0 items-center gap-3 md:gap-5">
-          <NotificationBell userId={userId} />
+          <NotificationBell userId={userId} userUuid={userUuid} />
 
           {/* Profile Menu */}
           <div className="relative hidden md:block">

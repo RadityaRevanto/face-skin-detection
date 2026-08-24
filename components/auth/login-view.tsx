@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { type FormEvent, type ReactNode, useState } from "react";
+import { GoogleLoginButton } from "./google-login-button";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -152,6 +153,11 @@ export function LoginView() {
 
       const profile = result.user;
 
+      if (profile.email_verified === false) {
+        window.location.href = `/verify-email?email=${encodeURIComponent(email)}`;
+        return;
+      }
+
       if (profile.role === "admin") {
         window.location.href = "/admin/dashboard";
         return;
@@ -261,7 +267,7 @@ export function LoginView() {
 
             <div className='text-right'>
               <Link
-                href='#'
+                href='/forgot-password'
                 className='text-xs font-semibold text-emerald-700 underline-offset-4 hover:underline'
               >
                 Lupa password?
@@ -293,6 +299,8 @@ export function LoginView() {
           </span>
           <div className='h-px flex-1 bg-linear-to-l from-transparent via-zinc-200 to-zinc-200' />
         </div>
+
+        <GoogleLoginButton />
 
         <p className='text-center text-sm text-zinc-500'>
           Belum punya akun?{" "}

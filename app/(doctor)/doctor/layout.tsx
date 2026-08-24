@@ -20,7 +20,7 @@ export default async function DoctorLayout({ children }: DoctorLayoutProps) {
         />
 
         <div className='min-w-0 flex-1 bg-[#f7fbf8]! dark:bg-[#f7fbf8]!'>
-          <DoctorLayoutHeader initialDisplayName={profile.full_name || "Dokter"} userId={profile.uuid || profile.id} />
+          <DoctorLayoutHeader initialDisplayName={profile.full_name || "Dokter"} userId={profile.id} userUuid={profile.uuid} />
 
           <div className='py-6 pl-5 pr-4 sm:pl-6 sm:pr-6 lg:pl-8 lg:pr-8'>
             {children}

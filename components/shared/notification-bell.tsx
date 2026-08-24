@@ -18,10 +18,11 @@ export type NotificationData = {
 };
 
 interface NotificationBellProps {
-  userId?: string | null;
+  userId?: number | string | null;
+  userUuid?: string | null;
 }
 
-export function NotificationBell({ userId }: NotificationBellProps) {
+export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
@@ -70,42 +71,44 @@ export function NotificationBell({ userId }: NotificationBellProps) {
 
   // Listen to WebSocket for real-time notifications
   useEffect(() => {
-    if (!userId) return;
+    if (!userId && !userUuid) return;
 
     try {
       const echo = getEcho();
       if (!echo) return;
 
-      const channel = echo.private(`App.Models.User.${userId}`);
-      
-      // Also listen to private-user.{uuid} if needed, but usually notifications are broadcast on App.Models.User.{id} 
-      // by Laravel's DatabaseChannel/BroadcastChannel by default. 
-      // If we don't know the exact ID, we might need the UUID. 
-      // Let's listen to both just in case, or adapt based on backend config.
-      const uuidChannel = echo.private(`user.${userId}`);
-
       const handleNewNotification = (e: any) => {
-        // e contains the notification payload
-        // We can just refetch to make sure we have the latest data
         fetchNotifications();
       };
 
-      channel.notification(handleNewNotification);
-      uuidChannel.notification(handleNewNotification);
-      
-      // Some generic broadcast events
-      uuidChannel.listen(".Illuminate\\Notifications\\Events\\BroadcastNotificationCreated", handleNewNotification);
+      let channel: any;
+      let uuidChannel: any;
 
+      if (userId) {
+        channel = echo.private(`App.Models.User.${userId}`);
+        channel.notification(handleNewNotification);
+      }
+
+      if (userUuid) {
+        uuidChannel = echo.private(`user.${userUuid}`);
+        uuidChannel.notification(handleNewNotification);
+        uuidChannel.listen(".Illuminate\\Notifications\\Events\\BroadcastNotificationCreated", handleNewNotification);
+      }
+      
       return () => {
-        channel.stopListening("Illuminate\\Notifications\\Events\\BroadcastNotificationCreated");
-        uuidChannel.stopListening(".Illuminate\\Notifications\\Events\\BroadcastNotificationCreated");
-        echo.leave(`App.Models.User.${userId}`);
-        echo.leave(`user.${userId}`);
+        if (channel) {
+          channel.stopListening("Illuminate\\Notifications\\Events\\BroadcastNotificationCreated");
+          echo.leave(`App.Models.User.${userId}`);
+        }
+        if (uuidChannel) {
+          uuidChannel.stopListening(".Illuminate\\Notifications\\Events\\BroadcastNotificationCreated");
+          echo.leave(`user.${userUuid}`);
+        }
       };
     } catch (err) {
       console.error("WebSocket subscription error:", err);
     }
-  }, [userId]);
+  }, [userId, userUuid]);
 
   const markAllAsRead = async () => {
     try {
@@ -184,7 +187,7 @@ export function NotificationBell({ userId }: NotificationBellProps) {
             bottom-0 left-0 w-full h-[85vh] rounded-t-3xl md:bottom-auto md:left-auto
             
             /* Desktop: Dropdown */
-            md:top-full md:mt-3 md:w-80 md:h-auto md:max-h-[500px] md:rounded-2xl md:border md:border-slate-100
+            md:top-full md:mt-3 md:w-80 md:h-auto md:max-h-125 md:rounded-2xl md:border md:border-slate-100
           `}
         >
           {/* Header */}

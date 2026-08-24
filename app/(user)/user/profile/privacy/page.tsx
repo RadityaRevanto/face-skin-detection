@@ -69,11 +69,11 @@ export default function UserPrivacyPage() {
       if (json.data?.download_url) {
         window.location.href = json.data.download_url;
       } else {
-        alert(json.meta?.message || json.message || "Gagal membuat tautan ekspor");
+        alert(json.meta?.message || json.message || "Fitur ekspor data sedang dalam pengembangan oleh tim backend (Endpoint belum siap).");
       }
     } catch (err) {
       console.error(err);
-      alert("Terjadi kesalahan saat mengekspor data");
+      alert("Terjadi kesalahan sistem atau fitur ekspor data belum tersedia di backend.");
     } finally {
       setIsExporting(false);
     }
@@ -172,9 +172,12 @@ export default function UserPrivacyPage() {
                   <button
                     onClick={toggleConsent}
                     disabled={isConsentLoading}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${consentStatus ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                    className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${consentStatus ? 'bg-emerald-500' : 'bg-slate-300'}`}
                   >
-                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${consentStatus ? 'translate-x-6' : 'translate-x-1'}`} />
+                    <span 
+                      style={{ transform: consentStatus ? 'translateX(1.5rem)' : 'translateX(0.25rem)' }} 
+                      className="inline-block h-4 w-4 rounded-full bg-white transition-transform" 
+                    />
                   </button>
                   <span className="text-sm font-medium text-slate-700">
                     {consentStatus ? "Diizinkan" : "Tidak Diizinkan"}

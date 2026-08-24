@@ -37,6 +37,36 @@ export async function loginAction(formData: FormData) {
   }
 }
 
+export async function googleLoginAction(idToken: string) {
+  if (!idToken) {
+    return { success: false, message: "Token Google tidak valid." };
+  }
+
+  try {
+    const response = await fetchApi<{ token: string; user: any }>("auth/google", {
+      method: "POST",
+      body: JSON.stringify({ id_token: idToken, privacy_consent: true }),
+    });
+
+    if (response.data && response.data.token) {
+      await setAuthToken(response.data.token);
+      
+      const profileResponse = await fetchApi<any>("profile");
+      const profile = profileResponse.data;
+      
+      const role = profile.role || "user";
+      const status = profile.verification_status || (profile.is_active === false ? "inactive" : "active");
+      await setUserRole(role, status);
+
+      return { success: true, user: profile };
+    }
+    
+    return { success: false, message: "Gagal login dengan Google. Token tidak ditemukan." };
+  } catch (error: any) {
+    return { success: false, message: error.message || "Gagal masuk menggunakan akun Google." };
+  }
+}
+
 export async function registerAction(formData: FormData) {
   const fullName = formData.get("full_name") as string;
   const email = formData.get("email") as string;

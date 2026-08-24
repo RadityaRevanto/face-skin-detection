@@ -14,7 +14,8 @@ type DoctorHeaderProps = {
   avatar?: ReactNode;
   className?: string;
   initialDisplayName?: string;
-  userId?: string | null;
+  userId?: number | string | null;
+  userUuid?: string | null;
 };
 
 function SearchIcon() {
@@ -40,6 +41,7 @@ export function DoctorHeader({
   className,
   initialDisplayName,
   userId,
+  userUuid,
 }: DoctorHeaderProps) {
   return (
     <header
@@ -57,7 +59,7 @@ export function DoctorHeader({
       {/* Desktop: actions + profile */}
       <div className="hidden items-center gap-2 md:flex sm:gap-4">
         {actions}
-        <NotificationBell userId={userId} />
+        <NotificationBell userId={userId} userUuid={userUuid} />
         {avatar ?? <DoctorProfileMenu initialDisplayName={initialDisplayName} />}
       </div>
     </header>

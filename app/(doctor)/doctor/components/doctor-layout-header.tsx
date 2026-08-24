@@ -35,9 +35,9 @@ function getHeaderContent(pathname: string) {
   return { title: "Doctor Panel", description: "Kelola data skincare dan rekomendasi." };
 }
 
-export function DoctorLayoutHeader({ initialDisplayName, userId }: { initialDisplayName?: string; userId?: string | null }) {
+export function DoctorLayoutHeader({ initialDisplayName, userId, userUuid }: { initialDisplayName?: string; userId?: number | string | null; userUuid?: string | null }) {
   const pathname = usePathname();
   const header = getHeaderContent(pathname);
 
-  return <DoctorHeader title={header.title} description={header.description} initialDisplayName={initialDisplayName} userId={userId} />;
+  return <DoctorHeader title={header.title} description={header.description} initialDisplayName={initialDisplayName} userId={userId} userUuid={userUuid} />;
 }

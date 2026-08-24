@@ -232,13 +232,13 @@ export function RegisterView() {
         return;
       }
 
-      setMessage(result.message || "Registrasi berhasil. Silakan login.");
+      setMessage(result.message || "Registrasi berhasil. Mengarahkan ke verifikasi email...");
       setIsSuccess(true);
 
       form.reset();
 
       window.setTimeout(() => {
-        window.location.href = ROUTES.LOGIN;
+        window.location.href = `/verify-email?email=${encodeURIComponent(email)}`;
       }, 1200);
     } catch (error) {
       console.error("Register submit error:", error);
@@ -258,7 +258,7 @@ export function RegisterView() {
       <BackgroundLeaf className='pointer-events-none absolute right-12 top-10 h-24 w-24 -rotate-12 opacity-15 blur-[1px]' />
       <BackgroundLeaf className='pointer-events-none absolute -bottom-10 left-8 h-36 w-36 rotate-[-28deg] opacity-20 blur-[1px] sm:h-48 sm:w-48' />
 
-      <div className='relative mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-[1500px] items-center gap-8 lg:grid-cols-[410px_minmax(0,1fr)] xl:grid-cols-[430px_minmax(0,1fr)]'>
+      <div className='relative mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-375 items-center gap-8 lg:grid-cols-[410px_minmax(0,1fr)] xl:grid-cols-[430px_minmax(0,1fr)]'>
         <section className='rounded-4xl border border-zinc-200/70 bg-white px-8 py-10 shadow-2xl shadow-emerald-950/10 sm:px-10'>
           <Link href={ROUTES.HOME} className='mb-10 flex items-center gap-3'>
             <LeafLogo />
@@ -460,7 +460,7 @@ export function RegisterView() {
           </p>
         </section>
 
-        <section className='relative min-h-[720px] overflow-hidden rounded-4xl px-5 py-10 sm:px-8 lg:min-h-[760px]'>
+        <section className='relative min-h-180 overflow-hidden rounded-4xl px-5 py-10 sm:px-8 lg:min-h-190'>
           <div className='absolute right-0 top-4 h-56 w-56 rounded-full bg-emerald-200/60 blur-3xl' />
           <div className='absolute bottom-10 left-8 h-40 w-40 rounded-full bg-teal-100/80 blur-3xl' />
           <div className='absolute right-4 top-4 h-24 w-24 rounded-full border border-emerald-200/40' />
@@ -479,7 +479,7 @@ export function RegisterView() {
             </div>
 
             <div className='relative rounded-4xl border border-white/80 bg-white/65 p-4 shadow-2xl shadow-emerald-950/10 backdrop-blur-xl sm:p-6 lg:p-7'>
-              <div className='relative min-h-[330px] overflow-hidden rounded-3xl bg-linear-to-br from-emerald-50 via-white to-teal-50'>
+              <div className='relative min-h-82.5 overflow-hidden rounded-3xl bg-linear-to-br from-emerald-50 via-white to-teal-50'>
                 <div className='absolute left-8 top-7 z-20 flex items-center gap-2 rounded-xl bg-white/85 px-3 py-2 text-xs font-semibold text-zinc-700 shadow-sm backdrop-blur'>
                   <span className='h-2.5 w-2.5 rounded-full bg-emerald-500' />
                   AI Memindai
