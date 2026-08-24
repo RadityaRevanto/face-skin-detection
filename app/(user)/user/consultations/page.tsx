@@ -339,14 +339,14 @@ export default function UserConsultationsPage() {
                       
                       <div className="flex items-center gap-4">
                         <img 
-                          src={conv.doctor.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(conv.doctor.full_name) + "&background=10b981&color=fff"} 
-                          alt={conv.doctor.full_name} 
+                          src={conv.doctor?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(conv.doctor?.full_name || "D") + "&background=10b981&color=fff"} 
+                          alt={conv.doctor?.full_name || "Akun Dihapus"} 
                           className="w-12 h-12 rounded-full object-cover" 
                         />
                         
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-baseline mb-1">
-                            <h3 className="font-semibold text-zinc-900 truncate text-sm">{conv.doctor.full_name}</h3>
+                            <h3 className="font-semibold text-zinc-900 truncate text-sm">{conv.doctor?.full_name || "Akun Dihapus"}</h3>
                             {conv.last_message && (
                               <span className="text-[10px] text-zinc-400 shrink-0">
                                 {formatTime(conv.last_message.created_at)}
@@ -387,12 +387,12 @@ export default function UserConsultationsPage() {
                       <ChevronLeft size={24} />
                     </button>
                     <img 
-                      src={activeConversation.doctor.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(activeConversation.doctor.full_name) + "&background=10b981&color=fff"} 
-                      alt={activeConversation.doctor.full_name} 
+                      src={activeConversation.doctor?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(activeConversation.doctor?.full_name || "D") + "&background=10b981&color=fff"} 
+                      alt={activeConversation.doctor?.full_name || "Akun Dihapus"} 
                       className="w-10 h-10 rounded-full object-cover" 
                     />
                     <div>
-                      <h2 className="font-semibold text-zinc-900 text-sm">{activeConversation.doctor.full_name}</h2>
+                      <h2 className="font-semibold text-zinc-900 text-sm">{activeConversation.doctor?.full_name || "Akun Dihapus"}</h2>
                       <p className="text-xs text-zinc-500 flex items-center gap-1">
                         Dokter
                       </p>
@@ -415,8 +415,8 @@ export default function UserConsultationsPage() {
                   </div>
 
                   {messages.map((message, index) => {
-                    const isUser = isCurrentUser(message.sender.role);
-                    const isFirstInGroup = index === 0 || messages[index - 1].sender.uuid !== message.sender.uuid;
+                    const isUser = isCurrentUser(message.sender?.role || "user");
+                    const isFirstInGroup = index === 0 || messages[index - 1].sender?.uuid !== message.sender?.uuid;
 
                     return (
                       <div key={message.uuid} className={`flex ${isUser ? "justify-end" : "justify-start"} ${isFirstInGroup ? "mt-3" : "mt-1"}`}>
@@ -512,7 +512,7 @@ export default function UserConsultationsPage() {
                       <button 
                         type="button" 
                         onClick={() => setIsScanModalOpen(true)}
-                        className="p-2.5 text-zinc-400 hover:text-emerald-600 transition-colors shrink-0 hidden sm:block"
+                        className="p-2.5 text-zinc-400 hover:text-emerald-600 transition-colors shrink-0"
                         title="Lampirkan Hasil Scan"
                       >
                         <CheckCheck size={20} />

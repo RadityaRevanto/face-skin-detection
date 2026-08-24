@@ -173,7 +173,7 @@ export default function DoctorConsultationsPage() {
   };
 
   const filteredConversations = conversations.filter(c => 
-    c.user.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
+    c.user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -256,14 +256,14 @@ export default function DoctorConsultationsPage() {
                     
                     <div className="flex items-center gap-4">
                       <img 
-                        src={conv.user.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(conv.user.full_name) + "&background=10b981&color=fff"} 
-                        alt={conv.user.full_name} 
+                        src={conv.user?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(conv.user?.full_name || 'U') + "&background=10b981&color=fff"} 
+                        alt={conv.user?.full_name || "Akun Dihapus"} 
                         className="w-12 h-12 rounded-full object-cover" 
                       />
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-baseline mb-1">
-                          <h3 className="font-semibold text-zinc-900 truncate text-sm">{conv.user.full_name}</h3>
+                          <h3 className="font-semibold text-zinc-900 truncate text-sm">{conv.user?.full_name || "Akun Dihapus"}</h3>
                           {conv.last_message && (
                             <span className="text-[10px] text-zinc-400 shrink-0">
                               {formatTime(conv.last_message.created_at)}
@@ -304,20 +304,20 @@ export default function DoctorConsultationsPage() {
                     <ChevronLeft size={24} />
                   </button>
                   <img 
-                    src={activeConversation.user.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(activeConversation.user.full_name) + "&background=10b981&color=fff"} 
-                    alt={activeConversation.user.full_name} 
+                    src={activeConversation.user?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(activeConversation.user?.full_name || "U") + "&background=10b981&color=fff"} 
+                    alt={activeConversation.user?.full_name || "Akun Dihapus"} 
                     className="w-11 h-11 rounded-full object-cover" 
                   />
                   <div>
-                    <h2 className="font-semibold text-zinc-900 text-sm">{activeConversation.user.full_name}</h2>
+                    <h2 className="font-semibold text-zinc-900 text-sm">{activeConversation.user?.full_name || "Akun Dihapus"}</h2>
                     <p className="text-xs text-zinc-500 flex items-center gap-1.5 mt-0.5">
-                      {activeConversation.user.age !== undefined && activeConversation.user.age !== null && (
+                      {activeConversation.user?.age !== undefined && activeConversation.user?.age !== null && (
                         <>
-                          <span>{activeConversation.user.age} thn</span>
+                          <span>{activeConversation.user?.age} thn</span>
                           <span className="w-1 h-1 rounded-full bg-zinc-300"></span>
                         </>
                       )}
-                      <span>{formatGender(activeConversation.user.gender)}</span>
+                      <span>{formatGender(activeConversation.user?.gender)}</span>
                     </p>
                   </div>
                 </div>
@@ -337,8 +337,8 @@ export default function DoctorConsultationsPage() {
                 </div>
 
                 {messages.map((message, index) => {
-                  const isDoctor = isCurrentUser(message.sender.role);
-                  const isFirstInGroup = index === 0 || messages[index - 1].sender.uuid !== message.sender.uuid;
+                  const isDoctor = isCurrentUser(message.sender?.role || "user");
+                  const isFirstInGroup = index === 0 || messages[index - 1].sender?.uuid !== message.sender?.uuid;
 
                   return (
                     <div key={message.uuid} className={`flex ${isDoctor ? "justify-end" : "justify-start"} ${isFirstInGroup ? "mt-3" : "mt-1"}`}>
