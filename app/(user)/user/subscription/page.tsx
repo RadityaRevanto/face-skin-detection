@@ -21,6 +21,8 @@ export default function SubscriptionPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [cancelTargetUuid, setCancelTargetUuid] = useState<string | null>(null);
   const router = useRouter();
 
   const fetchSubscriptions = async () => {
@@ -84,13 +86,20 @@ export default function SubscriptionPage() {
     }
   };
 
-  const handleCancel = async (uuid: string) => {
-    if (!confirm("Apakah Anda yakin ingin membatalkan langganan?")) return;
+  const handleCancelClick = (uuid: string) => {
+    setCancelTargetUuid(uuid);
+    setIsCancelModalOpen(true);
+  };
+
+  const executeCancel = async () => {
+    if (!cancelTargetUuid) return;
     
     setIsProcessing(true);
     setErrorMsg(null);
+    setIsCancelModalOpen(false);
+    
     try {
-      const res = await fetch(`/api/subscriptions/${uuid}/cancel`, {
+      const res = await fetch(`/api/subscriptions/${cancelTargetUuid}/cancel`, {
         method: "POST",
       });
       
@@ -104,6 +113,7 @@ export default function SubscriptionPage() {
       setErrorMsg(err.message);
     } finally {
       setIsProcessing(false);
+      setCancelTargetUuid(null);
     }
   };
 
@@ -159,7 +169,7 @@ export default function SubscriptionPage() {
                 </div>
 
                 <button
-                  onClick={() => handleCancel(activeSubscription.uuid)}
+                  onClick={() => handleCancelClick(activeSubscription.uuid)}
                   disabled={isProcessing}
                   className="w-full md:w-auto px-6 py-3 bg-white border-2 border-red-100 text-red-600 font-semibold rounded-xl hover:bg-red-50 hover:border-red-200 transition-all disabled:opacity-50"
                 >
@@ -243,6 +253,41 @@ export default function SubscriptionPage() {
           </div>
         </div>
       </main>
+
+      {/* Cancel Confirmation Modal */}
+      {isCancelModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-6 sm:p-8 text-center">
+              <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-5">
+                <AlertCircle size={32} />
+              </div>
+              <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 mb-2">Batalkan Langganan?</h2>
+              <p className="text-zinc-500 mb-6 text-sm sm:text-base leading-relaxed">
+                Anda akan kehilangan akses prioritas dan konsultasi tanpa batas. <br/><br/>
+                <span className="font-semibold text-red-600">Peringatan:</span> Sisa waktu paket yang sudah dibayar tidak dapat di-refund (dikembalikan).
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => {
+                    setIsCancelModalOpen(false);
+                    setCancelTargetUuid(null);
+                  }}
+                  className="flex-1 px-4 py-3 border border-zinc-200 text-zinc-700 font-semibold rounded-xl hover:bg-zinc-50 transition-colors"
+                >
+                  Kembali
+                </button>
+                <button
+                  onClick={executeCancel}
+                  className="flex-1 px-4 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-colors"
+                >
+                  Ya, Batalkan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

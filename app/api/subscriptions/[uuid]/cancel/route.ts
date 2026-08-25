@@ -3,10 +3,11 @@ import { fetchApi } from "@/lib/api/server-client";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { uuid: string } }
+  { params }: { params: Promise<{ uuid: string }> }
 ) {
   try {
-    const result = await fetchApi(`/subscriptions/${params.uuid}/cancel`, {
+    const resolvedParams = await params;
+    const result = await fetchApi(`/subscriptions/${resolvedParams.uuid}/cancel`, {
       method: "POST",
     });
 
