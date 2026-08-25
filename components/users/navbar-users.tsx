@@ -70,6 +70,14 @@ function ChatIcon() {
   );
 }
 
+function StarIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+    </svg>
+  );
+}
+
 function MenuIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-6 w-6">
@@ -124,6 +132,7 @@ const navItems: NavItem[] = [
   { label: "Pemeriksaan", href: "/user/pemeriksaan", icon: <CalendarIcon /> },
   { label: "History", href: "/user/history", icon: <ClockIcon /> },
   { label: "Konsultasi", href: "/user/consultations", icon: <ChatIcon /> },
+  { label: "Premium", href: "/user/subscription", icon: <StarIcon /> },
 ];
 
 import { NotificationBell } from "@/components/shared/notification-bell";
@@ -184,12 +193,16 @@ export default function NavbarUsers({
                 key={item.label}
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`relative flex h-full items-center gap-2 text-sm font-semibold transition-colors ${isActive ? "text-emerald-600" : "text-slate-500 hover:text-emerald-600"}`}
+                className={`relative flex h-full items-center gap-2 text-sm font-semibold transition-colors ${
+                  item.label === "Premium"
+                    ? isActive ? "text-amber-500" : "text-amber-600 hover:text-amber-500"
+                    : isActive ? "text-emerald-600" : "text-slate-500 hover:text-emerald-600"
+                }`}
               >
                 {item.icon}
                 <span>{item.label}</span>
                 {isActive && (
-                  <span className="absolute bottom-0 left-1/2 h-1 w-20 -translate-x-1/2 rounded-t-full bg-emerald-500" />
+                  <span className={`absolute bottom-0 left-1/2 h-1 w-20 -translate-x-1/2 rounded-t-full ${item.label === 'Premium' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
                 )}
               </Link>
             );
@@ -250,7 +263,11 @@ export default function NavbarUsers({
                   key={item.label}
                   href={item.href}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${isActive ? "bg-emerald-50 text-emerald-600" : "text-slate-600 hover:bg-slate-50"}`}
+                  className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-colors ${
+                    item.label === "Premium"
+                      ? isActive ? "bg-amber-50 text-amber-600" : "text-amber-600 hover:bg-amber-50"
+                      : isActive ? "bg-emerald-50 text-emerald-600" : "text-slate-600 hover:bg-slate-50"
+                  }`}
                 >
                   {item.icon}
                   {item.label}

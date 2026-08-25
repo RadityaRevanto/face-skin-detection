@@ -14,6 +14,7 @@ import {
   Info,
   ChevronLeft,
   MessageSquarePlus,
+  Star,
 } from "lucide-react";
 import { 
   getConversations, 
@@ -27,6 +28,7 @@ import { DoctorSearchModal } from "./_components/doctor-search-modal";
 import { ScanHistoryModal } from "./_components/scan-history-modal";
 import { getEcho } from "@/lib/echo";
 import { ScanHistory } from "@/lib/api/scans-query";
+import { getProfile, UserProfile } from "@/lib/api/profile-query";
 
 export default function UserConsultationsPage() {
   
@@ -44,6 +46,7 @@ export default function UserConsultationsPage() {
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -53,10 +56,20 @@ export default function UserConsultationsPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, selectedImagePreview]);
 
-  // Fetch initial conversations
+  // Fetch initial conversations and profile
   useEffect(() => {
     fetchConversations();
+    fetchProfileData();
   }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      const res = await getProfile();
+      setUserProfile(res.data);
+    } catch (error) {
+      console.error("Failed to fetch profile", error);
+    }
+  };
 
   // Polling messages when active conversation changes
   useEffect(() => {
@@ -269,15 +282,36 @@ export default function UserConsultationsPage() {
           </div>
           
           <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-start gap-4 bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm shadow-emerald-900/5 shrink-0">
-            <div className="flex -space-x-2">
-              <span className="w-10 h-10 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-emerald-700 font-bold text-sm z-20">1</span>
-              <span className="w-10 h-10 rounded-full bg-emerald-100 border-2 border-white flex items-center justify-center text-emerald-700 font-bold text-sm z-10">2</span>
-              <span className="w-10 h-10 rounded-full bg-zinc-100 border-2 border-white flex items-center justify-center text-zinc-400 font-bold text-sm z-0">3</span>
-            </div>
-            <div>
-              <p className="font-semibold text-emerald-800 text-base">Sisa Kuota Gratis</p>
-              <p className="text-sm text-zinc-500 mt-0.5">2 dari 3 sesi tersisa</p>
-            </div>
+            {userProfile?.subscription_status === "Pro" ? (
+              <>
+                <div className="flex -space-x-2">
+                  <span className="w-10 h-10 rounded-full bg-amber-100 border-2 border-white flex items-center justify-center text-amber-600 font-bold text-sm z-20">
+                    <Star size={18} fill="currentColor" />
+                  </span>
+                </div>
+                <div>
+                  <p className="font-semibold text-amber-600 text-base">SkinCek Pro Aktif</p>
+                  <p className="text-sm text-zinc-500 mt-0.5">Konsultasi tanpa batas</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex -space-x-2">
+                  {[1, 2, 3].map((num) => {
+                    const isActive = num <= (userProfile?.remaining_free_messages ?? 3);
+                    return (
+                      <span key={num} className={`w-10 h-10 rounded-full ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-400'} border-2 border-white flex items-center justify-center font-bold text-sm z-${30 - num * 10}`}>
+                        {num}
+                      </span>
+                    );
+                  })}
+                </div>
+                <div>
+                  <p className="font-semibold text-emerald-800 text-base">Sisa Kuota Gratis</p>
+                  <p className="text-sm text-zinc-500 mt-0.5">{userProfile?.remaining_free_messages ?? 3} dari 3 sesi tersisa</p>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
