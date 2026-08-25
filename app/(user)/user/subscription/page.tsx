@@ -127,7 +127,7 @@ export default function SubscriptionPage() {
         )}
 
         <div className="w-full max-w-3xl bg-white rounded-3xl shadow-sm border border-emerald-100/50 overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-800 to-emerald-600 p-8 sm:p-10 text-white text-center relative overflow-hidden">
+          <div className="bg-linear-to-r from-emerald-800 to-emerald-600 p-8 sm:p-10 text-white text-center relative overflow-hidden">
             <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 scale-150">
               <Sparkles size={120} />
             </div>
@@ -182,7 +182,7 @@ export default function SubscriptionPage() {
                   <button
                     onClick={handleCheckout}
                     disabled={isProcessing}
-                    className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none"
+                    className="w-full py-3.5 bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none"
                   >
                     {isProcessing ? (
                       <span className="flex items-center justify-center gap-2">
