@@ -26,6 +26,7 @@ import {
 } from "@/lib/api/consultations-query";
 import { DoctorSearchModal } from "./_components/doctor-search-modal";
 import { ScanHistoryModal } from "./_components/scan-history-modal";
+import { DoctorRatingModal } from "./_components/doctor-rating-modal";
 import { getEcho } from "@/lib/echo";
 import { ScanHistory } from "@/lib/api/scans-query";
 import { getProfile, UserProfile } from "@/lib/api/profile-query";
@@ -43,9 +44,11 @@ export default function UserConsultationsPage() {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -260,6 +263,31 @@ export default function UserConsultationsPage() {
         </div>
       )}
 
+      {/* Success Popup */}
+      {successMsg && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl w-full max-w-sm flex flex-col shadow-2xl overflow-hidden transform transition-all animate-in zoom-in-95 duration-200">
+            <div className="bg-emerald-50 p-4 border-b border-emerald-100 flex items-center gap-3">
+              <div className="bg-emerald-100 text-emerald-600 p-2 rounded-full">
+                <Check size={20} strokeWidth={2.5} />
+              </div>
+              <h3 className="font-bold text-emerald-800 text-base">Berhasil</h3>
+            </div>
+            <div className="p-5 text-center">
+              <p className="text-zinc-600 text-sm leading-relaxed font-medium">{successMsg}</p>
+            </div>
+            <div className="p-4 bg-zinc-50 border-t border-zinc-100 flex justify-center">
+              <button 
+                onClick={() => setSuccessMsg(null)}
+                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors"
+              >
+                Oke
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <DoctorSearchModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
@@ -271,6 +299,19 @@ export default function UserConsultationsPage() {
         onClose={() => setIsScanModalOpen(false)}
         onSelectScan={handleSendScanHistory}
       />
+
+      {activeConversation && (
+        <DoctorRatingModal
+          isOpen={isRatingModalOpen}
+          onClose={() => setIsRatingModalOpen(false)}
+          doctorId={activeConversation.doctor?.uuid}
+          doctorName={activeConversation.doctor?.full_name || "Dokter"}
+          onSuccess={() => {
+            setIsRatingModalOpen(false);
+            setSuccessMsg("Terima kasih, ulasan Anda berhasil disimpan.");
+          }}
+        />
+      )}
 
       <div className={`mx-auto w-full max-w-350 flex-1 flex flex-col lg:flex-row gap-6 ${showSidebar ? '' : 'min-h-0'}`}>
         
@@ -432,7 +473,21 @@ export default function UserConsultationsPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-zinc-400">
+                  <div className="flex items-center gap-2 sm:gap-4 text-zinc-400">
+                    <button 
+                      onClick={() => setIsRatingModalOpen(true)}
+                      className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-full text-xs font-semibold transition-colors"
+                    >
+                      <Star size={14} className="fill-amber-400" />
+                      Beri Ulasan
+                    </button>
+                    <button 
+                      onClick={() => setIsRatingModalOpen(true)}
+                      className="sm:hidden hover:text-amber-500 transition-colors"
+                      title="Beri Ulasan"
+                    >
+                      <Star size={20} />
+                    </button>
                     <button className="hover:text-zinc-600 transition-colors"><Info size={20} /></button>
                     <button className="hover:text-zinc-600 transition-colors"><MoreVertical size={20} /></button>
                   </div>

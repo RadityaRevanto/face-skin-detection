@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Search } from "lucide-react";
+import { X, Search, Star } from "lucide-react";
 import { getDoctors } from "@/lib/api/consultations-query";
 
 interface DoctorSearchModalProps {
@@ -86,9 +86,18 @@ export function DoctorSearchModal({ isOpen, onClose, onSelectDoctor }: DoctorSea
                 />
                 <div>
                   <h3 className="font-semibold text-sm text-zinc-900">{doctor.full_name}</h3>
-                  <p className="text-xs text-emerald-600 mt-0.5">
+                  <p className="text-xs text-emerald-600 mt-0.5 mb-1">
                     {doctor.doctor_verification?.specialization || "Dokter"}
                   </p>
+                  <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+                    <Star size={12} className={doctor.rating_avg ? "fill-amber-400 text-amber-400" : "fill-zinc-200 text-zinc-200"} />
+                    <span className="font-medium text-zinc-700">
+                      {doctor.rating_avg ? Number(doctor.rating_avg).toFixed(1) : "Belum ada rating"}
+                    </span>
+                    {doctor.rating_count > 0 && (
+                      <span className="text-zinc-400">({doctor.rating_count} ulasan)</span>
+                    )}
+                  </div>
                 </div>
               </div>
             ))

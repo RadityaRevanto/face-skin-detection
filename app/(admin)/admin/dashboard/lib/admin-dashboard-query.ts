@@ -194,7 +194,7 @@ export async function getAdminDashboardData(): Promise<AdminDashboardData> {
   }
 
   const verificationRequests: VerificationRequest[] = verificationRows.map((doctor: VerificationApi) => ({
-    id: doctor.id,
+    id: doctor.uuid ?? doctor.id,
     name: doctor.doctor?.name ?? "Dokter",
     email: doctor.doctor?.email ?? "-",
     identity: doctor.str_number ?? doctor.specialization ?? "Dokumen Dokter",

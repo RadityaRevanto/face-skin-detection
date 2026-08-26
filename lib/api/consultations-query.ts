@@ -121,3 +121,36 @@ export async function getDoctors(page: number = 1) {
 
   return res.json();
 }
+
+export async function rateDoctor(doctorId: string, rating: number, review?: string) {
+  const res = await fetch(`/api/doctors/${doctorId}/ratings`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ rating, review }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Gagal mengirim ulasan dokter");
+  }
+
+  return res.json();
+}
+
+export async function getDoctorRatings(doctorId: string, page: number = 1) {
+  const res = await fetch(`/api/doctors/${doctorId}/ratings?page=${page}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Gagal mengambil daftar ulasan dokter");
+  }
+
+  return res.json();
+}
