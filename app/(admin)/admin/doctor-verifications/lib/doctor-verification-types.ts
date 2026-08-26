@@ -2,6 +2,12 @@ export type VerificationStatus = "pending" | "approved" | "rejected";
 
 export type DoctorVerificationPageType = "pending" | "rejected";
 
+export type VerificationDocument = {
+  uuid: string;
+  url: string;
+  file_name: string | null;
+};
+
 export type DoctorVerificationRequest = {
   id: string;
   no: number;
@@ -9,8 +15,7 @@ export type DoctorVerificationRequest = {
   email: string;
   identity: string;
   specialization: string;
-  document: string;
-  documentUrl: string | null;
+  documents: VerificationDocument[];
   status: "Pending" | "Rejected";
   submittedAt: string;
   reviewedAt: string;

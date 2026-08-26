@@ -1,5 +1,11 @@
 export type DoctorVerificationStatus = "approved";
 
+export type DoctorDocument = {
+  uuid: string;
+  url: string;
+  file_name: string | null;
+};
+
 export type DoctorRow = {
   id: string;
   verificationId: string;
@@ -8,8 +14,7 @@ export type DoctorRow = {
   email: string;
   identity: string;
   specialization: string;
-  document: string;
-  documentUrl: string | null;
+  documents: DoctorDocument[];
   verifiedAt: string;
   status: "Approved";
   rawStatus: DoctorVerificationStatus;

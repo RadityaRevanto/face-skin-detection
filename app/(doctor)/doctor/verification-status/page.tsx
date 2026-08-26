@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { unstable_noStore as noStore } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { DoctorLogoutButton } from "@/components/doctor/doctor-logout-button";
 import { fetchApi } from "@/lib/api/server-client";
 import { ResubmissionForm } from "./_components/resubmission-form";
 
-export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
@@ -390,8 +388,6 @@ function StepIcon({ status, index }: { status: StepStatus; index: number }) {
 }
 
 export default async function VerificationStatusPage() {
-  noStore();
-
   let doctorProfile: DoctorProfile | null = null;
   let verification: DoctorVerification | null = null;
 

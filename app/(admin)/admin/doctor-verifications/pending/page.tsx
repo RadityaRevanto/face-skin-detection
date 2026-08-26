@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { DoctorVerificationContent } from "../components/doctor-verification-content";
 import { getDoctorVerificationPageData } from "../lib/doctor-verifications-query";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Pending Verifikasi Dokter | Face Skin Detection",

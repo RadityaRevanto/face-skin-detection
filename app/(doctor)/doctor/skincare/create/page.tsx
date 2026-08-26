@@ -6,7 +6,6 @@ import { ROUTES } from "@/lib/constants";
 import { requireDoctorProfile } from "@/lib/doctor-auth";
 import { fetchApi } from "@/lib/api/server-client";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Tambah Skincare | Face Skin Detection",

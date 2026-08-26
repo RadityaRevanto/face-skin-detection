@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { RecommendationContent } from "./components/recommendation-content";
 import { getRecommendationsPageData } from "./lib/recommendations-query";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Kelola Rekomendasi | Face Skin Detection",

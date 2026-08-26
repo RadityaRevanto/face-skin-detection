@@ -1,5 +1,11 @@
 export type VerificationStatus = "pending" | "approved" | "rejected";
 
+export type VerificationDocument = {
+  uuid: string;
+  url: string;
+  file_name: string | null;
+};
+
 export type DoctorVerificationDetail = {
   id: string;
   doctorId: string;
@@ -9,8 +15,7 @@ export type DoctorVerificationDetail = {
   address: string;
   identity: string;
   specialization: string;
-  document: string;
-  documentUrl: string | null;
+  documents: VerificationDocument[];
   status: string;
   rawStatus: VerificationStatus;
   submittedAt: string;

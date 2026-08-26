@@ -11,16 +11,6 @@ export function formatDate(date: string | null | undefined) {
   }).format(new Date(date));
 }
 
-export function getDocumentLabel(documentUrl: string | null) {
-  if (!documentUrl) {
-    return "No Document";
-  }
-
-  const fileName = documentUrl.split("/").pop();
-
-  return fileName || "Document";
-}
-
 export function mapVerificationStatus(
   status: DoctorVerificationStatus | string,
 ) {

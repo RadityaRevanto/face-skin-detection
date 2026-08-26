@@ -9,7 +9,6 @@ import type {
 } from "./verification-detail-types";
 import {
   formatDate,
-  getDocumentLabel,
   mapVerificationStatus,
 } from "./verification-detail-utils";
 
@@ -50,8 +49,6 @@ export async function getDoctorVerificationDetail(
 
     const profile = row.doctor;
 
-    const documentUrl = row.documents && row.documents.length > 0 ? row.documents[0].url : "";
-
     return {
       id: row.uuid,
       doctorId: row.doctor_id ?? profile?.uuid ?? "",
@@ -64,8 +61,7 @@ export async function getDoctorVerificationDetail(
 
       identity: row.str_number ?? "-",
       specialization: row.specialization ?? "-",
-      document: getDocumentLabel(documentUrl),
-      documentUrl: documentUrl,
+      documents: row.documents ?? [],
       status: mapVerificationStatus(row.verification_status),
       rawStatus: row.verification_status,
       submittedAt: formatDate(row.created_at),

@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { SkincareContent } from "./components/skincare-content";
 import { getSkincarePageData } from "./lib/skincare-query";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Kelola Skincare | Face Skin Detection",

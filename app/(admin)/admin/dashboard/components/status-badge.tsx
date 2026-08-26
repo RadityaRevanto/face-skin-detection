@@ -3,7 +3,9 @@ type StatusBadgeProps = {
 };
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  if (status === "Approved") {
+  const s = status.toLowerCase();
+
+  if (s === "approved") {
     return (
       <span className='rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700'>
         Approved
@@ -11,7 +13,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
     );
   }
 
-  if (status === "Rejected") {
+  if (s === "rejected") {
     return (
       <span className='rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700'>
         Rejected

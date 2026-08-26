@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { fetchApi } from "@/lib/api/server-client";
 import { getDashboardData } from "./_lib/dashboard-query";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Dashboard Dokter | Face Skin Detection",

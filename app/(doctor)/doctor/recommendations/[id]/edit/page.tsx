@@ -6,7 +6,6 @@ import { ROUTES } from "@/lib/constants";
 
 import { getEditRecommendationPageData } from "./lib/edit-recommendation-query";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Edit Rekomendasi | Face Skin Detection",
