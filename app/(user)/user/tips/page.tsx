@@ -6,7 +6,6 @@ import { PersonalizedTipsCard } from "./components/personalized-tips-card";
 import { TipsGrid } from "./components/tips-grid";
 import {
   getAllTipsGroups,
-  getCurrentUserId,
   getLatestPrediction,
   getPersonalizedTips,
 } from "./lib/tips-query";
@@ -17,9 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function TipsPage() {
-  const userId = await getCurrentUserId();
-
-  const latestPrediction = await getLatestPrediction(userId);
+  const latestPrediction = await getLatestPrediction();
 
   const personalizedTips = await getPersonalizedTips(
     latestPrediction?.predicted_class ?? null,

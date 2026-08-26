@@ -28,7 +28,11 @@ export default function RootLayout({
       lang="en"
       className={`${poppins.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      {/* suppressHydrationWarning: ekstensi browser (mis. ColorZilla) menyuntikkan
+          atribut seperti cz-shortcut-listen ke <body> sebelum hydrate. */}
+      <body suppressHydrationWarning className="min-h-full flex flex-col">
+        {children}
+      </body>
     </html>
   );
 }

@@ -65,12 +65,11 @@ export function UploadImagePanel({
         throw new Error(json.error ?? "Gagal analisis gambar.");
       }
 
+      // Respons identik dengan PredictionHistoryResource backend.
+      // Jika Laravel tidak menyertakan URL foto, pakai preview lokal.
       const result: LiveScanResult = {
         ...json.data,
-        scan_mode: "upload_image",
         image_url: json.data.image_url ?? imagePreviewUrl,
-        cropped_image_url: null,
-        recommendations: json.data.recommendations ?? [],
       };
 
       setPhase("done");

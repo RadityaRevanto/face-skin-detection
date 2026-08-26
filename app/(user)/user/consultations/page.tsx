@@ -2,27 +2,32 @@
 
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
-import { 
-  Send, 
-  Paperclip, 
-  Image as ImageIcon, 
-  X, 
-  Check, 
-  CheckCheck, 
+import {
+  Send,
+  Paperclip,
+  Image as ImageIcon,
+  X,
+  Check,
+  CheckCheck,
   Clock,
   MoreVertical,
   Info,
   ChevronLeft,
   MessageSquarePlus,
   Star,
+  Sparkles,
+  Trash2,
 } from "lucide-react";
-import { 
-  getConversations, 
-  createConversation, 
-  getMessages, 
-  sendMessage, 
-  Conversation, 
-  Message 
+import {
+  getConversations,
+  createConversation,
+  getMessages,
+  sendMessage,
+  startAiConversation,
+  deleteAiConversation,
+  ConsultationApiError,
+  Conversation,
+  Message
 } from "@/lib/api/consultations-query";
 import { DoctorSearchModal } from "./_components/doctor-search-modal";
 import { ScanHistoryModal } from "./_components/scan-history-modal";
@@ -30,6 +35,18 @@ import { DoctorRatingModal } from "./_components/doctor-rating-modal";
 import { getEcho } from "@/lib/echo";
 import { ScanHistory } from "@/lib/api/scans-query";
 import { getProfile, UserProfile } from "@/lib/api/profile-query";
+
+// Identitas bot Aura Skin (dibuat oleh UserSeeder backend).
+const AI_BOT_EMAIL = "aura@skincek.com";
+
+function isAiBotConversation(conv: Conversation): boolean {
+  return (
+    conv.doctor?.email === AI_BOT_EMAIL ||
+    conv.doctor?.full_name === "Aura Skin"
+  );
+}
+
+type ErrorCta = "subscription" | "consent";
 
 export default function UserConsultationsPage() {
   
@@ -47,9 +64,28 @@ export default function UserConsultationsPage() {
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [isSending, setIsSending] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isStartingAi, setIsStartingAi] = useState(false);
+  const [errorState, setErrorState] = useState<{ message: string; cta?: ErrorCta } | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
+  // Peta error API menjadi popup + CTA yang relevan:
+  // 402/429 → kuota habis (upgrade Pro), 403 AI → minta consent.
+  const showApiError = (error: unknown) => {
+    if (error instanceof ConsultationApiError) {
+      let cta: ErrorCta | undefined;
+      if (error.status === 402 || error.status === 429) {
+        cta = "subscription";
+      } else if (error.status === 403 && /ai|aura/i.test(error.message)) {
+        cta = "consent";
+      }
+      setErrorState({ message: error.message, cta });
+      return;
+    }
+    setErrorState({
+      message: error instanceof Error ? error.message : "Terjadi kesalahan.",
+    });
+  };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -150,8 +186,43 @@ export default function UserConsultationsPage() {
       
       setActiveConversation(newConversation);
       setShowSidebar(false);
-    } catch (error: any) {
-      setErrorMsg(error.message);
+    } catch (error) {
+      showApiError(error);
+    }
+  };
+
+  // Mulai/ambil percakapan dengan bot Aura Skin.
+  const handleStartAiChat = async () => {
+    if (isStartingAi) return;
+    setIsStartingAi(true);
+    try {
+      const res = await startAiConversation();
+      const conv = res.data as Conversation;
+      setConversations((prev) =>
+        prev.some((c) => c.uuid === conv.uuid) ? prev : [conv, ...prev]
+      );
+      setActiveConversation(conv);
+      setShowSidebar(false);
+    } catch (error) {
+      showApiError(error);
+    } finally {
+      setIsStartingAi(false);
+    }
+  };
+
+  const handleDeleteAiHistory = async () => {
+    if (!activeConversation) return;
+    if (!window.confirm("Hapus seluruh riwayat chat dengan Aura Skin?")) return;
+
+    try {
+      await deleteAiConversation(activeConversation.uuid);
+      const removedUuid = activeConversation.uuid;
+      setConversations((prev) => prev.filter((c) => c.uuid !== removedUuid));
+      setActiveConversation(null);
+      setShowSidebar(true);
+      setSuccessMsg("Riwayat chat Aura Skin telah dihapus.");
+    } catch (error) {
+      showApiError(error);
     }
   };
 
@@ -194,8 +265,8 @@ export default function UserConsultationsPage() {
       setInputText("");
       setSelectedImageFile(null);
       setSelectedImagePreview(null);
-    } catch (error: any) {
-      setErrorMsg(error.message);
+    } catch (error) {
+      showApiError(error);
     } finally {
       setIsSending(false);
     }
@@ -218,8 +289,8 @@ export default function UserConsultationsPage() {
         }
         return c;
       }));
-    } catch (error: any) {
-      setErrorMsg(error.message);
+    } catch (error) {
+      showApiError(error);
     } finally {
       setIsSending(false);
     }
@@ -239,7 +310,7 @@ export default function UserConsultationsPage() {
     <main className={`bg-[#f7fbf8] p-4 sm:p-6 lg:p-8 flex flex-col ${showSidebar ? 'min-h-[calc(100vh-72px)] h-auto lg:h-[calc(100vh-72px)]' : 'h-[calc(100vh-72px)]'}`}>
       
       {/* Error Popup */}
-      {errorMsg && (
+      {errorState && (
         <div className="fixed inset-0 z-60 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl w-full max-w-sm flex flex-col shadow-2xl overflow-hidden transform transition-all">
             <div className="bg-rose-50 p-4 border-b border-rose-100 flex items-center gap-3">
@@ -249,14 +320,30 @@ export default function UserConsultationsPage() {
               <h3 className="font-bold text-rose-800 text-base">Pemberitahuan</h3>
             </div>
             <div className="p-5">
-              <p className="text-zinc-600 text-sm leading-relaxed">{errorMsg}</p>
+              <p className="text-zinc-600 text-sm leading-relaxed">{errorState.message}</p>
             </div>
-            <div className="p-4 bg-zinc-50 border-t border-zinc-100 flex justify-end">
-              <button 
-                onClick={() => setErrorMsg(null)}
-                className="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-medium rounded-xl transition-colors"
+            <div className={`p-4 bg-zinc-50 border-t border-zinc-100 flex ${errorState.cta ? "flex-col gap-2" : "justify-end"}`}>
+              {errorState.cta === "subscription" && (
+                <a
+                  href="/user/subscription"
+                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors text-center"
+                >
+                  Upgrade ke Pro
+                </a>
+              )}
+              {errorState.cta === "consent" && (
+                <a
+                  href="/user/profile/privacy"
+                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors text-center"
+                >
+                  Atur Persetujuan AI
+                </a>
+              )}
+              <button
+                onClick={() => setErrorState(null)}
+                className={`${errorState.cta ? "w-full py-2.5 border border-zinc-200 text-zinc-700 hover:bg-zinc-100" : "px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white"} text-sm font-medium rounded-xl transition-colors`}
               >
-                Tutup
+                {errorState.cta ? "Nanti Saja" : "Tutup"}
               </button>
             </div>
           </div>
@@ -384,6 +471,29 @@ export default function UserConsultationsPage() {
               </div>
             </div>
             
+            {/* Entri pinned: Asisten AI Aura Skin */}
+            <div className="px-3 pt-3 pb-1">
+              <button
+                onClick={handleStartAiChat}
+                disabled={isStartingAi}
+                className="w-full flex items-center gap-3 p-3 rounded-xl bg-linear-to-r from-violet-50 to-emerald-50 border border-violet-100 hover:border-violet-300 transition-all text-left disabled:opacity-60"
+              >
+                <span className="w-12 h-12 rounded-full bg-linear-to-br from-violet-500 to-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                  {isStartingAi ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                  ) : (
+                    <Sparkles size={22} />
+                  )}
+                </span>
+                <span className="min-w-0">
+                  <span className="block font-semibold text-sm text-zinc-900">Aura Skin</span>
+                  <span className="block text-xs text-zinc-500 mt-0.5 truncate">
+                    Asisten AI skincare — tanya kapan saja
+                  </span>
+                </span>
+              </button>
+            </div>
+
             <div className="flex-1 overflow-y-auto">
               {isLoadingConversations ? (
                 <div className="flex justify-center p-8">
@@ -398,9 +508,10 @@ export default function UserConsultationsPage() {
               ) : (
                 conversations.map((conv) => {
                   const isActive = activeConversation?.uuid === conv.uuid;
-                  
+                  const isBot = isAiBotConversation(conv);
+
                   return (
-                    <div 
+                    <div
                       key={conv.uuid}
                       onClick={() => {
                         setActiveConversation(conv);
@@ -411,17 +522,25 @@ export default function UserConsultationsPage() {
                       {isActive && (
                         <div className="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500 rounded-r-full" />
                       )}
-                      
+
                       <div className="flex items-center gap-4">
-                        <img 
-                          src={conv.doctor?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(conv.doctor?.full_name || "D") + "&background=10b981&color=fff"} 
-                          alt={conv.doctor?.full_name || "Akun Dihapus"} 
-                          className="w-12 h-12 rounded-full object-cover" 
-                        />
-                        
+                        {isBot ? (
+                          <span className="w-12 h-12 rounded-full bg-linear-to-br from-violet-500 to-emerald-500 text-white flex items-center justify-center shrink-0">
+                            <Sparkles size={20} />
+                          </span>
+                        ) : (
+                          <img
+                            src={conv.doctor?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(conv.doctor?.full_name || "D") + "&background=10b981&color=fff"}
+                            alt={conv.doctor?.full_name || "Akun Dihapus"}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                        )}
+
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-baseline mb-1">
-                            <h3 className="font-semibold text-zinc-900 truncate text-sm">{conv.doctor?.full_name || "Akun Dihapus"}</h3>
+                            <h3 className={`font-semibold text-zinc-900 truncate text-sm ${isBot ? "text-violet-700" : ""}`}>
+                              {isBot ? "Aura Skin" : conv.doctor?.full_name || "Akun Dihapus"}
+                            </h3>
                             {conv.last_message && (
                               <span className="text-[10px] text-zinc-400 shrink-0">
                                 {formatTime(conv.last_message.created_at)}
@@ -431,11 +550,11 @@ export default function UserConsultationsPage() {
                           <div className="flex justify-between items-center">
                             <p className="text-xs truncate text-zinc-500">
                               {conv.last_message ? (
-                                conv.last_message.type === 'image' ? '📷 Foto' : 
-                                conv.last_message.type === 'scan_result' ? '📋 Hasil Scan' : 
+                                conv.last_message.type === 'image' ? '📷 Foto' :
+                                conv.last_message.type === 'scan_result' ? '📋 Hasil Scan' :
                                 conv.last_message.content
                               ) : (
-                                "Belum ada pesan"
+                                isBot ? "Tanyakan kondisi kulitmu di sini" : "Belum ada pesan"
                               )}
                             </p>
                           </div>
@@ -452,46 +571,74 @@ export default function UserConsultationsPage() {
           <div className={`${!showSidebar ? 'flex' : 'hidden'} md:flex flex-1 flex-col bg-zinc-50/30`}>
             {activeConversation ? (
               <>
-                {/* Chat Header */}
-                <div className="h-16 border-b border-zinc-100 bg-white/80 backdrop-blur-md px-4 sm:px-6 flex justify-between items-center shrink-0">
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <button 
-                      onClick={() => setShowSidebar(true)} 
-                      className="md:hidden p-2 -ml-2 text-zinc-500 hover:text-emerald-600 transition-colors"
-                    >
-                      <ChevronLeft size={24} />
-                    </button>
-                    <img 
-                      src={activeConversation.doctor?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(activeConversation.doctor?.full_name || "D") + "&background=10b981&color=fff"} 
-                      alt={activeConversation.doctor?.full_name || "Akun Dihapus"} 
-                      className="w-10 h-10 rounded-full object-cover" 
-                    />
-                    <div>
-                      <h2 className="font-semibold text-zinc-900 text-sm">{activeConversation.doctor?.full_name || "Akun Dihapus"}</h2>
-                      <p className="text-xs text-zinc-500 flex items-center gap-1">
-                        Dokter
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 sm:gap-4 text-zinc-400">
-                    <button 
-                      onClick={() => setIsRatingModalOpen(true)}
-                      className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-full text-xs font-semibold transition-colors"
-                    >
-                      <Star size={14} className="fill-amber-400" />
-                      Beri Ulasan
-                    </button>
-                    <button 
-                      onClick={() => setIsRatingModalOpen(true)}
-                      className="sm:hidden hover:text-amber-500 transition-colors"
-                      title="Beri Ulasan"
-                    >
-                      <Star size={20} />
-                    </button>
-                    <button className="hover:text-zinc-600 transition-colors"><Info size={20} /></button>
-                    <button className="hover:text-zinc-600 transition-colors"><MoreVertical size={20} /></button>
-                  </div>
-                </div>
+                {(() => {
+                  const activeIsBot = isAiBotConversation(activeConversation);
+                  return (
+                    <>
+                      {/* Chat Header */}
+                      <div className="h-16 border-b border-zinc-100 bg-white/80 backdrop-blur-md px-4 sm:px-6 flex justify-between items-center shrink-0">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <button
+                            onClick={() => setShowSidebar(true)}
+                            className="md:hidden p-2 -ml-2 text-zinc-500 hover:text-emerald-600 transition-colors"
+                          >
+                            <ChevronLeft size={24} />
+                          </button>
+                          {activeIsBot ? (
+                            <span className="w-10 h-10 rounded-full bg-linear-to-br from-violet-500 to-emerald-500 text-white flex items-center justify-center shrink-0">
+                              <Sparkles size={18} />
+                            </span>
+                          ) : (
+                            <img
+                              src={activeConversation.doctor?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(activeConversation.doctor?.full_name || "D") + "&background=10b981&color=fff"}
+                              alt={activeConversation.doctor?.full_name || "Akun Dihapus"}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                          )}
+                          <div>
+                            <h2 className={`font-semibold text-zinc-900 text-sm ${activeIsBot ? "text-violet-700" : ""}`}>
+                              {activeIsBot ? "Aura Skin" : activeConversation.doctor?.full_name || "Akun Dihapus"}
+                            </h2>
+                            <p className="text-xs text-zinc-500 flex items-center gap-1">
+                              {activeIsBot ? "Asisten AI" : "Dokter"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 sm:gap-4 text-zinc-400">
+                          {activeIsBot ? (
+                            <button
+                              onClick={handleDeleteAiHistory}
+                              title="Hapus riwayat chat AI"
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-full text-xs font-semibold transition-colors"
+                            >
+                              <Trash2 size={14} />
+                              Hapus Riwayat
+                            </button>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => setIsRatingModalOpen(true)}
+                                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-600 rounded-full text-xs font-semibold transition-colors"
+                              >
+                                <Star size={14} className="fill-amber-400" />
+                                Beri Ulasan
+                              </button>
+                              <button
+                                onClick={() => setIsRatingModalOpen(true)}
+                                className="sm:hidden hover:text-amber-500 transition-colors"
+                                title="Beri Ulasan"
+                              >
+                                <Star size={20} />
+                              </button>
+                            </>
+                          )}
+                          <button className="hover:text-zinc-600 transition-colors"><Info size={20} /></button>
+                          <button className="hover:text-zinc-600 transition-colors"><MoreVertical size={20} /></button>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
 
                 {/* Chat Messages */}
                 <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#efeae2]">

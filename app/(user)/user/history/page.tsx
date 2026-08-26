@@ -10,7 +10,6 @@ import { ProblemDetailsCard } from "./_components/problem-details-card";
 import { RecommendationCard } from "./_components/recommendation-card";
 import { ScanFeedbackCard } from "./_components/scan-feedback-card";
 import {
-  getCurrentUserId,
   getPredictionHistories,
   getRecommendations,
 } from "./_lib/history-query";
@@ -35,8 +34,7 @@ type HistoryPageProps = {
 export default async function HistoryPage({ searchParams }: HistoryPageProps) {
   const resolvedSearchParams = await searchParams;
 
-  const userId = await getCurrentUserId();
-  const histories = await getPredictionHistories(userId);
+  const histories = await getPredictionHistories();
 
   const selectedHistory =
     histories.find((history) => history.id === resolvedSearchParams?.id) ??
@@ -50,7 +48,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
 
   const problemDetails = getProblemDetails(selectedHistory);
 
-  const { recommendations, concernId, hasMore } = await getRecommendations(
+  const { recommendations, mlLabel, hasMore } = await getRecommendations(
     selectedHistory?.predicted_class ?? null,
   );
 
@@ -61,8 +59,8 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
   const selectedConfidence = getConfidencePercent(selectedHistory?.confidence);
 
   const scanMethod =
-    selectedHistory?.scan_mode === "livecam_yolo"
-      ? "YOLOv8 - Real-time Detection"
+    selectedHistory?.scan_mode === "livecam"
+      ? "Live Camera - Real-time Detection"
       : "Upload Image - Classification";
 
   return (
@@ -103,9 +101,9 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
 
             <ProblemDetailsCard problemDetails={problemDetails} />
 
-            <RecommendationCard 
-              recommendations={recommendations} 
-              concernId={concernId}
+            <RecommendationCard
+              recommendations={recommendations}
+              mlLabel={mlLabel}
               hasMore={hasMore}
               historyId={selectedHistory?.id}
             />

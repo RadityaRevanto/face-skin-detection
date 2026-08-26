@@ -8,10 +8,10 @@ export default async function UserLayout({ children }: { children: ReactNode }) 
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <NavbarUsers 
-        initialDisplayName={profile.full_name || "Pengguna"} 
+      <NavbarUsers
+        initialDisplayName={profile.full_name || "Pengguna"}
         initialAvatarUrl={profile.avatar_url || profile.google_avatar_url || null}
-        userId={profile.id}
+        userId={profile.uuid}
         userUuid={profile.uuid}
       />
       {children}

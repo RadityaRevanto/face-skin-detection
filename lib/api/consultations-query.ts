@@ -33,6 +33,26 @@ export type Conversation = {
   updated_at: string;
 };
 
+// Error dengan status HTTP agar UI bisa memberi CTA spesifik
+// (mis. 402 kuota chat habis → arahkan ke halaman langganan).
+export class ConsultationApiError extends Error {
+  constructor(public status: number, message: string) {
+    super(message);
+    this.name = "ConsultationApiError";
+  }
+}
+
+async function readError(res: Response, fallback: string) {
+  let message = fallback;
+  try {
+    const json = await res.json();
+    if (json?.message) message = json.message;
+  } catch {
+    // abaikan body non-JSON
+  }
+  return new ConsultationApiError(res.status, message);
+}
+
 export async function getConversations(page: number = 1) {
   const res = await fetch(`/api/conversations?page=${page}`, {
     method: "GET",
@@ -42,8 +62,7 @@ export async function getConversations(page: number = 1) {
   });
 
   if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Gagal mengambil daftar obrolan");
+    throw await readError(res, "Gagal mengambil daftar obrolan");
   }
 
   return res.json();
@@ -59,8 +78,33 @@ export async function createConversation(doctorId: string) {
   });
 
   if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Gagal membuat ruang obrolan");
+    throw await readError(res, "Gagal membuat ruang obrolan");
+  }
+
+  return res.json();
+}
+
+// Mulai/ambil percakapan dengan bot "Aura Skin" (butuh consent AI).
+export async function startAiConversation() {
+  const res = await fetch(`/api/ai-chat/conversations`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!res.ok) {
+    throw await readError(res, "Gagal memulai chat dengan Aura Skin");
+  }
+
+  return res.json();
+}
+
+export async function deleteAiConversation(conversationUuid: string) {
+  const res = await fetch(`/api/ai-chat/conversations/${conversationUuid}`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    throw await readError(res, "Gagal menghapus riwayat chat AI");
   }
 
   return res.json();
@@ -99,8 +143,7 @@ export async function sendMessage(conversationId: string, payload: FormData | { 
   const res = await fetch(`/api/conversations/${conversationId}/messages`, options);
 
   if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Gagal mengirim pesan");
+    throw await readError(res, "Gagal mengirim pesan");
   }
 
   return res.json();

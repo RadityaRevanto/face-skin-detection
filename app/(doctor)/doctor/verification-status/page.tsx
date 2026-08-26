@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { DoctorLogoutButton } from "@/components/doctor/doctor-logout-button";
 import { fetchApi } from "@/lib/api/server-client";
+import { ResubmissionForm } from "./_components/resubmission-form";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -27,21 +28,33 @@ type DoctorProfile = {
   is_active: boolean | null;
 };
 
+type VerificationDocument = {
+  uuid: string;
+  url: string;
+  file_name?: string | null;
+};
+
 type DoctorVerification = {
-  doctor_id: string;
+  uuid: string;
   str_number: string | null;
   specialization: string | null;
-  document_url: string | null;
+  title?: string | null;
+  sub_specialization?: string | null;
+  experience_years?: number | null;
+  alma_mater?: string | null;
+  // Resource backend mengirim koleksi dokumen (bukan document_url tunggal).
+  documents: VerificationDocument[];
   verification_status: string | null;
   rejection_reason: string | null;
   revision_note: string | null;
-  reviewed_by: string | null;
   reviewed_at: string | null;
   created_at: string | null;
   updated_at: string | null;
 };
 
 type StepStatus = "completed" | "current" | "pending" | "failed";
+
+type ApiStatusError = Error & { status?: number };
 
 type VerificationStep = {
   title: string;
@@ -238,7 +251,8 @@ function getVerificationSteps(
   verification: DoctorVerification | null,
 ): VerificationStep[] {
   const status = normalizeStatus(verification?.verification_status);
-  const hasDocument = Boolean(verification?.document_url);
+  // Resource mengirim documents[] (bukan document_url tunggal).
+  const hasDocument = Boolean(verification?.documents?.length);
 
   if (status === "approved") {
     return [
@@ -378,26 +392,33 @@ function StepIcon({ status, index }: { status: StepStatus; index: number }) {
 export default async function VerificationStatusPage() {
   noStore();
 
-  let doctorProfile: any;
-  let verification: any = null;
+  let doctorProfile: DoctorProfile | null = null;
+  let verification: DoctorVerification | null = null;
 
   try {
-    const resProfile = await fetchApi<{ data: any }>("/profile");
-    doctorProfile = resProfile.data;
+    const resProfile = await fetchApi<DoctorProfile>("/profile");
+    doctorProfile = resProfile.data ?? null;
 
     if (!doctorProfile || doctorProfile.role !== "doctor") {
       redirect("/login");
     }
 
     try {
-      const resVerification = await fetchApi<{ data: any }>("/doctor-verifications");
-      verification = resVerification.data;
-    } catch (error: any) {
-      if (error.status !== 404) {
+      const resVerification =
+        await fetchApi<DoctorVerification>("/doctor-verifications");
+      verification = resVerification.data ?? null;
+    } catch (error) {
+      if ((error as ApiStatusError)?.status !== 404) {
         console.error("Failed to fetch doctor verification status:", error);
       }
     }
   } catch (error) {
+    if ((error as ApiStatusError)?.status !== 404) {
+      console.error("Failed to fetch doctor profile:", error);
+    }
+  }
+
+  if (!doctorProfile) {
     redirect("/login");
   }
 
@@ -576,6 +597,35 @@ export default async function VerificationStatusPage() {
                     </span>
                   </div>
 
+                  <div>
+                    <span className='font-semibold text-slate-500'>
+                      Dokumen terunggah
+                    </span>
+                    {verification?.documents?.length ? (
+                      <ul className='mt-2 space-y-2'>
+                        {verification.documents.map((doc) => (
+                          <li key={doc.uuid}>
+                            <a
+                              href={doc.url}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-50'
+                            >
+                              <DocumentIcon />
+                              <span className='truncate'>
+                                {doc.file_name ?? doc.uuid}
+                              </span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className='mt-2 rounded-xl bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700'>
+                        Belum ada dokumen tersimpan.
+                      </p>
+                    )}
+                  </div>
+
                   <div className='flex justify-between gap-4'>
                     <span className='font-semibold text-slate-500'>
                       Dikirim pada
@@ -612,6 +662,21 @@ export default async function VerificationStatusPage() {
           </section>
         ) : null}
 
+        {verification && (normalizedStatus === "rejected" || isRevisionStatus(normalizedStatus)) ? (
+          <ResubmissionForm
+            mode={normalizedStatus === "rejected" ? "rejected" : "needs_revision"}
+            verificationUuid={verification.uuid}
+            defaultValues={{
+              specialization: verification.specialization,
+              str_number: verification.str_number,
+              title: verification.title,
+              sub_specialization: verification.sub_specialization,
+              experience_years: verification.experience_years,
+              alma_mater: verification.alma_mater,
+            }}
+          />
+        ) : null}
+
         {!verification ? (
           <section className='mt-6 rounded-3xl bg-amber-50 p-6 shadow-sm ring-1 ring-amber-100'>
             <h2 className='font-bold text-amber-900'>
@@ -626,20 +691,26 @@ export default async function VerificationStatusPage() {
           </section>
         ) : null}
 
-        <section className='mt-6 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 sm:flex-row sm:items-center sm:justify-between'>
-          <div>
-            <h2 className='font-bold text-slate-900'>
-              Perlu memperbarui data?
-            </h2>
+        {!(verification && (normalizedStatus === "rejected" || isRevisionStatus(normalizedStatus))) ? (
+          <section className='mt-6 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 sm:flex-row sm:items-center sm:justify-between'>
+            <div>
+              <h2 className='font-bold text-slate-900'>
+                Perlu memperbarui data?
+              </h2>
 
-            <p className='mt-1 text-sm leading-6 text-slate-500'>
-              Jika dokumen atau data profesi Anda salah, hubungi admin agar
-              dapat dilakukan revisi.
-            </p>
-          </div>
+              <p className='mt-1 text-sm leading-6 text-slate-500'>
+                Jika dokumen atau data profesi Anda salah, hubungi admin agar
+                dapat dilakukan revisi.
+              </p>
+            </div>
 
-          <DoctorLogoutButton />
-        </section>
+            <DoctorLogoutButton />
+          </section>
+        ) : (
+          <section className='mt-6 flex justify-end rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100'>
+            <DoctorLogoutButton />
+          </section>
+        )}
       </div>
     </main>
   );

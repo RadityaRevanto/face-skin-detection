@@ -1,4 +1,5 @@
 import type { PredictionHistory, TipItem } from "../lib/tips-types";
+import { getConcernDisplayName } from "@/lib/utils/skin-labels";
 import { CalendarIcon, ShieldIcon } from "./icons";
 
 type PersonalizedTipsCardProps = {
@@ -31,7 +32,7 @@ export function PersonalizedTipsCard({
         <div className='mb-5 rounded-2xl bg-slate-50 p-4'>
           <p className='text-sm font-semibold text-slate-500'>Hasil terbaru</p>
           <p className='mt-1 text-xl font-bold text-slate-900'>
-            {latestPrediction.predicted_class}
+            {getConcernDisplayName(latestPrediction.skin_concern?.name, latestPrediction.predicted_class)}
           </p>
         </div>
       ) : null}
@@ -39,7 +40,7 @@ export function PersonalizedTipsCard({
       <div className='space-y-4'>
         {tips.length > 0 ? (
           tips.map((tip) => (
-            <article key={tip.id} className='flex items-start gap-3'>
+            <article key={tip.uuid} className='flex items-start gap-3'>
               <div className='mt-0.5 text-emerald-600'>
                 <CalendarIcon />
               </div>

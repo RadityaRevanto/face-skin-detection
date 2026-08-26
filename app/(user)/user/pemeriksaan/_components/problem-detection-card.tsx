@@ -1,4 +1,5 @@
 import type { SkinProblem } from "../_lib/pemeriksaan-types";
+import { translateSkinLabel } from "@/lib/utils/skin-labels";
 
 type ProblemDetectionCardProps = {
   skinProblems: SkinProblem[];
@@ -29,7 +30,7 @@ export function ProblemDetectionCard({
               {probabilityEntries.map(([label, prob]) => (
                 <div key={label} className='flex items-center gap-3'>
                   <span className='w-24 truncate text-xs font-semibold text-slate-500 sm:w-36'>
-                    {label}
+                    {translateSkinLabel(label)}
                   </span>
                   <div className='h-2 flex-1 overflow-hidden rounded-full bg-slate-100'>
                     <div

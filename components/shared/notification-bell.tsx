@@ -100,7 +100,7 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
   const fetchNotifications = async () => {
     try {
       setIsLoading(true);
-      const res = await fetch("/api/notifications?per_page=15");
+      const res = await fetch("/api/notifications?per_page=10");
       const json = await res.json();
       
       if (json.data && Array.isArray(json.data)) {
@@ -128,29 +128,21 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
       const echo = getEcho();
       if (!echo) return;
 
-      const handleNewNotification = (e: any) => {
+      const handleNewNotification = () => {
         fetchNotifications();
       };
 
-      let channel: any;
+      // Backend broadcast notifikasi ke PrivateChannel('user.{uuid}')
+      // via receivesBroadcastNotificationsOn() pada model User.
       let uuidChannel: any;
-
-      if (userId) {
-        channel = echo.private(`App.Models.User.${userId}`);
-        channel.notification(handleNewNotification);
-      }
 
       if (userUuid) {
         uuidChannel = echo.private(`user.${userUuid}`);
         uuidChannel.notification(handleNewNotification);
         uuidChannel.listen(".Illuminate\\Notifications\\Events\\BroadcastNotificationCreated", handleNewNotification);
       }
-      
+
       return () => {
-        if (channel) {
-          channel.stopListening("Illuminate\\Notifications\\Events\\BroadcastNotificationCreated");
-          echo.leave(`App.Models.User.${userId}`);
-        }
         if (uuidChannel) {
           uuidChannel.stopListening(".Illuminate\\Notifications\\Events\\BroadcastNotificationCreated");
           echo.leave(`user.${userUuid}`);

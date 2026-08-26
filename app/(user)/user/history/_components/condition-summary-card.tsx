@@ -1,4 +1,5 @@
 import type { PredictionHistory, ToneConfig } from "../_lib/history-types";
+import { getConcernDisplayName } from "@/lib/utils/skin-labels";
 import { ShieldIcon } from "./icons";
 
 type ConditionSummaryCardProps = {
@@ -36,7 +37,9 @@ export function ConditionSummaryCard({
 
         <div className='min-w-0'>
           <h3 className={`text-2xl font-bold ${tone.title}`}>
-            {selectedHistory?.predicted_class ?? "Belum Ada Data"}
+            {selectedHistory
+              ? getConcernDisplayName(selectedHistory.skin_concern?.name, selectedHistory.predicted_class)
+              : "Belum Ada Data"}
           </h3>
 
           <p className='mt-2 text-sm leading-6 text-slate-500'>

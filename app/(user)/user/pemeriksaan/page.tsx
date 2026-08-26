@@ -1,11 +1,18 @@
 import { fetchApi } from "@/lib/api/server-client";
 import { PemeriksaanContent } from "./_components/pemeriksaan-content";
 
+type ProfileSummary = {
+  uuid?: string;
+  full_name?: string | null;
+  gender?: string | null;
+  date_of_birth?: string | null;
+};
+
 export default async function PemeriksaanPage() {
-  let profile = null;
+  let profile: ProfileSummary | null = null;
   try {
-    const response = await fetchApi<any>("profile");
-    profile = response.data;
+    const response = await fetchApi<ProfileSummary>("profile");
+    profile = response.data ?? null;
   } catch (error) {
     console.error("Gagal mengambil profile:", error);
   }

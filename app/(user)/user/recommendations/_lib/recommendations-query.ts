@@ -1,86 +1,56 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 import type { SkinRecommendation } from "../../history/_lib/history-types";
 
-export async function getConcernName(concernId: string) {
-  const supabase = await createClient();
+type ConcernApi = {
+  uuid: string;
+  name: string;
+  ml_label: string;
+};
 
-  const { data: concern, error } = await supabase
-    .from("skin_concerns")
-    .select("name")
-    .eq("id", concernId)
-    .maybeSingle();
-
-  if (error || !concern) {
+// Cari nama concern berbahasa Indonesia dari label ML (mis. "Redness" → "Kemerahan").
+export async function getConcernNameByMlLabel(
+  mlLabel: string,
+): Promise<string | null> {
+  try {
+    const res = await fetchApi<ConcernApi[]>("skin-concerns");
+    const concerns = res.data ?? [];
+    const target = mlLabel.toLowerCase();
+    return (
+      concerns.find((c) => c.ml_label?.toLowerCase() === target)?.name ?? null
+    );
+  } catch (error) {
+    console.error("Failed to fetch skin concerns from Laravel:", error);
     return null;
   }
-
-  return concern.name;
 }
 
+// Paginasi server-side via GET /v1/skin-recommendations.
+// Backend memfilter dengan parameter `ml_label` dan mengurutkan prioritas
+// high → medium → low otomatis (SkinRecommendationController@index).
 export async function getPaginatedRecommendations(
-  concernId: string,
+  mlLabel: string,
   page: number,
   limit: number = 5
 ) {
-  const supabase = await createClient();
-  
-  // Hitung total rekomendasi
-  const { count, error: countError } = await supabase
-    .from("skin_recommendations")
-    .select("*", { count: "exact", head: true })
-    .eq("concern_id", concernId)
-    .eq("is_active", true);
+  try {
+    const res = await fetchApi<SkinRecommendation[]>(
+      `skin-recommendations?ml_label=${encodeURIComponent(mlLabel)}&per_page=${limit}&page=${page}`
+    );
 
-  if (countError) {
-    console.error("Failed to count recommendations:", countError);
-    return { data: [], totalPages: 0, currentPage: page };
-  }
+    const data = res.data ?? [];
+    const meta = (res.meta ?? {}) as {
+      current_page?: number;
+      last_page?: number;
+    };
 
-  const totalItems = count || 0;
-  const totalPages = Math.ceil(totalItems / limit);
-  
-  // Pastikan page valid
-  const currentPage = page < 1 ? 1 : page > totalPages && totalPages > 0 ? totalPages : page;
-  
-  const from = (currentPage - 1) * limit;
-  const to = from + limit - 1;
+    const totalPages = meta.last_page ?? (data.length > 0 ? 1 : 0);
+    let currentPage = meta.current_page ?? page;
+    if (currentPage < 1) currentPage = 1;
+    if (totalPages > 0 && currentPage > totalPages) currentPage = totalPages;
 
-  // Ambil data
-  // Karena kita butuh sorting berdasarkan enum ('high', 'medium', 'low') di level database,
-  // di postgres hal ini sedikit tricky tanpa fungsi khusus. 
-  // Sebagai solusi cepat, kita bisa mengambil seluruh ID yang valid lalu sort di JS dan potong.
-  // Tapi karena kita mau "paginasi sejati", kita ambil semua dulu untuk skin concern ini (toh datanya per concern biasanya tidak ratusan ribu)
-  // lalu sort di javascript, baru kita paginasi di memori (lebih aman untuk saat ini).
-  
-  const { data: allRecommendations, error } = await supabase
-    .from("skin_recommendations")
-    .select(`
-      *,
-      skincare_products (*)
-    `)
-    .eq("concern_id", concernId)
-    .eq("is_active", true);
-
-  if (error || !allRecommendations) {
+    return { data, totalPages, currentPage };
+  } catch (error) {
     console.error("Failed to fetch paginated recommendations:", error);
-    return { data: [], totalPages: 0, currentPage };
+    return { data: [] as SkinRecommendation[], totalPages: 0, currentPage: page };
   }
-
-  // Sort
-  const sorted = allRecommendations.sort((a, b) => {
-    const priorityWeight: Record<string, number> = { high: 1, medium: 2, low: 3 };
-    const weightA = priorityWeight[a.priority_level] || 3;
-    const weightB = priorityWeight[b.priority_level] || 3;
-    return weightA - weightB;
-  });
-
-  // Paginate di memory
-  const paginatedData = sorted.slice(from, from + limit);
-
-  return {
-    data: paginatedData as unknown as SkinRecommendation[],
-    totalPages,
-    currentPage,
-  };
 }

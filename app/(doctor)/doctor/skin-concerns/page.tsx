@@ -40,7 +40,6 @@ function DetailIcon() {
 }
 
 interface SkinConcernApi {
-  id: string;
   uuid: string;
   name: string;
   description?: string;
@@ -113,7 +112,7 @@ export default async function DoctorSkinConcernsPage({ searchParams }: PageProps
 
           <TableBody className='divide-y divide-gray-100 bg-white'>
             {concerns.map((concern, index) => (
-              <TableRow key={concern.id} className='group border-gray-100 transition-colors hover:bg-emerald-50/30'>
+              <TableRow key={concern.uuid} className='group border-gray-100 transition-colors hover:bg-emerald-50/30'>
                 <TableCell className='whitespace-nowrap px-6 py-5 text-sm font-medium text-gray-500 sm:px-8'>
                   {from + index + 1}
                 </TableCell>
@@ -129,7 +128,7 @@ export default async function DoctorSkinConcernsPage({ searchParams }: PageProps
                   {concern.default_severity_score ?? "-"}
                 </TableCell>
                 <TableCell className='whitespace-nowrap px-6 py-5 text-right text-sm font-medium sm:px-8'>
-                  <Link href={`/doctor/skin-concerns/${concern.id}`}>
+                  <Link href={`/doctor/skin-concerns/${concern.uuid}`}>
                     <Button type='button' variant='ghost' size='sm' title='Lihat Detail' className='h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50! hover:text-emerald-700'>
                       <DetailIcon />
                     </Button>

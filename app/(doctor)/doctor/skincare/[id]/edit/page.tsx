@@ -21,63 +21,54 @@ type PageProps = {
 };
 
 interface ConcernApi {
-  id: string;
   uuid: string;
   name: string;
 }
 
 interface SkinTypeApi {
-  id: string;
   uuid: string;
   name: string;
 }
 
 interface SkincareProductApi {
-  id: string;
   uuid: string;
-  doctor_id: string;
   name: string;
   category: string;
-  key_ingredients?: string;
-  usage_instruction?: string;
-  warning?: string;
+  gender?: string;
+  key_ingredients?: string | null;
+  usage_instruction?: string | null;
+  warning?: string | null;
   is_active?: boolean;
-  concern?: ConcernApi;
-  skin_type?: SkinTypeApi;
+  concern?: ConcernApi | null;
+  skin_type?: SkinTypeApi | null;
 }
 
 export default async function EditSkincarePage({ params }: PageProps) {
   const { id } = await params;
 
-  const doctor = await requireDoctorProfile();
+  await requireDoctorProfile();
 
   let skincareProduct: SkincareProductApi | null = null;
   let concerns: ConcernApi[] = [];
   let skinTypes: SkinTypeApi[] = [];
 
   try {
+    // Ownership divalidasi backend saat PATCH (403 jika bukan pemilik).
     const [resProduct, resConcerns, resTypes] = await Promise.all([
       fetchApi<SkincareProductApi>(`/skincare-products/${id}`),
-      fetchApi<ConcernApi[]>("/skin-concerns?per_page=100"),
-      fetchApi<SkinTypeApi[]>("/skin-types?per_page=100"),
+      fetchApi<ConcernApi[]>("/skin-concerns?per_page=50&page=1"),
+      fetchApi<SkinTypeApi[]>("/skin-types?per_page=50&page=1"),
     ]);
 
-    skincareProduct = resProduct.data as any; // Wait, resProduct.data is SkincareProductApi if fetchApi is correct
-    // But fetchApi signature: Promise<{ data: T, meta?: any }>
-    // Wait, `/skincare-products/${id}` might return just the object if it's not paginated, OR it might return { data: ... }
-    // Let's assume it returns { data: ... } as usual.
-    skincareProduct = (resProduct as any).data ?? resProduct;
-    concerns = resConcerns as any ?? []; // wait, resConcerns is { data: ... } if paginated, but I used `?? []` which implies it's an array directly?
-    // In previous code I did `concerns = resConcerns ?? [];`. I should probably do `resConcerns.data ?? []` if fetchApi returns `{ data: ... }`.
-    // Wait, I will just leave it as is but typecast properly.
-    concerns = (resConcerns as any).data ?? resConcerns ?? [];
-    skinTypes = (resTypes as any).data ?? resTypes ?? [];
-  } catch (error: any) {
+    skincareProduct = resProduct.data ?? null;
+    concerns = resConcerns.data ?? [];
+    skinTypes = resTypes.data ?? [];
+  } catch (error) {
     console.error("Failed to fetch data for skincare edit form:", error);
     notFound();
   }
 
-  if (!skincareProduct || skincareProduct.doctor_id !== doctor.id) {
+  if (!skincareProduct) {
     notFound();
   }
 
@@ -105,26 +96,27 @@ export default async function EditSkincarePage({ params }: PageProps) {
         mode='edit'
         concerns={concerns.map(
           (concern: ConcernApi) => ({
-            id: concern.id,
+            id: concern.uuid,
             name: concern.name ?? "-",
           }),
         )}
         skinTypes={skinTypes.map(
           (skinType: SkinTypeApi) => ({
-            id: skinType.id,
+            id: skinType.uuid,
             name: skinType.name ?? "-",
           }),
         )}
         defaultValues={{
-          id: skincareProduct.id,
-          concernId: skincareProduct.concern?.id ?? "",
-          skinTypeId: skincareProduct.skin_type?.id ?? "",
+          id: skincareProduct.uuid,
+          concernId: skincareProduct.concern?.uuid ?? "",
+          skinTypeId: skincareProduct.skin_type?.uuid ?? "",
           name: skincareProduct.name ?? "",
           category: skincareProduct.category ?? "",
           keyIngredients: skincareProduct.key_ingredients ?? "",
           usageInstruction: skincareProduct.usage_instruction ?? "",
           warning: skincareProduct.warning ?? "",
           isActive: skincareProduct.is_active ?? true,
+          genderSuitability: skincareProduct.gender ?? "unisex",
         }}
       />
     </div>

@@ -1,14 +1,15 @@
+import type { SkinConcernInfo } from "@/lib/api/scans-query";
+
+// Prediksi terbaru dari PredictionHistoryResource (subset yang dipakai halaman tips).
 export type PredictionHistory = {
   id: string;
   predicted_class: string;
-  confidence: number | string;
-  severity_score: number | null;
-  severity_level: "mild" | "moderate" | "severe" | null;
+  skin_concern?: SkinConcernInfo | null;
   created_at: string;
 };
 
 export type TipItem = {
-  id: string;
+  uuid: string;
   title: string;
   recommendation_text: string;
   priority_level: "low" | "medium" | "high";

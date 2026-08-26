@@ -10,6 +10,7 @@ import {
   getHistoryImageUrl,
   getToneBySeverity,
 } from "../_lib/history-utils";
+import { getConcernDisplayName } from "@/lib/utils/skin-labels";
 import { CalendarIcon, ChevronDownIcon } from "./icons";
 
 type HistorySidebarProps = {
@@ -238,7 +239,7 @@ export function HistorySidebar({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={imageUrl}
-                      alt={`Foto pemeriksaan ${item.predicted_class}`}
+                      alt={`Foto pemeriksaan ${getConcernDisplayName(item.skin_concern?.name, item.predicted_class)}`}
                       className='h-full w-full object-cover'
                     />
                   ) : (
@@ -259,7 +260,7 @@ export function HistorySidebar({
                     </span>
                   </div>
                   <h2 className={`mt-2 font-bold ${itemTone.title}`}>
-                    {item.predicted_class}
+                    {getConcernDisplayName(item.skin_concern?.name, item.predicted_class)}
                   </h2>
                   <span className='mt-3 inline-block text-sm font-bold text-emerald-700 transition-colors group-hover:text-emerald-800'>
                     Lihat Detail ›

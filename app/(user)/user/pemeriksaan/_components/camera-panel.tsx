@@ -126,10 +126,7 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
       const res  = await fetch("/api/predict/livecam", { method: "POST", body: fd });
       const json = await res.json();
       if (!res.ok || !json.success) throw new Error(json.error ?? "Server error");
-      const result: LiveScanResult = {
-        ...(json.data as LiveScanResult),
-        recommendations: (json.data as LiveScanResult).recommendations ?? [],
-      };
+      const result: LiveScanResult = json.data;
       setPhase("done");
       onScanCompleteRef.current?.(result);
     } catch (err) {

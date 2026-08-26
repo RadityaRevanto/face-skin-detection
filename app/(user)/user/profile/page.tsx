@@ -82,19 +82,22 @@ export default function UserProfilePage() {
               <div className="space-y-3">
                 <div className="bg-white/10 rounded-lg p-2.5 flex items-center justify-between backdrop-blur-sm">
                   <div className="flex items-center gap-2 text-xs">
-                    <Clock size={14} className="text-emerald-400" /> Sisa Scan
+                    <Clock size={14} className="text-emerald-400" /> Total Scan
                   </div>
-                  <span className="font-bold text-sm">{3 - (profile.scan_count || 0)} / 3</span>
+                  <span className="font-bold text-sm">{profile.scan_count || 0}</span>
                 </div>
+                <p className="text-[10px] text-zinc-400 leading-snug px-1">
+                  Kuota scan gratis 3x/hari untuk pengguna Free.
+                </p>
                 <div className="bg-white/10 rounded-lg p-2.5 flex items-center justify-between backdrop-blur-sm">
                   <div className="flex items-center gap-2 text-xs">
                     <Clock size={14} className="text-emerald-400" /> Sisa Chat
                   </div>
                   <span className="font-bold text-sm">{profile.remaining_free_messages || 0} / 3</span>
                 </div>
-                <button className="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold rounded-lg mt-2 transition-colors">
+                <Link href="/user/subscription" className="block w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold rounded-lg mt-2 transition-colors text-center">
                   Upgrade Pro
-                </button>
+                </Link>
               </div>
             )}
           </div>

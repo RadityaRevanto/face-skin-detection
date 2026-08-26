@@ -16,15 +16,12 @@ function normalizePriorityLevel(
 }
 
 interface ConcernApi {
-  id: string;
   uuid: string;
   name: string;
-  description?: string;
   is_active?: boolean;
 }
 
 interface ProductApi {
-  id: string;
   uuid: string;
   name: string;
   category: string;
@@ -32,70 +29,63 @@ interface ProductApi {
 }
 
 interface RecommendationApi {
-  id: string;
   uuid: string;
-  doctor_id: string;
   title: string;
   recommendation_text: string;
   priority_level: string;
   is_active?: boolean;
-  concern?: ConcernApi;
-  product?: ProductApi;
+  concern?: ConcernApi | null;
+  product?: ProductApi | null;
 }
 
 export async function getEditRecommendationPageData(
   id: string,
 ): Promise<EditRecommendationPageData> {
-  const doctor = await requireDoctorProfile();
+  await requireDoctorProfile();
 
   let recommendation: RecommendationApi | null = null;
   let concerns: ConcernApi[] = [];
   let products: ProductApi[] = [];
 
   try {
+    // Endpoint detail rekomendasi yang benar (binding by uuid).
+    // Ownership divalidasi backend saat PATCH (403 jika bukan pemilik).
     const [resRecommendation, productsRes, concernsRes] = await Promise.all([
-      fetchApi<RecommendationApi>(`/recommendations/${id}`),
-      fetchApi<ProductApi[]>("/doctor/products?per_page=100"),
-      fetchApi<ConcernApi[]>("/skin-concerns?per_page=100"),
+      fetchApi<RecommendationApi>(`/skin-recommendations/${id}`),
+      fetchApi<ProductApi[]>("/doctor/products?per_page=50&page=1"),
+      fetchApi<ConcernApi[]>("/skin-concerns?per_page=50&page=1"),
     ]);
 
-    recommendation = (resRecommendation as any).data ?? resRecommendation;
-    concerns = Array.isArray((concernsRes as any).data) ? (concernsRes as any).data : (concernsRes as any).data?.data ?? concernsRes ?? [];
-    products = Array.isArray((productsRes as any).data) ? (productsRes as any).data : (productsRes as any).data?.data ?? productsRes ?? [];
-  } catch (error: any) {
+    recommendation = resRecommendation.data ?? null;
+    concerns = concernsRes.data ?? [];
+    products = productsRes.data ?? [];
+  } catch (error) {
     console.error("Failed to fetch recommendation detail or dependencies:", error);
-    if (error?.status === 404 || !recommendation) {
-      notFound();
-    }
+    notFound();
   }
 
   if (!recommendation) {
     notFound();
   }
 
-  // Ensure recommendation belongs to the current doctor
-  if (recommendation.doctor_id !== doctor.id) {
-    notFound();
-  }
-
   return {
     recommendation: {
-      id: recommendation.id,
-      concernId: recommendation.concern?.id ?? "",
-      productId: recommendation.product?.id ?? "",
+      id: recommendation.uuid,
+      concernId: recommendation.concern?.uuid ?? "",
+      productId: recommendation.product?.uuid ?? "",
       title: recommendation.title ?? "",
       recommendationText: recommendation.recommendation_text ?? "",
       priorityLevel: normalizePriorityLevel(recommendation.priority_level),
       isActive: recommendation.is_active ?? true,
     },
-    concerns: concerns.map((concern: ConcernApi, i: number) => ({
-      id: concern.id || concern.uuid || `concern-${i}`,
+    concerns: concerns.map((concern: ConcernApi) => ({
+      id: concern.uuid,
       name: concern.name ?? "-",
     })),
     products: products
       .filter((product: ProductApi) => product.is_active !== false)
-      .map((product: ProductApi, i: number) => ({
-        id: product.id || product.uuid || `product-${i}`,
+      .map((product: ProductApi) => ({
+        id: product.uuid,
         name: product.name ?? "-",
         category: product.category ?? "-",
       })),

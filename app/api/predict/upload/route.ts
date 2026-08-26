@@ -1,72 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ApiError } from "@/lib/api/errors";
 import { fetchApi } from "@/lib/api/server-client";
-
-interface PredictionHistoryApi {
-  id: string;
-  predicted_class: string;
-  confidence: number;
-  probabilities: Record<string, number>;
-  severity_score: number;
-  severity_level: string;
-  model_used: string;
-  image_url: string;
-  cropped_image_url?: string;
-}
+import type { PredictionResult } from "@/lib/api/scans-query";
 
 // POST /api/predict/upload
+// Proxy ke Laravel POST /scans. Respons = PredictionHistoryResource apa adanya.
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
-    const file = formData.get("image") as File | null;
+    const file = formData.get("image");
 
-    if (!file) {
+    if (!(file instanceof File)) {
       return NextResponse.json(
-        { success: false, error: "File tidak ditemukan" },
+        { success: false, error: "File gambar tidak ditemukan" },
         { status: 400 }
       );
     }
 
-    // Teruskan FormData langsung ke Laravel
-    // fetchApi akan otomatis mengambil token dari HttpOnly cookies jika user login
-    const response = await fetchApi<PredictionHistoryApi>("scans", {
+    // Teruskan FormData langsung ke Laravel (key harus 'image' sesuai StoreScanRequest)
+    const response = await fetchApi<PredictionResult>("scans", {
       method: "POST",
       body: formData,
     });
 
-    if (response && response.data) {
-      // Laravel mengembalikan hasil dari ScanController (PredictionHistoryResource)
-      // Kita kembalikan format yang diharapkan oleh frontend
-      const history = response.data;
-      return NextResponse.json({
-        success: true,
-        data: {
-          prediction: {
-            predicted_class: history.predicted_class,
-            confidence: history.confidence,
-            probabilities: history.probabilities,
-            severity_score: history.severity_score,
-            severity_level: history.severity_level,
-            model_used: history.model_used,
-          },
-          // Karena recommendations mungkin tidak dikembalikan dari /scans,
-          // kita set kosong atau abaikan, nanti di frontend akan difetch oleh halaman lain.
-          // Atau jika diperlukan, fetch recommendations di sini
-          recommendations: [],
-          scan_mode: "upload_image",
-          image_url: history.image_url,
-          cropped_image_url: history.cropped_image_url,
-          history_id: history.id,
-        },
-      });
-    }
-
-    throw new Error("Invalid response from Laravel");
-  } catch (error: any) {
-    console.error("Upload predict error:", error);
-    const msg = error?.data?.message || error?.message || "Internal server error";
     return NextResponse.json(
-      { success: false, error: msg },
-      { status: 500 }
+      { success: true, data: response.data },
+      { status: 201 }
     );
+  } catch (error) {
+    console.error("Upload predict error:", error);
+    const status = error instanceof ApiError ? error.status : 500;
+    const message =
+      error instanceof ApiError
+        ? error.message
+        : "Terjadi kesalahan internal saat analisis gambar.";
+    return NextResponse.json({ success: false, error: message }, { status });
   }
 }

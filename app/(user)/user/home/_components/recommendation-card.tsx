@@ -14,7 +14,7 @@ export function RecommendationCard({
       <div className='mt-5 space-y-4'>
         {recommendations.length > 0 ? (
           recommendations.map((item) => (
-            <div key={item.id} className='flex items-start gap-3'>
+            <div key={item.uuid} className='flex items-start gap-3'>
               <div className='mt-0.5 text-emerald-600'>
                 <CalendarIcon />
               </div>
