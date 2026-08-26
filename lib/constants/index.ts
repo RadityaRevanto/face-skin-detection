@@ -54,9 +54,11 @@ export const ROUTES = {
     DASHBOARD: "/user/home",
     SCAN: "/user/pemeriksaan",
     HISTORY: "/user/history",
+    CONSULTATIONS: "/user/consultations",
   },
   DOCTOR: {
     DASHBOARD: "/doctor/dashboard",
+    CONSULTATIONS: "/doctor/consultations",
     SKINCARE: "/doctor/skincare",
     SKINCARE_CREATE: "/doctor/skincare/create",
     SKINCARE_EDIT: (id: string) => `/doctor/skincare/${id}/edit`,

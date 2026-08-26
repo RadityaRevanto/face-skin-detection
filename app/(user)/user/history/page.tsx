@@ -8,6 +8,7 @@ import { HistorySidebar } from "./_components/history-sidebar";
 import { NoteCard } from "./_components/note-card";
 import { ProblemDetailsCard } from "./_components/problem-details-card";
 import { RecommendationCard } from "./_components/recommendation-card";
+import { ScanFeedbackCard } from "./_components/scan-feedback-card";
 import {
   getCurrentUserId,
   getPredictionHistories,
@@ -49,7 +50,7 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
 
   const problemDetails = getProblemDetails(selectedHistory);
 
-  const recommendations = await getRecommendations(
+  const { recommendations, concernId, hasMore } = await getRecommendations(
     selectedHistory?.predicted_class ?? null,
   );
 
@@ -98,9 +99,16 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
               tone={tone}
             />
 
+            <ScanFeedbackCard historyId={selectedHistory?.id} />
+
             <ProblemDetailsCard problemDetails={problemDetails} />
 
-            <RecommendationCard recommendations={recommendations} />
+            <RecommendationCard 
+              recommendations={recommendations} 
+              concernId={concernId}
+              hasMore={hasMore}
+              historyId={selectedHistory?.id}
+            />
           </aside>
         </div>
 

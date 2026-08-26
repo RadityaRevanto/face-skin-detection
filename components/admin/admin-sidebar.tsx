@@ -70,7 +70,6 @@ const adminNavItems: SidebarNavItem[] = [
   {
     label: "Verification",
     href: ROUTES.ADMIN.DOCTOR_VERIFICATIONS,
-    badge: "5",
     icon: (
       <Icon>
         <path d="M12 21s7-3.5 7-10V5l-7-3-7 3v6c0 6.5 7 10 7 10Z" {...iconStroke} />
@@ -145,13 +144,23 @@ const adminNavItems: SidebarNavItem[] = [
   // },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({ pendingCount = 0 }: { pendingCount?: number }) {
+  const navItems = adminNavItems.map((item) => {
+    if (item.label === "Verification") {
+      return {
+        ...item,
+        badge: pendingCount > 0 ? String(pendingCount) : undefined,
+      };
+    }
+    return item;
+  });
+
   return (
     <Sidebar
       brand={{
         href: ROUTES.ADMIN.DASHBOARD,
         logo: (
-          <div className="flex h-11 w-11 items-center justify-center rounded-full  text-white shadow-lg shadow-emerald-500/25">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full text-white shadow-lg shadow-emerald-500/25">
             <LeafLogo />
           </div>
         ),
@@ -160,7 +169,7 @@ export function AdminSidebar() {
         mobileTitle: "Admin Panel",
         mobileSubtitle: "Skin Detection",
       }}
-      items={adminNavItems}
+      items={navItems}
       mobileFooter={<AdminProfileMenu variant="inline" />}
     />
   );

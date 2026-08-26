@@ -1,8 +1,5 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-
-import { updateSession } from "@/lib/supabase/middleware";
 
 function redirectTo(request: NextRequest, pathname: string) {
   const url = request.nextUrl.clone();
@@ -11,7 +8,6 @@ function redirectTo(request: NextRequest, pathname: string) {
 }
 
 export async function middleware(request: NextRequest) {
-  const response = await updateSession(request);
   const pathname = request.nextUrl.pathname;
 
   const protectedRoutes = ["/user", "/doctor", "/admin"];
@@ -20,41 +16,24 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith(route),
   );
 
-  if (!isProtectedRoute) {
+  if (pathname === "/login" && request.nextUrl.searchParams.get("clear_session") === "true") {
+    const response = redirectTo(request, "/login");
+    response.cookies.delete("auth_token");
+    response.cookies.delete("user_role");
+    response.cookies.delete("user_status");
     return response;
   }
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll() {
-          // Session cookie sudah di-handle oleh updateSession(request)
-        },
-      },
-    },
-  );
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    return redirectTo(request, "/login");
+  if (!isProtectedRoute) {
+    return NextResponse.next();
   }
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role, is_active")
-    .eq("id", user.id)
-    .maybeSingle();
+  // Ambil token dari cookie (di-set dari Laravel Sanctum)
+  const authToken = request.cookies.get("auth_token")?.value;
+  const userRole = request.cookies.get("user_role")?.value;
+  const userStatus = request.cookies.get("user_status")?.value;
 
-  if (profileError || !profile) {
+  if (!authToken || !userRole) {
     return redirectTo(request, "/login");
   }
 
@@ -62,44 +41,37 @@ export async function middleware(request: NextRequest) {
    * ADMIN GUARD
    */
   if (pathname.startsWith("/admin")) {
-    if (profile.role !== "admin") {
+    if (userRole !== "admin") {
       return redirectTo(request, "/");
     }
 
-    if (profile.is_active === false) {
+    if (userStatus === "inactive") {
       return redirectTo(request, "/login");
     }
 
-    return response;
+    return NextResponse.next();
   }
 
   /**
    * USER GUARD
    */
   if (pathname.startsWith("/user")) {
-    if (profile.role !== "user") {
+    if (userRole !== "user") {
       return redirectTo(request, "/");
     }
 
-    if (profile.is_active === false) {
+    if (userStatus === "inactive") {
       return redirectTo(request, "/login");
     }
 
-    return response;
+    return NextResponse.next();
   }
 
   /**
    * DOCTOR GUARD
-   *
-   * Dokter pending tetap boleh masuk ke:
-   * /doctor/verification-status
-   *
-   * Karena dokter pending punya:
-   * role = doctor
-   * is_active = false
    */
   if (pathname.startsWith("/doctor")) {
-    if (profile.role !== "doctor") {
+    if (userRole !== "doctor") {
       return redirectTo(request, "/");
     }
 
@@ -107,26 +79,8 @@ export async function middleware(request: NextRequest) {
       pathname === "/doctor/verification-status" ||
       pathname.startsWith("/doctor/verification-status/");
 
-    const { data: verification, error: verificationError } = await supabase
-      .from("doctor_verifications")
-      .select("verification_status")
-      .eq("doctor_id", user.id)
-      .maybeSingle();
-
-    if (verificationError) {
-      console.error("Failed to fetch doctor verification in middleware:", {
-        message: verificationError.message,
-        details: verificationError.details,
-        hint: verificationError.hint,
-        code: verificationError.code,
-      });
-    }
-
-    const verificationStatus =
-      verification?.verification_status?.toLowerCase().trim() || "pending";
-
-    const isApproved = verificationStatus === "approved";
-    const isActive = profile.is_active !== false;
+    const isApproved = userStatus === "approved";
+    const isActive = userStatus !== "inactive";
 
     /**
      * Kalau dokter sudah approved dan aktif,
@@ -145,16 +99,13 @@ export async function middleware(request: NextRequest) {
         return redirectTo(request, "/doctor/verification-status");
       }
 
-      return response;
+      return NextResponse.next();
     }
 
-    /**
-     * Dokter approved + aktif boleh akses semua route doctor.
-     */
-    return response;
+    return NextResponse.next();
   }
 
-  return response;
+  return NextResponse.next();
 }
 
 export const config = {

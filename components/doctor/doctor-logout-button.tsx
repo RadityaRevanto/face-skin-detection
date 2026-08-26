@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { createClient } from "@/lib/supabase/client";
+import { logoutAction } from "@/lib/auth/actions";
 
 export function DoctorLogoutButton() {
   const router = useRouter();
@@ -12,8 +12,7 @@ export function DoctorLogoutButton() {
   async function handleLogout() {
     setIsLoggingOut(true);
 
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    await logoutAction();
 
     router.replace("/login");
     router.refresh();

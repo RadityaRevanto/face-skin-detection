@@ -4,7 +4,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { DoctorLogoutButton } from "@/components/doctor/doctor-logout-button";
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -378,74 +378,29 @@ function StepIcon({ status, index }: { status: StepStatus; index: number }) {
 export default async function VerificationStatusPage() {
   noStore();
 
-  const supabase = await createClient();
+  let doctorProfile: any;
+  let verification: any = null;
 
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
+  try {
+    const resProfile = await fetchApi<{ data: any }>("/profile");
+    doctorProfile = resProfile.data;
 
-  if (userError || !user) {
+    if (!doctorProfile || doctorProfile.role !== "doctor") {
+      redirect("/login");
+    }
+
+    try {
+      const resVerification = await fetchApi<{ data: any }>("/doctor-verifications");
+      verification = resVerification.data;
+    } catch (error: any) {
+      if (error.status !== 404) {
+        console.error("Failed to fetch doctor verification status:", error);
+      }
+    }
+  } catch (error) {
     redirect("/login");
   }
 
-  const { data: profileData, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, full_name, email, role, is_active")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (profileError) {
-    console.error("Failed to fetch doctor profile on verification page:", {
-      message: profileError.message,
-      details: profileError.details,
-      hint: profileError.hint,
-      code: profileError.code,
-    });
-
-    redirect("/login");
-  }
-
-  if (!profileData) {
-    redirect("/login");
-  }
-
-  const doctorProfile = profileData as DoctorProfile;
-
-  if (doctorProfile.role !== "doctor") {
-    redirect("/login");
-  }
-
-  const { data: verificationData, error: verificationError } = await supabase
-    .from("doctor_verifications")
-    .select(
-      `
-      doctor_id,
-      str_number,
-      specialization,
-      document_url,
-      verification_status,
-      rejection_reason,
-      revision_note,
-      reviewed_by,
-      reviewed_at,
-      created_at,
-      updated_at
-      `,
-    )
-    .eq("doctor_id", doctorProfile.id)
-    .maybeSingle();
-
-  if (verificationError) {
-    console.error("Failed to fetch doctor verification status:", {
-      message: verificationError.message,
-      details: verificationError.details,
-      hint: verificationError.hint,
-      code: verificationError.code,
-    });
-  }
-
-  const verification = verificationData as DoctorVerification | null;
   const normalizedStatus = normalizeStatus(verification?.verification_status);
   const statusConfig = getStatusConfig(verification?.verification_status);
   const verificationSteps = getVerificationSteps(verification);
@@ -454,7 +409,7 @@ export default async function VerificationStatusPage() {
   const isActive = doctorProfile.is_active !== false;
 
   if (isApproved && isActive) {
-    redirect("/doctor/dashboard");
+    redirect("/api/auth/sync");
   }
 
   const statusIcon =
@@ -599,7 +554,7 @@ export default async function VerificationStatusPage() {
                   <div className='flex justify-between gap-4'>
                     <span className='font-semibold text-slate-500'>Email</span>
                     <span className='max-w-44 truncate text-right font-bold text-slate-800'>
-                      {doctorProfile.email ?? user.email ?? "-"}
+                      {doctorProfile.email ?? "-"}
                     </span>
                   </div>
 

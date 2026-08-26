@@ -1,5 +1,5 @@
 import { requireAdminProfile } from "@/lib/admin-auth";
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 
 import type { UserRow, UsersPageData } from "./users-types";
 
@@ -16,37 +16,64 @@ function formatDate(date: string | null | undefined) {
   }).format(new Date(date));
 }
 
+function formatGender(gender: string | null | undefined) {
+  if (!gender) return "-";
+  if (gender === "laki_laki") return "Laki-laki";
+  if (gender === "perempuan") return "Perempuan";
+  return gender;
+}
+
+interface UserApi {
+  id: string;
+  uuid: string;
+  full_name: string;
+  email: string;
+  created_at: string;
+  gender?: string;
+  age?: number | string;
+}
+
 type GetUsersPageDataParams = {
   page?: number;
+  search?: string;
 };
 
 export async function getUsersPageData({
   page = 1,
+  search = "",
 }: GetUsersPageDataParams = {}): Promise<UsersPageData> {
   await requireAdminProfile();
 
-  const supabase = await createClient();
-
   const safePage = Number.isNaN(page) || page < 1 ? 1 : page;
   const from = (safePage - 1) * PAGE_SIZE;
-  const to = from + PAGE_SIZE - 1;
+  const searchQuery = search ? `&search=${search}` : "";
 
-  const { data, error, count } = await supabase
-    .from("profiles")
-    .select("id, full_name, email, created_at", {
-      count: "exact",
-    })
-    .eq("role", "user")
-    .order("created_at", { ascending: false })
-    .range(from, to);
+  try {
+    const res = await fetchApi<UserApi[]>(
+      `/admin/users?role=user&page=${safePage}&per_page=${PAGE_SIZE}${searchQuery}`,
+    );
 
-  if (error) {
-    console.error("Failed to fetch users:", {
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-      code: error.code,
-    });
+    const users: UserRow[] = (res.data ?? []).map((user: UserApi, index: number) => ({
+      id: user.uuid || user.id,
+      no: from + index + 1,
+      username: user.full_name ?? "User",
+      email: user.email ?? "-",
+      join: formatDate(user.created_at),
+      gender: formatGender(user.gender),
+      age: user.age ?? "-",
+    }));
+
+    return {
+      users,
+      pagination: {
+        currentPage: safePage,
+        totalPages: res.meta?.last_page ?? 1,
+        totalItems: res.meta?.total ?? 0,
+        pageSize: PAGE_SIZE,
+      },
+    };
+  } catch (error) {
+    console.error("Failed to fetch users:", error);
 
     return {
       users: [],
@@ -58,25 +85,4 @@ export async function getUsersPageData({
       },
     };
   }
-
-  const users: UserRow[] = (data ?? []).map((user, index) => ({
-    id: user.id,
-    no: from + index + 1,
-    username: user.full_name ?? "User",
-    email: user.email ?? "-",
-    join: formatDate(user.created_at),
-  }));
-
-  const totalItems = count ?? 0;
-  const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_SIZE));
-
-  return {
-    users,
-    pagination: {
-      currentPage: safePage,
-      totalPages,
-      totalItems,
-      pageSize: PAGE_SIZE,
-    },
-  };
 }

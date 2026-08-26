@@ -4,6 +4,8 @@ import { DoctorProfileMenu } from "@/components/doctor/doctor-profile-menu";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
+import { NotificationBell } from "@/components/shared/notification-bell";
+
 type DoctorHeaderProps = {
   title: string;
   description?: string;
@@ -11,6 +13,9 @@ type DoctorHeaderProps = {
   actions?: ReactNode;
   avatar?: ReactNode;
   className?: string;
+  initialDisplayName?: string;
+  userId?: number | string | null;
+  userUuid?: string | null;
 };
 
 function SearchIcon() {
@@ -34,6 +39,9 @@ export function DoctorHeader({
   actions,
   avatar,
   className,
+  initialDisplayName,
+  userId,
+  userUuid,
 }: DoctorHeaderProps) {
   return (
     <header
@@ -43,26 +51,16 @@ export function DoctorHeader({
         className
       )}
     >
-      {/* Mobile: page title */}
-      <div className="flex min-w-0 flex-1 items-center md:hidden">
-        <h1 className="truncate text-base font-bold text-slate-800">{title}</h1>
-      </div>
-
-      {/* Desktop: search bar */}
-      <div className="hidden min-w-0 flex-1 items-center md:flex">
-        <div className="relative w-full max-w-105">
-          <SearchIcon />
-          <Input
-            placeholder={searchPlaceholder}
-            className="h-10 w-full rounded-xl border-slate-200 bg-white pl-10 pr-4 text-sm shadow-sm dark:border-slate-200 dark:bg-white"
-          />
-        </div>
+      {/* Page title (Mobile & Desktop) */}
+      <div className="flex min-w-0 flex-1 items-center">
+        <h1 className="truncate text-base font-bold text-slate-800 sm:text-lg">{title}</h1>
       </div>
 
       {/* Desktop: actions + profile */}
       <div className="hidden items-center gap-2 md:flex sm:gap-4">
         {actions}
-        {avatar ?? <DoctorProfileMenu />}
+        <NotificationBell userId={userId} userUuid={userUuid} />
+        {avatar ?? <DoctorProfileMenu initialDisplayName={initialDisplayName} />}
       </div>
     </header>
   );

@@ -1,8 +1,12 @@
+import Link from "next/link";
 import type { SkinRecommendation } from "../_lib/history-types";
 import { BulbIcon, CalendarIcon } from "./icons";
 
 type RecommendationCardProps = {
   recommendations: SkinRecommendation[];
+  concernId?: string | null;
+  hasMore?: boolean;
+  historyId?: string;
 };
 
 function getProduct(item: SkinRecommendation) {
@@ -17,6 +21,9 @@ function getProduct(item: SkinRecommendation) {
 
 export function RecommendationCard({
   recommendations,
+  concernId,
+  hasMore,
+  historyId,
 }: RecommendationCardProps) {
   return (
     <section className='rounded-3xl bg-white p-7 shadow-sm ring-1 ring-slate-100'>
@@ -129,6 +136,17 @@ export function RecommendationCard({
           </div>
         )}
       </div>
+
+      {hasMore && concernId && (
+        <div className='mt-6 text-center'>
+          <Link
+            href={`/user/recommendations?concern_id=${concernId}&history_id=${historyId || ""}`}
+            className='inline-flex items-center justify-center rounded-xl bg-emerald-50 px-5 py-2.5 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-100'
+          >
+            Lihat Semua Rekomendasi
+          </Link>
+        </div>
+      )}
     </section>
   );
 }

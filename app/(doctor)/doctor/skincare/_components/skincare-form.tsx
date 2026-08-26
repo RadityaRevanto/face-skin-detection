@@ -31,6 +31,7 @@ type SkincareFormProps = {
     usageInstruction?: string;
     warning?: string;
     isActive?: boolean;
+    genderSuitability?: string;
   };
 };
 
@@ -71,6 +72,9 @@ export function SkincareForm({
   );
   const [warning, setWarning] = useState(defaultValues?.warning ?? "");
   const [isActive, setIsActive] = useState(defaultValues?.isActive ?? true);
+  const [genderSuitability, setGenderSuitability] = useState(
+    defaultValues?.genderSuitability ?? "unisex",
+  );
 
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -137,6 +141,7 @@ export function SkincareForm({
           usageInstruction: trimmedUsageInstruction,
           warning: trimmedWarning || null,
           isActive,
+          genderSuitability,
         }),
       });
 
@@ -274,6 +279,26 @@ export function SkincareForm({
               ))}
             </select>
           </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor='genderSuitability'
+            className='mb-2 block text-sm font-semibold text-gray-700'
+          >
+            Peruntukan Gender
+          </label>
+
+          <select
+            id='genderSuitability'
+            value={genderSuitability}
+            onChange={(event) => setGenderSuitability(event.target.value)}
+            className='h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 text-sm font-medium text-gray-700 outline-none transition-colors focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+          >
+            <option value='unisex'>Unisex</option>
+            <option value='laki_laki'>Laki-laki</option>
+            <option value='perempuan'>Perempuan</option>
+          </select>
         </div>
 
         <div>

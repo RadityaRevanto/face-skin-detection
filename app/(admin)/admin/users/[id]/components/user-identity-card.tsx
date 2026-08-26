@@ -25,29 +25,29 @@ export function UserIdentityCard({ user }: UserIdentityCardProps) {
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={user.avatarUrl}
-                alt={user.username}
+                alt={user.name}
                 className='h-full w-full object-cover'
               />
             ) : (
-              getInitials(user.username)
+              getInitials(user.name)
             )}
           </div>
 
           <div>
-            <h4 className='text-lg font-bold text-gray-900'>{user.username}</h4>
+            <h4 className='text-lg font-bold text-gray-900'>{user.name}</h4>
             <p className='text-sm text-gray-500'>{user.email}</p>
           </div>
         </div>
 
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-          <InfoBox label='Username' value={user.username} />
+          <InfoBox label='Nama' value={user.name} />
           <InfoBox label='Email' value={user.email} />
           <InfoBox label='Role' value='User' />
           <InfoBox
             label='Status Akun'
             value={user.isActive ? "Active" : "Inactive"}
           />
-          <InfoBox label='Tanggal Bergabung' value={user.joinedAt} />
+          <InfoBox label='Tanggal Bergabung' value={user.createdAt} />
         </div>
       </div>
     </Card>

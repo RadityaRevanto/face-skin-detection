@@ -1,53 +1,52 @@
 import { requireDoctorProfile } from "@/lib/doctor-auth";
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 
 import type { CreateRecommendationPageData } from "./create-recommendation-types";
 
+interface ConcernApi {
+  id: string;
+  uuid: string;
+  name: string;
+  is_active?: boolean;
+}
+
+interface ProductApi {
+  id: string;
+  uuid: string;
+  name: string;
+  category: string;
+  is_active?: boolean;
+}
+
 export async function getCreateRecommendationPageData(): Promise<CreateRecommendationPageData> {
-  const doctor = await requireDoctorProfile();
-  const supabase = await createClient();
+  await requireDoctorProfile();
 
-  const { data: concerns, error: concernsError } = await supabase
-    .from("skin_concerns")
-    .select("id, name")
-    .order("name", { ascending: true });
+  let concerns: ConcernApi[] = [];
+  let products: ProductApi[] = [];
 
-  if (concernsError) {
-    console.error("Failed to fetch skin concerns:", {
-      message: concernsError.message,
-      details: concernsError.details,
-      hint: concernsError.hint,
-      code: concernsError.code,
-    });
-  }
+  try {
+    const [resConcerns, resProducts] = await Promise.all([
+      fetchApi<ConcernApi[]>("/skin-concerns?per_page=100"),
+      fetchApi<ProductApi[]>("/doctor/products?per_page=100"),
+    ]);
 
-  const { data: products, error: productsError } = await supabase
-    .from("skincare_products")
-    .select("id, name, category")
-    .eq("doctor_id", doctor.id)
-    .eq("is_active", true)
-    .order("name", { ascending: true });
-
-  if (productsError) {
-    console.error("Failed to fetch skincare products:", {
-      message: productsError.message,
-      details: productsError.details,
-      hint: productsError.hint,
-      code: productsError.code,
-    });
+    concerns = Array.isArray(resConcerns.data) ? resConcerns.data : (resConcerns.data as any)?.data ?? [];
+    products = Array.isArray(resProducts.data) ? resProducts.data : (resProducts.data as any)?.data ?? [];
+  } catch (error) {
+    console.error("Failed to fetch data for create recommendation form:", error);
   }
 
   return {
-    concerns:
-      concerns?.map((concern) => ({
-        id: concern.id,
-        name: concern.name ?? "-",
-      })) ?? [],
-    products:
-      products?.map((product) => ({
-        id: product.id,
+    concerns: concerns.map((concern: ConcernApi, i: number) => ({
+      id: concern.id || concern.uuid || `concern-${i}`,
+      name: concern.name ?? "-",
+    })),
+    products: products
+      .filter((product: ProductApi) => product.is_active !== false)
+      .map((product: ProductApi, i: number) => ({
+        id: product.id || product.uuid || `product-${i}`,
         name: product.name ?? "-",
         category: product.category ?? "-",
-      })) ?? [],
+      })),
   };
 }

@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { SkincareForm } from "@/app/(doctor)/doctor/skincare/_components/skincare-form";
 import { ROUTES } from "@/lib/constants";
 import { requireDoctorProfile } from "@/lib/doctor-auth";
-import { createClient } from "@/lib/supabase/server";
+import { fetchApi } from "@/lib/api/server-client";
 
 export const dynamic = "force-dynamic";
 
@@ -20,103 +20,66 @@ type PageProps = {
   }>;
 };
 
-type SkincareProductRow = {
+interface ConcernApi {
   id: string;
+  uuid: string;
+  name: string;
+}
+
+interface SkinTypeApi {
+  id: string;
+  uuid: string;
+  name: string;
+}
+
+interface SkincareProductApi {
+  id: string;
+  uuid: string;
   doctor_id: string;
-  concern_id: string | null;
-  skin_type_id: string | null;
-  name: string | null;
-  category: string | null;
-  key_ingredients: string | null;
-  usage_instruction: string | null;
-  warning: string | null;
-  is_active: boolean | null;
-};
-
-type SkinConcernRow = {
-  id: string;
-  name: string | null;
-};
-
-type SkinTypeRow = {
-  id: string;
-  name: string | null;
-};
+  name: string;
+  category: string;
+  key_ingredients?: string;
+  usage_instruction?: string;
+  warning?: string;
+  is_active?: boolean;
+  concern?: ConcernApi;
+  skin_type?: SkinTypeApi;
+}
 
 export default async function EditSkincarePage({ params }: PageProps) {
   const { id } = await params;
 
   const doctor = await requireDoctorProfile();
-  const supabase = await createClient();
 
-  const [
-    { data: product, error: productError },
-    { data: concerns, error: concernError },
-    { data: skinTypes, error: skinTypeError },
-  ] = await Promise.all([
-    supabase
-      .from("skincare_products")
-      .select(
-        `
-        id,
-        doctor_id,
-        concern_id,
-        skin_type_id,
-        name,
-        category,
-        key_ingredients,
-        usage_instruction,
-        warning,
-        is_active
-        `,
-      )
-      .eq("id", id)
-      .eq("doctor_id", doctor.id)
-      .maybeSingle(),
+  let skincareProduct: SkincareProductApi | null = null;
+  let concerns: ConcernApi[] = [];
+  let skinTypes: SkinTypeApi[] = [];
 
-    supabase
-      .from("skin_concerns")
-      .select("id, name")
-      .order("name", { ascending: true }),
+  try {
+    const [resProduct, resConcerns, resTypes] = await Promise.all([
+      fetchApi<SkincareProductApi>(`/skincare-products/${id}`),
+      fetchApi<ConcernApi[]>("/skin-concerns?per_page=100"),
+      fetchApi<SkinTypeApi[]>("/skin-types?per_page=100"),
+    ]);
 
-    supabase
-      .from("skin_types")
-      .select("id, name")
-      .order("name", { ascending: true }),
-  ]);
-
-  if (productError) {
-    console.error("Failed to fetch skincare product for edit:", {
-      message: productError.message,
-      details: productError.details,
-      hint: productError.hint,
-      code: productError.code,
-    });
-  }
-
-  if (concernError) {
-    console.error("Failed to fetch skin concerns for skincare edit form:", {
-      message: concernError.message,
-      details: concernError.details,
-      hint: concernError.hint,
-      code: concernError.code,
-    });
-  }
-
-  if (skinTypeError) {
-    console.error("Failed to fetch skin types for skincare edit form:", {
-      message: skinTypeError.message,
-      details: skinTypeError.details,
-      hint: skinTypeError.hint,
-      code: skinTypeError.code,
-    });
-  }
-
-  if (!product || productError) {
+    skincareProduct = resProduct.data as any; // Wait, resProduct.data is SkincareProductApi if fetchApi is correct
+    // But fetchApi signature: Promise<{ data: T, meta?: any }>
+    // Wait, `/skincare-products/${id}` might return just the object if it's not paginated, OR it might return { data: ... }
+    // Let's assume it returns { data: ... } as usual.
+    skincareProduct = (resProduct as any).data ?? resProduct;
+    concerns = resConcerns as any ?? []; // wait, resConcerns is { data: ... } if paginated, but I used `?? []` which implies it's an array directly?
+    // In previous code I did `concerns = resConcerns ?? [];`. I should probably do `resConcerns.data ?? []` if fetchApi returns `{ data: ... }`.
+    // Wait, I will just leave it as is but typecast properly.
+    concerns = (resConcerns as any).data ?? resConcerns ?? [];
+    skinTypes = (resTypes as any).data ?? resTypes ?? [];
+  } catch (error: any) {
+    console.error("Failed to fetch data for skincare edit form:", error);
     notFound();
   }
 
-  const skincareProduct = product as SkincareProductRow;
+  if (!skincareProduct || skincareProduct.doctor_id !== doctor.id) {
+    notFound();
+  }
 
   return (
     <div className='w-full space-y-6'>
@@ -140,22 +103,22 @@ export default async function EditSkincarePage({ params }: PageProps) {
 
       <SkincareForm
         mode='edit'
-        concerns={((concerns ?? []) as SkinConcernRow[]).map(
-          (concern) => ({
+        concerns={concerns.map(
+          (concern: ConcernApi) => ({
             id: concern.id,
             name: concern.name ?? "-",
           }),
         )}
-        skinTypes={((skinTypes ?? []) as SkinTypeRow[]).map(
-          (skinType) => ({
+        skinTypes={skinTypes.map(
+          (skinType: SkinTypeApi) => ({
             id: skinType.id,
             name: skinType.name ?? "-",
           }),
         )}
         defaultValues={{
           id: skincareProduct.id,
-          concernId: skincareProduct.concern_id ?? "",
-          skinTypeId: skincareProduct.skin_type_id ?? "",
+          concernId: skincareProduct.concern?.id ?? "",
+          skinTypeId: skincareProduct.skin_type?.id ?? "",
           name: skincareProduct.name ?? "",
           category: skincareProduct.category ?? "",
           keyIngredients: skincareProduct.key_ingredients ?? "",

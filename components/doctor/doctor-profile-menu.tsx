@@ -2,8 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
-import { createClient } from "@/lib/supabase/client";
+import { logoutAction } from "@/lib/auth/actions";
 
 function getInitials(name: string) {
   return name
@@ -25,43 +26,24 @@ function LogoutIcon() {
 
 type DoctorProfileMenuProps = {
   variant?: "dropdown" | "inline";
+  initialDisplayName?: string;
+  initialAvatarUrl?: string | null;
 };
 
-export function DoctorProfileMenu({ variant = "dropdown" }: DoctorProfileMenuProps) {
+export function DoctorProfileMenu({ 
+  variant = "dropdown",
+  initialDisplayName = "Dokter",
+  initialAvatarUrl = null,
+}: DoctorProfileMenuProps) {
   const router = useRouter();
-  const [displayName, setDisplayName] = useState("Dokter");
-  const [initials, setInitials] = useState("DR");
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  useEffect(() => {
-    const supabase = createClient();
-
-    async function loadProfile() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) return;
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", user.id)
-        .single();
-
-      const name = profile?.full_name ?? user.email?.split("@")[0] ?? "Dokter";
-      setDisplayName(name);
-      setInitials(getInitials(name) || "DR");
-    }
-
-    void loadProfile();
-  }, []);
+  const initials = getInitials(initialDisplayName) || "DR";
 
   async function handleLogout() {
     setIsLoggingOut(true);
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    await logoutAction();
     router.replace("/login");
     router.refresh();
   }
@@ -69,15 +51,19 @@ export function DoctorProfileMenu({ variant = "dropdown" }: DoctorProfileMenuPro
   if (variant === "inline") {
     return (
       <div className="flex flex-col gap-1">
-        <div className="flex items-center gap-3 px-1 py-2">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
-            {initials}
+        <Link href="/doctor/profile" className="flex items-center gap-3 px-1 py-2 hover:bg-slate-100 rounded-xl transition-colors">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white overflow-hidden">
+            {initialAvatarUrl ? (
+              <img src={initialAvatarUrl} alt={initialDisplayName} className="h-full w-full object-cover" />
+            ) : (
+              initials
+            )}
           </div>
           <div className="flex min-w-0 flex-col">
             <span className="text-xs font-medium text-slate-500">Masuk sebagai</span>
-            <span className="truncate text-sm font-bold text-slate-800">{displayName}</span>
+            <span className="truncate text-sm font-bold text-slate-800">{initialDisplayName}</span>
           </div>
-        </div>
+        </Link>
 
         <button
           type="button"
@@ -102,8 +88,12 @@ export function DoctorProfileMenu({ variant = "dropdown" }: DoctorProfileMenuPro
         onClick={() => setIsOpen((value) => !value)}
         className="inline-flex h-11 w-11 items-center justify-center rounded-full hover:bg-slate-100"
       >
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white">
-          {initials}
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white overflow-hidden">
+            {initialAvatarUrl ? (
+              <img src={initialAvatarUrl} alt={initialDisplayName} className="h-full w-full object-cover" />
+            ) : (
+              initials
+            )}
         </span>
       </button>
 
@@ -112,10 +102,10 @@ export function DoctorProfileMenu({ variant = "dropdown" }: DoctorProfileMenuPro
           role="menu"
           className="absolute right-0 top-full z-50 mt-3 w-64 overflow-hidden rounded-2xl border border-slate-100 bg-white p-2 shadow-xl shadow-slate-200/70"
         >
-          <div className="border-b border-slate-100 px-3 py-3">
+          <Link href="/doctor/profile" onClick={() => setIsOpen(false)} className="block border-b border-slate-100 px-3 py-3 hover:bg-slate-50 transition-colors">
             <p className="text-xs font-medium text-slate-500">Masuk sebagai</p>
-            <p className="mt-1 truncate text-sm font-bold text-slate-800">{displayName}</p>
-          </div>
+            <p className="mt-1 truncate text-sm font-bold text-slate-800">{initialDisplayName}</p>
+          </Link>
 
           <button
             type="button"

@@ -29,12 +29,15 @@ function getHeaderContent(pathname: string) {
   if (pathname.startsWith("/doctor/skin-concerns")) {
     return { title: "Skin Concern", description: "Lihat daftar skin concern yang digunakan sebagai dasar rekomendasi skincare." };
   }
+  if (pathname.startsWith("/doctor/consultations")) {
+    return { title: "Sesi Konsultasi", description: "Kelola percakapan dan konsultasi pasien." };
+  }
   return { title: "Doctor Panel", description: "Kelola data skincare dan rekomendasi." };
 }
 
-export function DoctorLayoutHeader() {
+export function DoctorLayoutHeader({ initialDisplayName, userId, userUuid }: { initialDisplayName?: string; userId?: number | string | null; userUuid?: string | null }) {
   const pathname = usePathname();
   const header = getHeaderContent(pathname);
 
-  return <DoctorHeader title={header.title} description={header.description} />;
+  return <DoctorHeader title={header.title} description={header.description} initialDisplayName={initialDisplayName} userId={userId} userUuid={userUuid} />;
 }
