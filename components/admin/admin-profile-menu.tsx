@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { logoutAction } from "@/lib/auth/actions";
@@ -18,6 +19,14 @@ function LogoutIcon() {
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
       <path d="M10 17l5-5-5-5M15 12H3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
       <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+function ShieldIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
     </svg>
   );
 }
@@ -111,6 +120,15 @@ export function AdminProfileMenu({ variant = "dropdown" }: AdminProfileMenuProps
               {displayName}
             </p>
           </div>
+
+          <Link
+            href="/admin/security"
+            onClick={() => setIsOpen(false)}
+            className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50"
+          >
+            <ShieldIcon />
+            Keamanan & Sesi
+          </Link>
 
           <button
             type="button"

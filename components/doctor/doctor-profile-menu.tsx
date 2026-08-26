@@ -24,6 +24,14 @@ function LogoutIcon() {
   );
 }
 
+function ShieldIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 type DoctorProfileMenuProps = {
   variant?: "dropdown" | "inline";
   initialDisplayName?: string;
@@ -63,6 +71,11 @@ export function DoctorProfileMenu({
             <span className="text-xs font-medium text-slate-500">Masuk sebagai</span>
             <span className="truncate text-sm font-bold text-slate-800">{initialDisplayName}</span>
           </div>
+        </Link>
+
+        <Link href="/doctor/security" className="flex w-full items-center gap-3 rounded-xl px-4 py-3 mt-1 text-left text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50">
+          <ShieldIcon />
+          Keamanan & Sesi
         </Link>
 
         <button
@@ -105,6 +118,15 @@ export function DoctorProfileMenu({
           <Link href="/doctor/profile" onClick={() => setIsOpen(false)} className="block border-b border-slate-100 px-3 py-3 hover:bg-slate-50 transition-colors">
             <p className="text-xs font-medium text-slate-500">Masuk sebagai</p>
             <p className="mt-1 truncate text-sm font-bold text-slate-800">{initialDisplayName}</p>
+          </Link>
+
+          <Link
+            href="/doctor/security"
+            onClick={() => setIsOpen(false)}
+            className="mt-2 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50"
+          >
+            <ShieldIcon />
+            Keamanan & Sesi
           </Link>
 
           <button

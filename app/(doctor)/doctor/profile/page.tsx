@@ -65,7 +65,9 @@ export default function DoctorProfilePage() {
           <Link href="/doctor/profile" className="flex items-center gap-3 px-4 py-3 bg-emerald-50 text-emerald-700 font-medium rounded-xl border border-emerald-200/50">
             <UserIcon size={18} /> Profil Akun
           </Link>
-          {/* We might add Privacy & Data here later if needed */}
+          <Link href="/doctor/security" className="flex items-center gap-3 px-4 py-3 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium rounded-xl transition-colors">
+            <Shield size={18} /> Keamanan & Sesi
+          </Link>
           
           <div className="mt-4 p-5 bg-linear-to-br from-emerald-900 to-emerald-800 rounded-2xl text-white shadow-lg relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10">

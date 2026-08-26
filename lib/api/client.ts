@@ -46,6 +46,11 @@ export async function fetchApi<T = unknown>(
   });
 
   if (!response.ok) {
+    if (response.status === 401 && typeof window !== "undefined") {
+      window.location.href = "/login?clear_session=true";
+      return new Promise(() => {}); // Prevent further execution while redirecting
+    }
+
     let errorData;
     try {
       errorData = await response.json();

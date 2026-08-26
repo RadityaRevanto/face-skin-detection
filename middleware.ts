@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 function redirectTo(request: NextRequest, pathname: string) {
   const url = request.nextUrl.clone();
   url.pathname = pathname;
+  url.search = ""; // clear search params to prevent redirect loops
   return NextResponse.redirect(url);
 }
 
@@ -17,7 +18,12 @@ export async function middleware(request: NextRequest) {
   );
 
   if (pathname === "/login" && request.nextUrl.searchParams.get("clear_session") === "true") {
-    const response = redirectTo(request, "/login");
+    // Add ?session_expired=true so the login page can show a message
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.search = "?session_expired=true";
+    
+    const response = NextResponse.redirect(url);
     response.cookies.delete("auth_token");
     response.cookies.delete("user_role");
     response.cookies.delete("user_status");

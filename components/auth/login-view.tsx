@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/lib/constants";
 import { loginAction } from "@/lib/auth/actions";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { AlertCircle } from "lucide-react";
 
 function MailIcon() {
   return (
@@ -114,6 +115,8 @@ function FieldIcon({ children }: { children: ReactNode }) {
 
 export function LoginView() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionExpired = searchParams.get("session_expired") === "true";
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -211,9 +214,17 @@ export function LoginView() {
         </div>
 
         <form onSubmit={handleSubmit} className='space-y-4'>
+          {sessionExpired && !errorMessage && (
+            <div className='rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700 flex items-start gap-2'>
+              <AlertCircle size={18} className="shrink-0 mt-0.5" />
+              <span>Sesi Anda telah berakhir atau Anda telah dikeluarkan dari perangkat lain. Silakan login kembali.</span>
+            </div>
+          )}
+          
           {errorMessage ? (
-            <div className='rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700'>
-              {errorMessage}
+            <div className='rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 flex items-start gap-2'>
+              <AlertCircle size={18} className="shrink-0 mt-0.5" />
+              <span>{errorMessage}</span>
             </div>
           ) : null}
 

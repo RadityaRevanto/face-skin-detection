@@ -41,6 +41,11 @@ export async function getConversations(page: number = 1) {
     },
   });
 
+  if (res.status === 401 && typeof window !== "undefined") {
+    window.location.href = "/login?clear_session=true";
+    return new Promise(() => {}); // Prevent execution
+  }
+
   if (!res.ok) {
     const error = await res.json();
     throw new Error(error.message || "Gagal mengambil daftar obrolan");
@@ -58,6 +63,11 @@ export async function createConversation(doctorId: string) {
     body: JSON.stringify({ doctor_id: doctorId }),
   });
 
+  if (res.status === 401 && typeof window !== "undefined") {
+    window.location.href = "/login?clear_session=true";
+    return new Promise(() => {}); // Prevent execution
+  }
+
   if (!res.ok) {
     const error = await res.json();
     throw new Error(error.message || "Gagal membuat ruang obrolan");
@@ -73,6 +83,11 @@ export async function getMessages(conversationId: string, page: number = 1) {
       "Content-Type": "application/json",
     },
   });
+
+  if (res.status === 401 && typeof window !== "undefined") {
+    window.location.href = "/login?clear_session=true";
+    return new Promise(() => {}); // Prevent execution
+  }
 
   if (!res.ok) {
     const error = await res.json();
@@ -98,6 +113,11 @@ export async function sendMessage(conversationId: string, payload: FormData | { 
 
   const res = await fetch(`/api/conversations/${conversationId}/messages`, options);
 
+  if (res.status === 401 && typeof window !== "undefined") {
+    window.location.href = "/login?clear_session=true";
+    return new Promise(() => {}); // Prevent execution
+  }
+
   if (!res.ok) {
     const error = await res.json();
     throw new Error(error.message || "Gagal mengirim pesan");
@@ -113,6 +133,11 @@ export async function getDoctors(page: number = 1) {
       "Content-Type": "application/json",
     },
   });
+
+  if (res.status === 401 && typeof window !== "undefined") {
+    window.location.href = "/login?clear_session=true";
+    return new Promise(() => {}); // Prevent execution
+  }
 
   if (!res.ok) {
     const error = await res.json();
@@ -131,6 +156,11 @@ export async function rateDoctor(doctorId: string, rating: number, review?: stri
     body: JSON.stringify({ rating, review }),
   });
 
+  if (res.status === 401 && typeof window !== "undefined") {
+    window.location.href = "/login?clear_session=true";
+    return new Promise(() => {}); // Prevent execution
+  }
+
   if (!res.ok) {
     const error = await res.json();
     throw new Error(error.message || "Gagal mengirim ulasan dokter");
@@ -146,6 +176,11 @@ export async function getDoctorRatings(doctorId: string, page: number = 1) {
       "Content-Type": "application/json",
     },
   });
+
+  if (res.status === 401 && typeof window !== "undefined") {
+    window.location.href = "/login?clear_session=true";
+    return new Promise(() => {}); // Prevent execution
+  }
 
   if (!res.ok) {
     const error = await res.json();

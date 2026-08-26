@@ -62,6 +62,14 @@ function LogoutIcon() {
   );
 }
 
+function ShieldIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 function ChatIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
@@ -236,6 +244,10 @@ export default function NavbarUsers({
                   <p className="text-xs font-medium text-slate-500">Masuk sebagai</p>
                   <p className="mt-1 truncate text-sm font-bold text-slate-800">{initialDisplayName}</p>
                 </Link>
+                <Link href="/user/security" onClick={() => setIsProfileOpen(false)} className="mt-1 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50">
+                  <ShieldIcon />
+                  Keamanan & Sesi
+                </Link>
                 <button
                   type="button"
                   role="menuitem"
@@ -276,12 +288,16 @@ export default function NavbarUsers({
             })}
           </div>
           <div className="border-t border-slate-100 pt-4 pb-2">
-            <Link href="/user/profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 mb-4 hover:bg-slate-50 p-2 rounded-xl transition-colors">
+            <Link href="/user/profile" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 mb-2 hover:bg-slate-50 p-2 rounded-xl transition-colors">
               <Avatar url={initialAvatarUrl} name={initialDisplayName} />
               <div className="flex flex-col">
                 <span className="text-xs font-medium text-slate-500">Masuk sebagai</span>
                 <span className="text-sm font-bold text-slate-800">{initialDisplayName}</span>
               </div>
+            </Link>
+            <Link href="/user/security" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-3 px-4 py-3 mb-2 mx-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+              <ShieldIcon />
+              Keamanan & Sesi
             </Link>
             <button
               type="button"
