@@ -2,8 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-import { createClient } from "@/lib/supabase/client";
+import { logoutAction } from "@/lib/auth/actions";
 
 function getInitials(name: string) {
   return name
@@ -35,30 +34,19 @@ export function AdminProfileMenu({ variant = "dropdown" }: AdminProfileMenuProps
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
-    const supabase = createClient();
-
     async function loadProfile() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        return;
+      try {
+        const res = await fetch("/api/profile");
+        const json = await res.json();
+        if (json && json.data) {
+          const profile = json.data;
+          const name = profile.full_name || profile.email?.split("@")[0] || "Admin";
+          setDisplayName(name);
+          setInitials(getInitials(name) || "AU");
+        }
+      } catch (error) {
+        console.error("Failed to load admin profile", error);
       }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", user.id)
-        .single();
-
-      const name =
-        profile?.full_name ??
-        user.email?.split("@")[0] ??
-        "Admin";
-
-      setDisplayName(name);
-      setInitials(getInitials(name) || "AU");
     }
 
     void loadProfile();
@@ -66,10 +54,7 @@ export function AdminProfileMenu({ variant = "dropdown" }: AdminProfileMenuProps
 
   async function handleLogout() {
     setIsLoggingOut(true);
-
-    const supabase = createClient();
-    await supabase.auth.signOut();
-
+    await logoutAction();
     router.replace("/login");
     router.refresh();
   }

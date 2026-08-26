@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { Bell, Check, Trash2, X } from "lucide-react";
 import { getEcho } from "@/lib/echo";
 
@@ -23,10 +24,18 @@ interface NotificationBellProps {
 }
 
 export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
+  const pathname = usePathname();
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Menentukan basePath (apakah /user, /doctor, atau /admin)
+  const basePath = pathname.startsWith("/doctor") 
+    ? "/doctor" 
+    : pathname.startsWith("/admin") 
+      ? "/admin" 
+      : "/user";
   
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -44,6 +53,48 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
+
+  // Sync state with NotificationsPage
+  useEffect(() => {
+    const handleReadAll = () => {
+      setUnreadCount(0);
+      setNotifications((prev) => prev.map((n) => ({ ...n, read_at: new Date().toISOString() })));
+    };
+
+    const handleReadSingle = (e: Event) => {
+      const customEvent = e as CustomEvent<{ id: string }>;
+      const { id } = customEvent.detail;
+      setNotifications((prev) => {
+        const target = prev.find((n) => n.id === id);
+        if (target && !target.read_at) {
+          setUnreadCount((c) => Math.max(0, c - 1));
+        }
+        return prev.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
+      });
+    };
+
+    const handleDeleteSingle = (e: Event) => {
+      const customEvent = e as CustomEvent<{ id: string }>;
+      const { id } = customEvent.detail;
+      setNotifications((prev) => {
+        const target = prev.find((n) => n.id === id);
+        if (target && !target.read_at) {
+          setUnreadCount((c) => Math.max(0, c - 1));
+        }
+        return prev.filter((n) => n.id !== id);
+      });
+    };
+
+    window.addEventListener("notificationsReadAll", handleReadAll);
+    window.addEventListener("notificationReadSingle", handleReadSingle);
+    window.addEventListener("notificationDeletedSingle", handleDeleteSingle);
+
+    return () => {
+      window.removeEventListener("notificationsReadAll", handleReadAll);
+      window.removeEventListener("notificationReadSingle", handleReadSingle);
+      window.removeEventListener("notificationDeletedSingle", handleDeleteSingle);
+    };
+  }, []);
 
   // Fetch initial notifications
   const fetchNotifications = async () => {
@@ -235,7 +286,7 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
                   return (
                     <div
                       key={notif.id}
-                      className={`relative flex gap-3 rounded-xl p-3 transition-colors ${
+                      className={`group relative flex gap-3 rounded-xl p-3 transition-colors ${
                         isRead ? "bg-white hover:bg-slate-50" : "bg-emerald-50/50 hover:bg-emerald-50"
                       }`}
                     >
@@ -279,6 +330,17 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
                 })}
               </div>
             )}
+          </div>
+          
+          {/* Footer Link to Dedicated Page */}
+          <div className="border-t border-slate-100 p-2 bg-slate-50/50">
+            <a 
+              href={`${basePath}/notifications`}
+              onClick={() => setIsOpen(false)}
+              className="block w-full py-2 text-center text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
+            >
+              Lihat Semua Notifikasi
+            </a>
           </div>
         </div>
       )}

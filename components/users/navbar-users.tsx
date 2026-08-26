@@ -185,7 +185,7 @@ export default function NavbarUsers({
         </div>
 
         {/* Desktop Nav */}
-        <div className="absolute left-1/2 hidden h-full -translate-x-1/2 items-center justify-center gap-8 md:flex">
+        <div className="hidden h-full flex-1 items-center justify-center gap-4 lg:gap-8 md:flex mx-4 overflow-hidden">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
             return (
