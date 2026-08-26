@@ -93,21 +93,21 @@ export default function SubscriptionPage() {
 
   const executeCancel = async () => {
     if (!cancelTargetUuid) return;
-    
+
     setIsProcessing(true);
     setErrorMsg(null);
     setIsCancelModalOpen(false);
-    
+
     try {
       const res = await fetch(`/api/subscriptions/${cancelTargetUuid}/cancel`, {
         method: "POST",
       });
-      
+
       const data = await res.json();
       if (!res.ok) {
         throw new Error(data.message || "Gagal membatalkan langganan");
       }
-      
+
       fetchSubscriptions();
     } catch (err: any) {
       setErrorMsg(err.message);
@@ -141,7 +141,7 @@ export default function SubscriptionPage() {
             <div className="absolute top-0 right-0 p-8 opacity-10 rotate-12 scale-150">
               <Sparkles size={120} />
             </div>
-            
+
             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3 relative z-10">SkinCek Pro</h1>
             <p className="text-emerald-100 max-w-xl mx-auto relative z-10 text-sm sm:text-base">
               Akses konsultasi tanpa batas dengan dokter spesialis dan nikmati prioritas dalam menganalisis kesehatan kulit Anda.
@@ -184,7 +184,7 @@ export default function SubscriptionPage() {
                   </div>
                   <h2 className="text-2xl font-bold text-slate-800 mb-2">Langganan Pro</h2>
                   <p className="text-slate-500 text-sm mb-6">Konsultasi dokter tanpa batas. Bebas tanya sepuasnya.</p>
-                  
+
                   <div className="text-4xl font-black text-slate-900 mb-8 flex items-end justify-center gap-1">
                     Rp15.000<span className="text-base font-semibold text-slate-400 mb-1.5">/bulan</span>
                   </div>
@@ -234,12 +234,11 @@ export default function SubscriptionPage() {
                             Rp{sub.amount.toLocaleString('id-ID')}
                           </td>
                           <td className="py-3 px-4">
-                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                              sub.status === 'active' ? 'bg-emerald-100 text-emerald-700' :
-                              sub.status === 'pending' ? 'bg-amber-100 text-amber-700' :
-                              sub.status === 'cancelled' ? 'bg-red-100 text-red-700' :
-                              'bg-slate-100 text-slate-700'
-                            }`}>
+                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${sub.status === 'active' ? 'bg-emerald-100 text-emerald-700' :
+                                sub.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                                  sub.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                                    'bg-slate-100 text-slate-700'
+                              }`}>
                               {sub.status}
                             </span>
                           </td>
@@ -264,7 +263,7 @@ export default function SubscriptionPage() {
               </div>
               <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 mb-2">Batalkan Langganan?</h2>
               <p className="text-zinc-500 mb-6 text-sm sm:text-base leading-relaxed">
-                Anda akan kehilangan akses prioritas dan konsultasi tanpa batas. <br/><br/>
+                Anda akan kehilangan akses prioritas dan konsultasi tanpa batas. <br /><br />
                 <span className="font-semibold text-red-600">Peringatan:</span> Sisa waktu paket yang sudah dibayar tidak dapat di-refund (dikembalikan).
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
