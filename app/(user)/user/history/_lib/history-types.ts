@@ -20,6 +20,8 @@ export type PredictionHistory = {
   created_at: string;
   skin_concern?: SkinConcernInfo | null;
   other_concerns?: OtherConcern[];
+  disclaimer?: string;
+  notice?: string | null;
 };
 
 export type SkincareProduct = {

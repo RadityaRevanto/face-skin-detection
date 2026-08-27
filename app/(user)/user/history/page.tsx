@@ -1,24 +1,15 @@
 import type { Metadata } from "next";
 
-import { AnalysisPhotoCard } from "./_components/analysis-photo-card";
-import { ConditionSummaryCard } from "./_components/condition-summary-card";
-import { ExaminationInfoCard } from "./_components/examination-info-card";
-import { HistoryResultHeader } from "./_components/history-result-header";
-import { HistorySidebar } from "./_components/history-sidebar";
-import { NoteCard } from "./_components/note-card";
-import { ProblemDetailsCard } from "./_components/problem-details-card";
+import { HistoryList } from "./_components/history-list";
+import { HistoryDetail } from "./_components/history-detail";
 import { RecommendationCard } from "./_components/recommendation-card";
-import { ScanFeedbackCard } from "./_components/scan-feedback-card";
 import {
   getPredictionHistories,
   getRecommendations,
 } from "./_lib/history-query";
 import {
-  formatDate,
-  getConfidencePercent,
-  getProblemDetails,
-  getToneBySeverity,
-} from "./_lib/history-utils";
+  getConcernDisplayName,
+} from "@/lib/utils/skin-labels";
 
 export const metadata: Metadata = {
   title: "History | Face Skin Detection",
@@ -41,77 +32,46 @@ export default async function HistoryPage({ searchParams }: HistoryPageProps) {
     histories[0] ??
     null;
 
-  const tone = getToneBySeverity(
-    selectedHistory?.severity_level ?? null,
-    selectedHistory?.severity_score ?? null,
-  );
-
-  const problemDetails = getProblemDetails(selectedHistory);
-
   const { recommendations, mlLabel, hasMore } = await getRecommendations(
     selectedHistory?.predicted_class ?? null,
   );
 
-  const selectedDate = selectedHistory
-    ? formatDate(selectedHistory.created_at)
-    : "-";
-
-  const selectedConfidence = getConfidencePercent(selectedHistory?.confidence);
-
-  const scanMethod =
-    selectedHistory?.scan_mode === "livecam"
-      ? "Live Camera - Real-time Detection"
-      : "Upload Image - Classification";
-
   return (
-    <main className='grid w-full items-start gap-6 px-4 py-6 sm:px-10 sm:py-8 lg:grid-cols-[360px_1fr] lg:px-12'>
-      <HistorySidebar
-        histories={histories}
-        selectedHistoryId={selectedHistory?.id}
-      />
-
-      <section className='min-w-0 space-y-6'>
-        <HistoryResultHeader
-          selectedHistory={selectedHistory}
-          selectedDate={selectedDate}
-          tone={tone}
+    <div className="grid w-full gap-6 lg:grid-cols-[380px_1fr]">
+      {/* Left: History list */}
+      <div className="h-fit lg:sticky lg:top-20">
+        <HistoryList
+          histories={histories}
+          selectedHistoryId={selectedHistory?.id}
         />
+      </div>
 
-        <div className='grid gap-6 xl:grid-cols-[1fr_430px]'>
-          <div className='min-w-0 space-y-6'>
-            <AnalysisPhotoCard
-              selectedHistory={selectedHistory}
-              problemDetails={problemDetails}
-            />
-
-            <ExaminationInfoCard
-              selectedDate={selectedDate}
-              scanMethod={scanMethod}
-            />
-          </div>
-
-          <aside className='min-w-0 space-y-6'>
-            <ConditionSummaryCard
-              selectedHistory={selectedHistory}
-              selectedConfidence={selectedConfidence}
-              tone={tone}
-            />
-
-            <ScanFeedbackCard historyId={selectedHistory?.id} />
-
-            <ProblemDetailsCard problemDetails={problemDetails} />
+      {/* Right: Detail view */}
+      <div className="min-w-0 space-y-6">
+        {selectedHistory ? (
+          <>
+            <HistoryDetail history={selectedHistory} />
 
             <RecommendationCard
               recommendations={recommendations}
               mlLabel={mlLabel}
               hasMore={hasMore}
-              historyId={selectedHistory?.id}
+              historyId={selectedHistory.id}
             />
-          </aside>
-        </div>
-
-        <NoteCard />
-      </section>
-    </main>
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white py-20 text-center">
+            <div className="grid h-16 w-16 place-items-center rounded-full bg-slate-100">
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-8 w-8 text-slate-400">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" />
+                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </div>
+            <p className="mt-4 text-lg font-bold text-slate-900">Belum Ada Riwayat</p>
+            <p className="mt-1 text-sm text-slate-500">Lakukan pemeriksaan terlebih dahulu untuk melihat hasilnya di sini.</p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
