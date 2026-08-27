@@ -41,7 +41,7 @@ export function ConversationSidebar({
         <p className="text-zinc-500 mt-2 text-sm sm:text-base leading-relaxed">Tanya jawab langsung dengan dokter spesialis kami mengenai hasil skin check Anda.</p>
       </div>
 
-      <div className="flex flex-col sm:flex-row lg:flex-col items-start sm:items-center lg:items-start gap-4 bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm shadow-emerald-900/5 shrink-0">
+      <div className="flex flex-row items-center gap-4 bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm shadow-emerald-900/5 shrink-0">
         {userProfile?.subscription_status === "Pro" ? (
           <>
             <div className="flex -space-x-2">
@@ -75,7 +75,7 @@ export function ConversationSidebar({
       </div>
 
       <div className={`flex flex-1 min-w-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60 ${showSidebar ? "min-h-100 lg:min-h-0" : "min-h-0"}`}>
-        <div className={`${showSidebar ? "flex" : "hidden"} md:flex w-full md:w-80 lg:w-96 border-r border-zinc-100 flex-col`}>
+        <div className={`${showSidebar ? "flex" : "hidden"} md:flex w-full border-r border-zinc-100 flex-col`}>
           <div className="p-5 border-b border-zinc-100 flex items-center justify-between">
             <h2 className="font-semibold text-zinc-800 text-lg">Pesan</h2>
             <button 

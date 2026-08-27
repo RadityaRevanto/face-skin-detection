@@ -176,3 +176,18 @@ export function FieldIcon({ children }: { children: ReactNode }) {
     </span>
   );
 }
+
+export function BackgroundLeaf({ className }: { className?: string }) {
+  return (
+    <svg aria-hidden='true' className={className} viewBox='0 0 48 48' fill='none'>
+      <path
+        d='M30.5 4.5C19 8.8 11 17.2 11 27.4c0 8.3 5.5 14.2 13.3 15.7C22.7 31 25.9 20 34.8 11.8c-4.2 8-5.3 16.6-2.8 25.4C39 33.3 43 26.6 43 18.8c0-5.5-2.1-10.4-5.4-14.3-2.2-.6-4.5-.6-7.1 0Z'
+        fill='#10B981'
+      />
+      <path
+        d='M23.8 42.9C14.6 39.7 5 32.2 5 21.6c0-5.1 2-9.5 5.1-12.9C18 14.4 22.8 23.1 23.8 42.9Z'
+        fill='#047857'
+      />
+    </svg>
+  );
+}
