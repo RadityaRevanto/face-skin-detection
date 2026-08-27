@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getProfile, UserProfile } from "@/lib/api/profile-query";
-import { User as UserIcon, Shield, CreditCard, Clock, Download, Trash2, Bot, AlertTriangle } from "lucide-react";
+import { User as UserIcon, Shield, KeyRound, CreditCard, Clock, Download, Trash2, Bot, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -67,7 +67,9 @@ export default function UserPrivacyPage() {
       const res = await fetch("/api/profile/export", { method: "POST" });
       const json = await res.json();
       if (json.data?.download_url) {
-        window.location.href = json.data.download_url;
+        const backendUrl = new URL(json.data.download_url);
+        const proxyUrl = `/api/profile/exports/download${backendUrl.search}`;
+        window.location.href = proxyUrl;
       } else {
         alert(json.meta?.message || json.message || "Fitur ekspor data sedang dalam pengembangan oleh tim backend (Endpoint belum siap).");
       }
@@ -124,6 +126,9 @@ export default function UserPrivacyPage() {
         <div className="w-full lg:w-64 shrink-0 flex flex-col gap-2">
           <Link href="/user/profile" className="flex items-center gap-3 px-4 py-3 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium rounded-xl transition-colors">
             <UserIcon size={18} /> Profil Akun
+          </Link>
+          <Link href="/user/profile/login-security" className="flex items-center gap-3 px-4 py-3 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium rounded-xl transition-colors">
+            <KeyRound size={18} /> Login & Keamanan
           </Link>
           <Link href="/user/profile/privacy" className="flex items-center gap-3 px-4 py-3 bg-emerald-50 text-emerald-700 font-medium rounded-xl border border-emerald-200/50">
             <Shield size={18} /> Privasi & Data
