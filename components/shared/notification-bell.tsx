@@ -2,26 +2,10 @@
 
 import { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { Bell, Check, Trash2, X } from "lucide-react";
+import { Bell } from "lucide-react";
 import { getEcho } from "@/lib/echo";
-
-export type NotificationData = {
-  id: string;
-  title?: string;
-  body?: string;
-  read_at: string | null;
-  created_at: string;
-  data?: {
-    title?: string;
-    body?: string;
-    conversation_id?: string;
-  };
-};
-
-interface NotificationBellProps {
-  userId?: number | string | null;
-  userUuid?: string | null;
-}
+import type { NotificationBellProps, NotificationData } from "./notification-types";
+import { NotificationModal } from "./notification-modal";
 
 export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
   const pathname = usePathname();
@@ -29,14 +13,14 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Menentukan basePath (apakah /user, /doctor, atau /admin)
-  const basePath = pathname.startsWith("/doctor") 
-    ? "/doctor" 
-    : pathname.startsWith("/admin") 
-      ? "/admin" 
+  const basePath = pathname.startsWith("/doctor")
+    ? "/doctor"
+    : pathname.startsWith("/admin")
+      ? "/admin"
       : "/user";
-  
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
@@ -102,7 +86,7 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
       setIsLoading(true);
       const res = await fetch("/api/notifications?per_page=10");
       const json = await res.json();
-      
+
       if (json.data && Array.isArray(json.data)) {
         setNotifications(json.data);
       }
@@ -222,119 +206,17 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
 
       {/* Dropdown / Modal */}
       {isOpen && (
-        <div
-          className={`
-            fixed md:absolute right-0 z-50 flex flex-col bg-white overflow-hidden shadow-2xl transition-all
-            
-            /* Mobile: Fullscreen sliding from bottom or center */
-            bottom-0 left-0 w-full h-[85vh] rounded-t-3xl md:bottom-auto md:left-auto
-            
-            /* Desktop: Dropdown */
-            md:top-full md:mt-3 md:w-80 md:h-auto md:max-h-125 md:rounded-2xl md:border md:border-slate-100
-          `}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-            <h3 className="font-bold text-slate-900">Notifikasi</h3>
-            <div className="flex items-center gap-3">
-              {unreadCount > 0 && (
-                <button
-                  onClick={markAllAsRead}
-                  className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 flex items-center gap-1"
-                >
-                  <Check size={14} /> Tandai dibaca
-                </button>
-              )}
-              <button
-                className="md:hidden text-slate-400 hover:text-slate-600 p-1"
-                onClick={() => setIsOpen(false)}
-              >
-                <X size={18} />
-              </button>
-            </div>
-          </div>
-
-          {/* List */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden p-2">
-            {isLoading && notifications.length === 0 ? (
-              <div className="flex items-center justify-center py-10">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent"></div>
-              </div>
-            ) : notifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div className="bg-slate-50 p-3 rounded-full mb-3 text-slate-300">
-                  <Bell size={24} />
-                </div>
-                <p className="text-sm font-medium text-slate-900">Belum ada notifikasi</p>
-                <p className="text-xs text-slate-500 mt-1">Notifikasi baru akan muncul di sini</p>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-1">
-                {notifications.map((notif) => {
-                  const title = notif.title || notif.data?.title || "Notifikasi Baru";
-                  const body = notif.body || notif.data?.body || "";
-                  const isRead = !!notif.read_at;
-
-                  return (
-                    <div
-                      key={notif.id}
-                      className={`group relative flex gap-3 rounded-xl p-3 transition-colors ${
-                        isRead ? "bg-white hover:bg-slate-50" : "bg-emerald-50/50 hover:bg-emerald-50"
-                      }`}
-                    >
-                      {!isRead && (
-                        <div className="absolute top-4 left-2 h-2 w-2 rounded-full bg-emerald-500" />
-                      )}
-                      <div className={`flex-1 ${!isRead ? "pl-3" : ""}`}>
-                        <div className="flex justify-between items-start mb-1">
-                          <h4 className={`text-sm ${isRead ? "font-medium text-slate-700" : "font-semibold text-slate-900"}`}>
-                            {title}
-                          </h4>
-                        </div>
-                        <p className="text-xs text-slate-600 line-clamp-2 mb-2 leading-relaxed">
-                          {body}
-                        </p>
-                        <span className="text-[10px] font-medium text-slate-400">
-                          {formatTime(notif.created_at)}
-                        </span>
-                      </div>
-                      
-                      <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity absolute right-2 top-2">
-                        {!isRead && (
-                          <button
-                            onClick={() => markAsRead(notif.id)}
-                            className="p-1.5 text-emerald-600 bg-white rounded-md shadow-sm border border-emerald-100 hover:bg-emerald-50"
-                            title="Tandai dibaca"
-                          >
-                            <Check size={12} />
-                          </button>
-                        )}
-                        <button
-                          onClick={() => deleteNotification(notif.id)}
-                          className="p-1.5 text-rose-500 bg-white rounded-md shadow-sm border border-rose-100 hover:bg-rose-50"
-                          title="Hapus"
-                        >
-                          <Trash2 size={12} />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          
-          {/* Footer Link to Dedicated Page */}
-          <div className="border-t border-slate-100 p-2 bg-slate-50/50">
-            <a 
-              href={`${basePath}/notifications`}
-              onClick={() => setIsOpen(false)}
-              className="block w-full py-2 text-center text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-colors"
-            >
-              Lihat Semua Notifikasi
-            </a>
-          </div>
-        </div>
+        <NotificationModal
+          notifications={notifications}
+          unreadCount={unreadCount}
+          isLoading={isLoading}
+          basePath={basePath}
+          formatTime={formatTime}
+          markAllAsRead={markAllAsRead}
+          markAsRead={markAsRead}
+          deleteNotification={deleteNotification}
+          onClose={() => setIsOpen(false)}
+        />
       )}
     </div>
   );

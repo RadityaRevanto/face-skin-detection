@@ -4,6 +4,10 @@ import { redirect } from "next/navigation";
 import { fetchApi } from "@/lib/api/server-client";
 import { getDashboardData } from "./_lib/dashboard-query";
 
+import { DashboardGreeting } from "./_components/dashboard-greeting";
+import { DashboardQuickActions } from "./_components/dashboard-quick-actions";
+import { DashboardRecentConversations } from "./_components/dashboard-recent-conversations";
+
 
 export const metadata: Metadata = {
   title: "Dashboard Dokter | Face Skin Detection",
@@ -59,19 +63,7 @@ export default async function DoctorDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Greeting */}
-      <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-600">
-          Dashboard
-        </p>
-        <h1 className="mt-3 text-2xl font-bold tracking-tight text-slate-950">
-          Selamat datang, {doctorProfile?.full_name ?? "Dokter"}
-        </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-          Kelola produk skincare, rekomendasi, dan pantau aktivitas konsultasi
-          pengguna dari satu tempat.
-        </p>
-      </section>
+      <DashboardGreeting fullName={doctorProfile?.full_name ?? null} />
 
       {/* Stats Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -131,90 +123,12 @@ export default async function DoctorDashboardPage() {
         />
       </div>
 
-      {/* Quick Actions */}
-      <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-          Akses Cepat
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <QuickActionLink
-            href="/doctor/consultations"
-            label="Konsultasi"
-            description="Balas chat pengguna"
-          />
-          <QuickActionLink
-            href="/doctor/skincare"
-            label="Produk Skincare"
-            description="Kelola produk"
-          />
-          <QuickActionLink
-            href="/doctor/recommendations"
-            label="Rekomendasi"
-            description="Atur rule rekomendasi"
-          />
-          <QuickActionLink
-            href="/doctor/skin-concerns"
-            label="Skin Concern"
-            description="Lihat data kondisi kulit"
-          />
-        </div>
-      </section>
+      <DashboardQuickActions />
 
-      {/* Recent Conversations */}
-      <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-            Percakapan Terbaru
-          </h2>
-          <Link
-            href="/doctor/consultations"
-            className="text-sm font-semibold text-emerald-600 hover:text-emerald-700"
-          >
-            Lihat semua
-          </Link>
-        </div>
-
-        {conversations.length === 0 ? (
-          <p className="py-8 text-center text-sm text-slate-400">
-            Belum ada percakapan.
-          </p>
-        ) : (
-          <div className="divide-y divide-slate-100">
-            {conversations.map((conv) => (
-              <Link
-                key={conv.uuid}
-                href={`/doctor/consultations?conversation=${conv.uuid}`}
-                className="flex items-center gap-4 py-3 transition-colors hover:bg-slate-50 -mx-3 px-3 rounded-xl"
-              >
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-700">
-                  {(conv.user?.full_name ?? "?").charAt(0).toUpperCase()}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="truncate text-sm font-semibold text-slate-800">
-                      {conv.user?.full_name ?? "Pengguna"}
-                    </span>
-                    {conv.message_count != null && (
-                      <span className="flex-shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">
-                        {conv.message_count} pesan
-                      </span>
-                    )}
-                  </div>
-                  {conv.last_message?.content && (
-                    <p className="mt-0.5 truncate text-xs text-slate-400">
-                      {conv.last_message.sender_role === "doctor" ? "Anda: " : ""}
-                      {conv.last_message.content}
-                    </p>
-                  )}
-                </div>
-                <span className="flex-shrink-0 text-[11px] font-medium text-slate-400">
-                  {formatRelativeTime(conv.last_message?.created_at ?? null)}
-                </span>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
+      <DashboardRecentConversations
+        conversations={conversations}
+        formatRelativeTime={formatRelativeTime}
+      />
     </div>
   );
 }
@@ -275,32 +189,5 @@ function StatCard({
         <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl ${colors.iconBg}`}>{icon}</div>
       </div>
     </div>
-  );
-}
-
-function QuickActionLink({
-  href,
-  label,
-  description,
-}: {
-  href: string;
-  label: string;
-  description: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="group flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/80 px-4 py-3 transition-all hover:border-emerald-200 hover:bg-emerald-50"
-    >
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-white text-slate-400 shadow-sm transition-colors group-hover:bg-emerald-100 group-hover:text-emerald-600">
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
-      </div>
-      <div className="min-w-0">
-        <p className="truncate text-sm font-bold text-slate-700 group-hover:text-emerald-700">{label}</p>
-        <p className="truncate text-[11px] text-slate-400">{description}</p>
-      </div>
-    </Link>
   );
 }

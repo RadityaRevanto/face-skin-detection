@@ -1,6 +1,6 @@
 "use client";
 
-export function IdlePlaceholder() {
+export function CameraPlaceholder() {
   return (
     <div className="absolute bottom-0 left-1/2 h-[500px] w-[420px] origin-bottom -translate-x-1/2 scale-[0.7] sm:scale-90 lg:scale-100">
       <div className="absolute left-1/2 top-10 h-44 w-60 -translate-x-1/2 rounded-t-full bg-slate-950" />

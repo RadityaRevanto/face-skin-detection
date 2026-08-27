@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { ROUTES } from "@/lib/constants";
-import { BackgroundLeaf, LeafLogo } from "./icons";
+import { BackgroundLeaf, LeafLogo } from "./brand-icons";
 import { RegisterForm } from "./register-form";
 import { RegisterShowcase } from "./register-showcase";
 

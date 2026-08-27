@@ -1,4 +1,4 @@
-import { LeafLogo } from "./icons";
+import { LeafLogo } from "./brand-icons";
 
 export function RegisterShowcase() {
   return (

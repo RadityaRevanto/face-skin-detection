@@ -4,36 +4,9 @@ import Link from "next/link";
 import { type FormEvent, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ROUTES } from "@/lib/constants";
-
-function HashIcon() {
-  return (
-    <svg aria-hidden='true' className='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth='1.8'>
-      <path strokeLinecap='round' strokeLinejoin='round' d='M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5' />
-    </svg>
-  );
-}
-
-function LeafLogo() {
-  return (
-    <svg aria-hidden='true' className='h-9 w-9' viewBox='0 0 48 48' fill='none'>
-      <path d='M30.5 4.5C19 8.8 11 17.2 11 27.4c0 8.3 5.5 14.2 13.3 15.7C22.7 31 25.9 20 34.8 11.8c-4.2 8-5.3 16.6-2.8 25.4C39 33.3 43 26.6 43 18.8c0-5.5-2.1-10.4-5.4-14.3-2.2-.6-4.5-.6-7.1 0Z' fill='#10B981' />
-      <path d='M23.8 42.9C14.6 39.7 5 32.2 5 21.6c0-5.1 2-9.5 5.1-12.9C18 14.4 22.8 23.1 23.8 42.9Z' fill='#047857' />
-      <path d='M12 31.5c6.6-8.1 13.5-14.4 24-20.4' stroke='white' strokeLinecap='round' strokeWidth='2' />
-    </svg>
-  );
-}
-
-function FieldIcon({ children }: { children: React.ReactNode }) {
-  return (
-    <span className='pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400'>
-      {children}
-    </span>
-  );
-}
+import { LeafLogo } from "./brand-icons";
+import { VerifyEmailForm } from "./verify-email-form";
 
 export function VerifyEmailView() {
   const router = useRouter();
@@ -89,7 +62,7 @@ export function VerifyEmailView() {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-    
+
     const otp = String(formData.get("otp") || "").trim();
 
     if (otp.length !== 6) {
@@ -148,45 +121,16 @@ export function VerifyEmailView() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className='space-y-4'>
-          {message ? (
-            <div className={`rounded-xl border px-4 py-3 text-sm font-medium ${isError ? 'border-red-200 bg-red-50 text-red-700' : 'border-emerald-200 bg-emerald-50 text-emerald-700'}`}>
-              {message}
-            </div>
-          ) : null}
-
-          <div className='space-y-2'>
-            <Label htmlFor='otp'>Kode OTP</Label>
-            <div className='relative'>
-              <FieldIcon><HashIcon /></FieldIcon>
-              <Input
-                id='otp'
-                name='otp'
-                type='text'
-                maxLength={6}
-                placeholder='123456'
-                className='h-12 rounded-xl pl-10 focus-visible:ring-emerald-500 font-mono tracking-widest text-center text-xl'
-                required
-                disabled={isLoading || (!isError && !!message && message.includes("berhasil"))}
-              />
-            </div>
-          </div>
-
-          <Button
-            variant='success'
-            className='h-12 w-full rounded-xl bg-emerald-700 text-base shadow-xl shadow-emerald-700/25 hover:bg-emerald-800 mt-4'
-            disabled={isLoading || (!isError && !!message && message.includes("berhasil"))}
-            type='submit'
-          >
-            {isLoading ? (
-              <><span className='h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white mr-2' />Memverifikasi...</>
-            ) : "Verifikasi"}
-          </Button>
-        </form>
+        <VerifyEmailForm
+          isLoading={isLoading}
+          message={message}
+          isError={isError}
+          handleSubmit={handleSubmit}
+        />
 
         <p className='text-center text-sm text-zinc-500 mt-6'>
           Belum menerima kode?{" "}
-          <button 
+          <button
             type="button"
             onClick={handleResendOTP}
             disabled={isResending}

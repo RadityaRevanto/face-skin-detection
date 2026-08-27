@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { ROUTES } from "@/lib/constants";
-import { LeafLogo } from "./icons";
+import { LeafLogo } from "./brand-icons";
 import { DoctorRegisterForm } from "./doctor-register-form";
 import { DoctorDashboardPreview } from "./dashboard-preview";
 

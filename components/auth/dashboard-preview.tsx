@@ -1,10 +1,10 @@
 import { type ReactNode } from "react";
 import {
   BadgeIcon,
-  LeafLogo,
   StethoscopeIcon,
   UserIcon,
 } from "./icons";
+import { LeafLogo } from "./brand-icons";
 
 function DashboardMenuItem({
   title,

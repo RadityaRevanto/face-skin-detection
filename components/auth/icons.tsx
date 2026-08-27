@@ -148,23 +148,10 @@ export function EyeIcon({ hidden }: { hidden?: boolean }) {
   );
 }
 
-export function LeafLogo() {
+export function HashIcon() {
   return (
-    <svg aria-hidden='true' className='h-9 w-9' viewBox='0 0 48 48' fill='none'>
-      <path
-        d='M30.5 4.5C19 8.8 11 17.2 11 27.4c0 8.3 5.5 14.2 13.3 15.7C22.7 31 25.9 20 34.8 11.8c-4.2 8-5.3 16.6-2.8 25.4C39 33.3 43 26.6 43 18.8c0-5.5-2.1-10.4-5.4-14.3-2.2-.6-4.5-.6-7.1 0Z'
-        fill='#10B981'
-      />
-      <path
-        d='M23.8 42.9C14.6 39.7 5 32.2 5 21.6c0-5.1 2-9.5 5.1-12.9C18 14.4 22.8 23.1 23.8 42.9Z'
-        fill='#047857'
-      />
-      <path
-        d='M12 31.5c6.6-8.1 13.5-14.4 24-20.4'
-        stroke='white'
-        strokeLinecap='round'
-        strokeWidth='2'
-      />
+    <svg aria-hidden='true' className='h-4 w-4' fill='none' viewBox='0 0 24 24' stroke='currentColor' strokeWidth='1.8'>
+      <path strokeLinecap='round' strokeLinejoin='round' d='M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5' />
     </svg>
   );
 }

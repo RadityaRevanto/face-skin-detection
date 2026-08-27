@@ -1,29 +1,23 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
-
 import type { LiveScanResult } from "../_lib/pemeriksaan-types";
 import { CameraIcon, RefreshIcon } from "./icons";
 import { CameraControls } from "./camera-controls";
 import { CameraView } from "./camera-view";
-import { FaceGuideOverlay } from "./face-guide-overlay";
-import { IdlePlaceholder } from "./idle-placeholder";
+import { CameraOverlays } from "./camera-overlays";
+import { CameraPlaceholder } from "./camera-placeholder";
 import { InfoBar } from "./info-bar";
-import { StatusOverlays } from "./status-overlays";
-
 type CameraPanelProps = {
   onScanComplete?: (result: LiveScanResult) => void;
   onReset?: () => void;
 };
 type ScanPhase = "idle" | "live" | "countdown" | "analyzing" | "done" | "error";
 type ModelLoadStatus = "loading" | "loaded" | "error";
-
 const STABLE_SECONDS  = 3;
 const DETECT_INTERVAL = 300;
 const FACE_PADDING    = 0.10;
 const STABLE_THRESHOLD = Math.round(1000 / DETECT_INTERVAL);
-
 export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
   const videoRef  = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -35,7 +29,6 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
   const detectTimerRef      = useRef<ReturnType<typeof setInterval> | null>(null);
   const countdownTimerRef   = useRef<ReturnType<typeof setInterval> | null>(null);
   const countdownValueRef   = useRef(STABLE_SECONDS);
-
   const [phase,        setPhase]        = useState<ScanPhase>("idle");
   const [faceDetected, setFaceDetected] = useState(false);
   const [countdown,    setCountdown]    = useState(STABLE_SECONDS);
@@ -43,9 +36,7 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
   const [errorMsg,     setErrorMsg]     = useState("");
   const [facingMode,   setFacingMode]   = useState<"user"|"environment">("user");
   const [modelStatus,  setModelStatus]  = useState<ModelLoadStatus>("loading");
-
   useEffect(() => { onScanCompleteRef.current = onScanComplete; }, [onScanComplete]);
-
   useEffect(() => {
     setModelStatus("loading");
     faceapi.nets.tinyFaceDetector.loadFromUri("/models")
@@ -53,9 +44,7 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
       .then(() => { faceModelsLoadedRef.current = true; setModelStatus("loaded"); })
       .catch((e) => { console.error("face-api load error:", e); setModelStatus("error"); });
   }, []);
-
   useEffect(() => { if (videoRef.current) videoRef.current.srcObject = streamRef.current; });
-
   useEffect(() => {
     return () => {
       streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -63,12 +52,10 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
       if (countdownTimerRef.current) clearInterval(countdownTimerRef.current);
     };
   }, []);
-
   function clearAllTimers() {
     if (detectTimerRef.current)   { clearInterval(detectTimerRef.current);   detectTimerRef.current   = null; }
     if (countdownTimerRef.current){ clearInterval(countdownTimerRef.current); countdownTimerRef.current = null; }
   }
-
   async function cropAndSend() {
     if (isScanningRef.current) return;
     isScanningRef.current = true;
@@ -108,7 +95,6 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
       setErrorMsg(err instanceof Error ? err.message : "Terjadi kesalahan."); setPhase("error");
     } finally { isScanningRef.current = false; }
   }
-
   function startCountdown() {
     if (countdownTimerRef.current) return;
     countdownValueRef.current = STABLE_SECONDS;
@@ -120,14 +106,12 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
       if (countdownValueRef.current <= 0) { clearAllTimers(); cropAndSend(); }
     }, 1000);
   }
-
   function resetCountdown() {
     if (countdownTimerRef.current) { clearInterval(countdownTimerRef.current); countdownTimerRef.current = null; }
     countdownValueRef.current = STABLE_SECONDS;
     setCountdown(STABLE_SECONDS);
     setPhase("live");
   }
-
   function startDetectionLoop() {
     if (detectTimerRef.current) return;
     detectTimerRef.current = setInterval(async () => {
@@ -147,7 +131,6 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
       }
     }, DETECT_INTERVAL);
   }
-
   async function startCamera(mode = facingMode) {
     try {
       streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -167,7 +150,6 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
       setErrorMsg("Kamera tidak bisa diakses. Izinkan akses kamera di browser Anda.");
     }
   }
-
   function stopCamera() {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
@@ -175,13 +157,11 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
     stableCountRef.current = 0; isScanningRef.current = false;
     setFaceDetected(false); setCountdown(STABLE_SECONDS); setPhase("idle");
   }
-
   async function switchCamera() {
     const next = facingMode === "user" ? "environment" : "user";
     setFacingMode(next);
     await startCamera(next);
   }
-
   function resetScan() {
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
@@ -191,10 +171,7 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
     setCountdown(STABLE_SECONDS); setPhase("idle");
     onReset?.();
   }
-
-  const isCameraOn = phase === "live" || phase === "countdown" || phase === "analyzing";
-  const mirrorClass = facingMode === "user" ? "-scale-x-100" : "";
-
+  const isCameraOn = phase === "live" || phase === "countdown" || phase === "analyzing"; const mirrorClass = facingMode === "user" ? "-scale-x-100" : "";
   return (
     <section className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-100">
       <div className="relative min-h-[440px] overflow-visible rounded-t-3xl bg-linear-to-br from-emerald-50 via-white to-cyan-50 sm:min-h-[520px] lg:min-h-[560px]">
@@ -203,9 +180,11 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
           onToggleCamera={isCameraOn ? stopCamera : () => startCamera()} onSwitchCamera={switchCamera}
         />
         <CameraView phase={phase} videoRef={videoRef} capturedDataUrl={capturedDataUrl} mirrorClass={mirrorClass} />
-        {phase === "idle" && <IdlePlaceholder />}
-        <FaceGuideOverlay phase={phase} faceDetected={faceDetected} countdown={countdown} />
-        <StatusOverlays phase={phase} modelStatus={modelStatus} errorMsg={errorMsg} onResetScan={resetScan} />
+        {phase === "idle" && <CameraPlaceholder />}
+        <CameraOverlays
+          phase={phase} faceDetected={faceDetected} countdown={countdown}
+          modelStatus={modelStatus} errorMsg={errorMsg} onResetScan={resetScan}
+        />
         <canvas ref={canvasRef} className="hidden" />
         <button type="button"
           aria-label={phase === "done" ? "Scan ulang" : "Nyalakan kamera"}
