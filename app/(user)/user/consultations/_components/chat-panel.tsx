@@ -55,8 +55,8 @@ export function ChatPanel({
   messagesEndRef,
 }: ChatPanelProps) {
   return (
-    <div className={`flex flex-1 min-w-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60 ${showSidebar ? "min-h-100 lg:min-h-0" : "min-h-0"}`}>
-      <div className={`${!showSidebar ? "flex" : "hidden"} md:flex flex-1 flex-col bg-zinc-50/30`}>
+    <div className={`${!showSidebar ? "flex" : "hidden lg:flex"} flex-1 min-w-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60 min-h-100 lg:min-h-0`}>
+      <div className="flex flex-1 flex-col bg-zinc-50/30">
         {activeConversation ? (
           <>
             {(() => {

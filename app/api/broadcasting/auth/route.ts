@@ -29,8 +29,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const backendUrl = process.env.BACKEND_URL ?? "http://be-skincek.test";
-    const url = `${backendUrl}/api/v1/broadcasting/auth/`;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
+    // baseUrl usually already has /api/v1
+    const url = `${baseUrl.replace(/\/$/, "")}/broadcasting/auth`;
 
     console.log("[broadcasting/auth] forwarding to:", url);
 
