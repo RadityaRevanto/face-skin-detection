@@ -6,7 +6,6 @@ import { ROUTES } from "@/lib/constants";
 import { requireDoctorProfile } from "@/lib/doctor-auth";
 import { fetchApi } from "@/lib/api/server-client";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Tambah Skincare | Face Skin Detection",
@@ -14,13 +13,11 @@ export const metadata: Metadata = {
 };
 
 interface ConcernApi {
-  id: string;
   uuid: string;
   name: string;
 }
 
 interface SkinTypeApi {
-  id: string;
   uuid: string;
   name: string;
 }
@@ -33,12 +30,12 @@ export default async function CreateSkincarePage() {
 
   try {
     const [resConcerns, resSkinTypes] = await Promise.all([
-      fetchApi<ConcernApi[]>("/skin-concerns?per_page=100"),
-      fetchApi<SkinTypeApi[]>("/skin-types?per_page=100"),
+      fetchApi<ConcernApi[]>("/skin-concerns?per_page=50&page=1"),
+      fetchApi<SkinTypeApi[]>("/skin-types?per_page=50&page=1"),
     ]);
 
-    concerns = (resConcerns as any).data ?? resConcerns ?? [];
-    skinTypes = (resSkinTypes as any).data ?? resSkinTypes ?? [];
+    concerns = resConcerns.data ?? [];
+    skinTypes = resSkinTypes.data ?? [];
   } catch (error) {
     console.error("Failed to fetch skin concerns and types for skincare form:", error);
   }
@@ -67,13 +64,14 @@ export default async function CreateSkincarePage() {
       <SkincareForm
         concerns={
           concerns.map((concern: ConcernApi) => ({
-            id: concern.id,
+            // Backend kini menerima uuid pada concern_id (UuidResolver).
+            id: concern.uuid,
             name: concern.name ?? "-",
           }))
         }
         skinTypes={
           skinTypes.map((skinType: SkinTypeApi) => ({
-            id: skinType.id,
+            id: skinType.uuid,
             name: skinType.name ?? "-",
           }))
         }

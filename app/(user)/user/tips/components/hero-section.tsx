@@ -1,4 +1,5 @@
 import type { PredictionHistory } from "../lib/tips-types";
+import { getConcernDisplayName } from "@/lib/utils/skin-labels";
 import { BulbIcon } from "./icons";
 
 type HeroSectionProps = {
@@ -35,7 +36,9 @@ export function HeroSection({ latestPrediction }: HeroSectionProps) {
                 Kondisi terbaru
               </p>
               <p className='mt-1 text-sm font-bold text-emerald-900'>
-                {latestPrediction?.predicted_class ?? "Belum ada pemeriksaan"}
+                {latestPrediction
+                  ? getConcernDisplayName(latestPrediction.skin_concern?.name, latestPrediction.predicted_class)
+                  : "Belum ada pemeriksaan"}
               </p>
             </div>
           </div>

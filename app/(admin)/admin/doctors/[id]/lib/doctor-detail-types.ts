@@ -5,6 +5,12 @@ export type DoctorVerificationStatus =
   | "revision_required"
   | "suspended";
 
+export type DoctorDocument = {
+  uuid: string;
+  url: string;
+  file_name: string | null;
+};
+
 export type DoctorDetail = {
   id: string;
   name: string;
@@ -17,8 +23,7 @@ export type DoctorDetail = {
     id: string;
     identity: string;
     specialization: string;
-    document: string;
-    documentUrl: string | null;
+    documents: DoctorDocument[];
     status: string;
     rawStatus: DoctorVerificationStatus;
     submittedAt: string;

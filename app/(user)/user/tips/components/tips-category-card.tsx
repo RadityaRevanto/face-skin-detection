@@ -20,7 +20,7 @@ export function TipsCategoryCard({ group }: TipsCategoryCardProps) {
 
       <div className='space-y-4'>
         {group.tips.map((tip) => (
-          <div key={tip.id} className='flex items-start gap-3'>
+          <div key={tip.uuid} className='flex items-start gap-3'>
             <div className='mt-0.5 text-slate-400'>
               <CalendarIcon />
             </div>

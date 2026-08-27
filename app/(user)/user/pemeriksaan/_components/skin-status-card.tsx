@@ -1,4 +1,5 @@
 import type { PredictionHistory, ToneConfig } from "../_lib/pemeriksaan-types";
+import { getConcernDisplayName } from "@/lib/utils/skin-labels";
 import { ShieldIcon } from "./icons";
 
 type SkinStatusCardProps = {
@@ -19,8 +20,14 @@ export function SkinStatusCard({
   const topPrediction = latestPrediction?.probabilities
     ? Object.entries(latestPrediction.probabilities).sort(([, a], [, b]) => b - a)[0]
     : null;
-  const topPredictionLabel =
-    topPrediction?.[0] ?? latestPrediction?.predicted_class ?? "Belum Ada Data";
+  // Tampilkan nama berbahasa Indonesia: utamakan skin_concern.name dari backend,
+  // fallback ke penerjemahan label mentah model (mis. "Redness" → "Kemerahan").
+  const topPredictionLabel = latestPrediction
+    ? getConcernDisplayName(
+        latestPrediction.skin_concern?.name,
+        topPrediction?.[0] ?? latestPrediction.predicted_class,
+      )
+    : "Belum Ada Data";
   const topPredictionPercent = topPrediction
     ? Math.round(
         Number(topPrediction[1]) <= 1
@@ -74,6 +81,17 @@ export function SkinStatusCard({
                 <ShieldIcon />
                 {tone.label}
               </span>
+
+              {latestPrediction?.skin_concern?.description && (
+                <div className='mt-4 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100'>
+                  <p className='text-xs font-bold uppercase tracking-wider text-slate-400'>
+                    Tentang Kondisi Ini
+                  </p>
+                  <p className='mt-2 text-sm leading-6 text-slate-600'>
+                    {latestPrediction.skin_concern.description}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </>

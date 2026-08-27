@@ -9,7 +9,6 @@ import type {
 } from "./doctor-detail-types";
 import {
   formatDate,
-  getDocumentLabel,
   mapVerificationStatus,
 } from "./doctor-detail-utils";
 
@@ -27,7 +26,7 @@ interface DoctorDetailApi {
     uuid: string;
     str_number: string;
     specialization: string;
-    document_url: string;
+    documents: Array<{ uuid: string; url: string; file_name: string | null }>;
     verification_status: DoctorVerificationStatus;
     created_at: string;
     reviewed_at?: string;
@@ -61,8 +60,7 @@ export async function getDoctorDetail(id: string): Promise<DoctorDetail> {
             id: latestVerification.id,
             identity: latestVerification.str_number ?? "-",
             specialization: latestVerification.specialization ?? "-",
-            document: getDocumentLabel(latestVerification.document_url),
-            documentUrl: latestVerification.document_url || null,
+            documents: latestVerification.documents ?? [],
             status: mapVerificationStatus(latestVerification.verification_status),
             rawStatus: latestVerification.verification_status,
             submittedAt: formatDate(latestVerification.created_at),

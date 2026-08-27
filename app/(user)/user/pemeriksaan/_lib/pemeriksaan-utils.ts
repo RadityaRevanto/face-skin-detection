@@ -1,33 +1,37 @@
+import { translateSkinLabel } from "@/lib/utils/skin-labels";
 import type {
   PredictionHistory,
+  SeverityLevel,
   SkinProblem,
   ToneConfig,
 } from "./pemeriksaan-types";
 
+// Nilai severity_level dari backend: "low" | "medium" | "high".
+// Sinonim lama tetap diterima agar aman terhadap data lama.
 export function normalizeSeverityLevel(
   level: string | null | undefined,
-): PredictionHistory["severity_level"] {
+): SeverityLevel {
   const value = (level ?? "").toLowerCase();
 
   if (value === "high" || value === "severe") {
-    return "severe";
+    return "high";
   }
 
   if (value === "medium" || value === "moderate") {
-    return "moderate";
+    return "medium";
   }
 
-  return "mild";
+  return "low";
 }
 
 export function getSeverityLabel(level: string | null | undefined) {
   const normalized = normalizeSeverityLevel(level);
 
-  if (normalized === "severe") {
+  if (normalized === "high") {
     return "Tinggi";
   }
 
-  if (normalized === "moderate") {
+  if (normalized === "medium") {
     return "Sedang";
   }
 
@@ -37,11 +41,11 @@ export function getSeverityLabel(level: string | null | undefined) {
 export function getSeverityBadgeClass(level: string | null | undefined) {
   const normalized = normalizeSeverityLevel(level);
 
-  if (normalized === "severe") {
+  if (normalized === "high") {
     return "bg-rose-50 text-rose-700 ring-rose-200";
   }
 
-  if (normalized === "moderate") {
+  if (normalized === "medium") {
     return "bg-amber-50 text-amber-700 ring-amber-200";
   }
 
@@ -64,7 +68,8 @@ export function getToneBySeverity(
   severityLevel: PredictionHistory["severity_level"],
   severityScore: number | null,
 ): ToneConfig {
-  if (severityLevel === "severe" || Number(severityScore ?? 0) >= 70) {
+  // severity_score dari backend berada pada skala integer 0–100.
+  if (severityLevel === "high" || Number(severityScore ?? 0) >= 70) {
     return {
       title: "Perlu Perhatian",
       label: "Skor Tinggi",
@@ -75,7 +80,7 @@ export function getToneBySeverity(
     };
   }
 
-  if (severityLevel === "moderate" || Number(severityScore ?? 0) >= 40) {
+  if (severityLevel === "medium" || Number(severityScore ?? 0) >= 40) {
     return {
       title: "Kulit Cukup Baik",
       label: "Skor Sedang",
@@ -105,21 +110,7 @@ function normalizeProbabilityValue(value: number) {
 }
 
 function mapProblemName(name: string) {
-  // Normalize hyphens to spaces so both "Non-Inflammatory Acne" and the raw
-  // model classes ("non inflammatory acne black heads") match consistently.
-  const normalizedName = name.toLowerCase().replace(/-/g, " ");
-
-  // Check the more specific "non inflammatory" first — otherwise it also
-  // matches the broader "inflammatory acne" check and collapses to "Jerawat".
-  if (normalizedName.includes("non inflammatory acne")) return "Komedo";
-  if (normalizedName.includes("inflammatory acne")) return "Jerawat";
-  if (normalizedName.includes("dark spots")) return "Flek Hitam";
-  if (normalizedName.includes("redness")) return "Kemerahan";
-  if (normalizedName.includes("pores")) return "Pori-pori Besar";
-  if (normalizedName.includes("pigmentation")) return "Pigmentasi";
-  if (normalizedName.includes("wrinkles")) return "Kerutan";
-
-  return name;
+  return translateSkinLabel(name);
 }
 
 function getProblemColor(index: number) {

@@ -1,19 +1,31 @@
+// Tipe area history mengikuti kontrak kanonik backend (PredictionHistoryResource).
+import type {
+  OtherConcern,
+  ScanMode,
+  SeverityLevel,
+  SkinConcernInfo,
+} from "@/lib/api/scans-query";
+
+// `id` diisi dari `uuid` backend (PK internal disembunyikan).
 export type PredictionHistory = {
   id: string;
-  scan_mode: "upload_image" | "livecam_yolo";
+  scan_mode: ScanMode;
   image_url: string | null;
-  cropped_image_url: string | null;
   predicted_class: string;
   confidence: number | string;
   probabilities: Record<string, number> | null;
-  severity_score: number | null;
-  severity_level: "mild" | "moderate" | "severe" | null;
+  severity_score: number | null; // 0–100
+  severity_level: SeverityLevel | null;
   model_used: string | null;
   created_at: string;
+  skin_concern?: SkinConcernInfo | null;
+  other_concerns?: OtherConcern[];
+  disclaimer?: string;
+  notice?: string | null;
 };
 
 export type SkincareProduct = {
-  id: string;
+  uuid: string;
   name: string;
   category: string;
   key_ingredients: string | null;
@@ -22,12 +34,20 @@ export type SkincareProduct = {
 };
 
 export type SkinRecommendation = {
-  id: string;
+  uuid: string;
   title: string;
   recommendation_text: string;
   priority_level: "low" | "medium" | "high";
-  skincare_products: SkincareProduct[] | SkincareProduct | null;
+  // Resource backend mengirim objek `product` tunggal (bukan array).
+  product?: SkincareProduct | null;
+  concern?: {
+    uuid: string;
+    name: string;
+    ml_label: string;
+  } | null;
 };
+
+export type { ScanMode, SeverityLevel };
 
 export type ProblemDetail = {
   name: string;

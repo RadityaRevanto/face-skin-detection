@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { X, Search, Check, AlertCircle, ThumbsUp, ThumbsDown } from "lucide-react";
 import { ScanHistory, getScans, submitScanFeedback } from "@/lib/api/scans-query";
 
@@ -15,24 +15,28 @@ export function ScanHistoryModal({ isOpen, onClose, onSelectScan }: ScanHistoryM
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      fetchScans();
-    }
-  }, [isOpen]);
-
-  const fetchScans = async () => {
+  const fetchScans = useCallback(async () => {
     setIsLoading(true);
     setErrorMsg(null);
     try {
       const res = await getScans(1);
       setScans(res.data || []);
-    } catch (error: any) {
-      setErrorMsg(error.message);
+    } catch (error: unknown) {
+      setErrorMsg(
+        error instanceof Error ? error.message : "Gagal memuat riwayat scan."
+      );
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      // Pola fetch-on-open; setState terjadi di dalam callback async.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      fetchScans();
+    }
+  }, [isOpen, fetchScans]);
 
   const handleFeedback = async (e: React.MouseEvent, scanId: string, isAccurate: boolean) => {
     e.stopPropagation();
@@ -123,11 +127,16 @@ export function ScanHistoryModal({ isOpen, onClose, onSelectScan }: ScanHistoryM
                   onClick={() => onSelectScan(scan)}
                   className="flex gap-4 p-3 bg-white rounded-xl border border-zinc-200 hover:border-emerald-300 hover:shadow-md hover:shadow-emerald-500/5 transition-all text-left group"
                 >
-                  <img 
-                    src={scan.image_url} 
-                    alt="Scan Result" 
-                    className="w-20 h-24 object-cover rounded-lg bg-zinc-100 shrink-0" 
-                  />
+                  {scan.image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={scan.image_url}
+                      alt="Scan Result"
+                      className="w-20 h-24 object-cover rounded-lg bg-zinc-100 shrink-0"
+                    />
+                  ) : (
+                    <div className="w-20 h-24 rounded-lg bg-zinc-100 shrink-0" />
+                  )}
                   <div className="flex-1 min-w-0 py-1">
                     <div className="flex justify-between items-start mb-1">
                       <h4 className="font-bold text-zinc-800 capitalize truncate">{scan.predicted_class}</h4>

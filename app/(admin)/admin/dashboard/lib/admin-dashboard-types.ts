@@ -1,45 +1,41 @@
-export type AdminDashboardStat = {
-  label: string;
-  value: string;
-  trend: string;
-  helper: string;
-  tone: string;
-  icon: string;
+export type DashboardCharts = {
+  scans_last_14_days: Array<{ date: string; count: number }>;
+  registrations_last_14_days: Array<{ date: string; count: number }>;
 };
 
-export type LatestUser = {
-  name: string;
-  email: string;
-  role: string;
-  join: string;
-};
-
-export type VerifiedDoctor = {
-  name: string;
-  email: string;
-  specialization: string;
-  verifiedAt: string;
-};
-
-export type UserRoleSummary = {
-  label: string;
-  value: string;
-  tone: string;
-};
-
-export type VerificationRequest = {
-  id: string;
-  name: string;
-  email: string;
-  identity: string;
-  submittedAt: string;
-  status: string;
+export type RecentVerification = {
+  uuid: string;
+  str_number: string | null;
+  specialization: string | null;
+  verification_status: string | null;
+  reviewed_at: string | null;
+  created_at: string | null;
+  doctor: {
+    uuid: string;
+    full_name: string | null;
+    email: string | null;
+    avatar_url: string | null;
+  } | null;
+  documents: Array<{
+    uuid: string;
+    url: string;
+    file_name: string | null;
+  }>;
 };
 
 export type AdminDashboardData = {
-  stats: AdminDashboardStat[];
-  latestUsers: LatestUser[];
-  verifiedDoctors: VerifiedDoctor[];
-  userRoleSummary: UserRoleSummary[];
-  verificationRequests: VerificationRequest[];
+  stats: {
+    total_users: number;
+    total_doctors: number;
+    new_users_this_week: number;
+    total_scans: number;
+    scans_today: number;
+    active_pro_subscriptions: number;
+    monthly_revenue: number;
+  };
+  pending_actions: {
+    doctor_verifications: number;
+  };
+  charts: DashboardCharts;
+  recent_verifications: RecentVerification[];
 };

@@ -1,4 +1,5 @@
 import type { PredictionHistory, ToneConfig } from "../_lib/history-types";
+import { getConcernDisplayName } from "@/lib/utils/skin-labels";
 
 type HistoryResultHeaderProps = {
   selectedHistory: PredictionHistory | null;
@@ -23,7 +24,9 @@ export function HistoryResultHeader({
         <span
           className={`rounded-full px-4 py-2 text-sm font-bold ${tone.badge}`}
         >
-          {selectedHistory?.predicted_class ?? "Belum Ada Data"}
+          {selectedHistory
+            ? getConcernDisplayName(selectedHistory.skin_concern?.name, selectedHistory.predicted_class)
+            : "Belum Ada Data"}
         </span>
       </div>
 

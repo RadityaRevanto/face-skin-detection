@@ -46,18 +46,23 @@ export function DoctorVerificationCard({
 
           <div className='rounded-xl bg-gray-50/80 p-3.5'>
             <p className='mb-1 text-xs text-gray-400'>Dokumen Verifikasi</p>
-            {verification.documentUrl ? (
-              <a
-                href={verification.documentUrl}
-                target='_blank'
-                rel='noreferrer'
-                className='text-sm font-semibold text-emerald-700 hover:text-emerald-800'
-              >
-                {verification.document}
-              </a>
+            {verification.documents.length > 0 ? (
+              <div className='space-y-1'>
+                {verification.documents.map((doc) => (
+                  <a
+                    key={doc.uuid}
+                    href={doc.url}
+                    target='_blank'
+                    rel='noreferrer'
+                    className='block text-sm font-semibold text-emerald-700 hover:text-emerald-800'
+                  >
+                    {doc.file_name ?? "Dokumen"}
+                  </a>
+                ))}
+              </div>
             ) : (
               <p className='text-sm font-semibold text-gray-900'>
-                {verification.document}
+                No Document
               </p>
             )}
           </div>

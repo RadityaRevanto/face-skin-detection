@@ -18,7 +18,7 @@ export function AnalysisPhotoCard({
       <h2 className='text-lg font-bold text-slate-900'>Foto Analisis</h2>
 
       <p className='mt-1 text-sm font-medium text-slate-500'>
-        Foto hasil pemeriksaan dari bucket skin-images
+        Foto hasil pemeriksaan tersimpan aman di penyimpanan backend
       </p>
 
       <div className='relative mt-5 min-h-[420px] overflow-hidden rounded-3xl bg-slate-100'>
@@ -84,9 +84,9 @@ export function AnalysisPhotoCard({
               Teknologi: {selectedHistory?.model_used ?? "Belum Ada"}
             </p>
             <p className='text-xs font-medium text-slate-500'>
-              {selectedHistory?.scan_mode === "livecam_yolo"
-                ? "Foto livecam dari skin-images"
-                : "Foto upload dari skin-images"}
+              {selectedHistory?.scan_mode === "livecam"
+                ? "Foto livecam dari kamera Anda"
+                : "Foto yang Anda unggah"}
             </p>
           </div>
         </div>

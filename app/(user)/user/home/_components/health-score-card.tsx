@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 
 import type { PredictionHistory, ToneConfig } from "../_lib/home-types";
+import { getConcernDisplayName } from "@/lib/utils/skin-labels";
 import { ArrowRightIcon } from "./icons";
 
 type HealthScoreCardProps = {
@@ -49,7 +50,9 @@ export function HealthScoreCard({
 
         <div>
           <h3 className={`text-xl font-bold ${tone.title}`}>
-            {latestPrediction?.predicted_class ?? "Belum Ada Data"}
+            {latestPrediction
+              ? getConcernDisplayName(latestPrediction.skin_concern?.name, latestPrediction.predicted_class)
+              : "Belum Ada Data"}
           </h3>
           <p className='mt-2 text-sm leading-6 text-slate-500'>
             {latestPrediction

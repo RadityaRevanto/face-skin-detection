@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { DoctorsContent } from "./components/doctors-content";
 import { getDoctorsPageData } from "./lib/doctors-query";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Manajemen Dokter | Face Skin Detection",

@@ -20,16 +20,6 @@ function formatDate(date: string | null | undefined) {
   }).format(new Date(date));
 }
 
-function getDocumentLabel(documentUrl: string | null) {
-  if (!documentUrl) {
-    return "No Document";
-  }
-
-  const fileName = documentUrl.split("/").pop();
-
-  return fileName || "Document";
-}
-
 async function fetchCount(status: string): Promise<number> {
   try {
     const res = await fetchApi<{ meta: { total: number } }>(
@@ -97,7 +87,6 @@ export async function getDoctorVerificationPageData({
     const verificationRequests: DoctorVerificationRequest[] = (res.data ?? []).map(
       (verification: VerificationApi, index: number) => {
         const profile = verification.doctor;
-        const documentUrl = verification.documents && verification.documents.length > 0 ? verification.documents[0].url : "";
 
         return {
           id: verification.uuid || verification.id,
@@ -106,8 +95,7 @@ export async function getDoctorVerificationPageData({
           email: profile?.email ?? "-",
           identity: verification.str_number ?? "-",
           specialization: verification.specialization ?? "-",
-          document: getDocumentLabel(documentUrl),
-          documentUrl: documentUrl,
+          documents: verification.documents ?? [],
           status: pageType === "pending" ? "Pending" : "Rejected",
           submittedAt: formatDate(verification.created_at),
           reviewedAt: formatDate(verification.reviewed_at),

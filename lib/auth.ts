@@ -5,8 +5,9 @@ import { getAuthToken, removeAuthToken } from "./auth/token";
 export type AppRole = "user" | "doctor" | "admin";
 
 export interface ProfileApi {
-  id: string;
-  uuid?: string;
+  // Backend hanya mengirim uuid (PK internal disembunyikan).
+  uuid: string;
+  id?: string;
   full_name: string;
   email: string;
   role: string;

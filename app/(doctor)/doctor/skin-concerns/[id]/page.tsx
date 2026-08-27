@@ -7,7 +7,6 @@ import { ROUTES } from "@/lib/constants";
 import { requireDoctorProfile } from "@/lib/doctor-auth";
 import { fetchApi } from "@/lib/api/server-client";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Detail Skin Concern | Face Skin Detection",
@@ -19,6 +18,17 @@ type PageProps = {
     id: string;
   }>;
 };
+
+interface SkinConcernApi {
+  uuid: string;
+  name: string;
+  ml_label?: string;
+  description?: string | null;
+  default_severity_score?: number | string;
+  is_active?: boolean;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
 
 function formatDate(date: string | null | undefined) {
   if (!date) {
@@ -37,11 +47,11 @@ export default async function SkinConcernDetailPage({ params }: PageProps) {
 
   await requireDoctorProfile();
 
-  let skinConcern: any = null;
+  let skinConcern: SkinConcernApi | null = null;
 
   try {
-    const res = await fetchApi<{ data: any }>(`/skin-concerns/${id}`);
-    skinConcern = res.data;
+    const res = await fetchApi<SkinConcernApi>(`/skin-concerns/${id}`);
+    skinConcern = res.data ?? null;
   } catch (error) {
     console.error("Failed to fetch skin concern detail:", error);
   }
@@ -100,7 +110,7 @@ export default async function SkinConcernDetailPage({ params }: PageProps) {
         <div className='divide-y divide-gray-100'>
           <div className='grid grid-cols-1 gap-2 px-6 py-5 sm:grid-cols-3 sm:px-8'>
             <p className='text-sm font-semibold text-gray-500'>ID Concern</p>
-            <p className='break-all text-sm font-medium text-gray-800 sm:col-span-2'>{skinConcern.id}</p>
+            <p className='break-all text-sm font-medium text-gray-800 sm:col-span-2'>{skinConcern.uuid}</p>
           </div>
           <div className='grid grid-cols-1 gap-2 px-6 py-5 sm:grid-cols-3 sm:px-8'>
             <p className='text-sm font-semibold text-gray-500'>Nama</p>

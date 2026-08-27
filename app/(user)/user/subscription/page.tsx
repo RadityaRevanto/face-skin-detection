@@ -3,17 +3,33 @@
 import { useState, useEffect } from "react";
 import Script from "next/script";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Clock, XCircle, Loader2, Sparkles, AlertCircle } from "lucide-react";
+import { CheckCircle2, Clock, XCircle, Loader2, Sparkles, AlertCircle, ReceiptText } from "lucide-react";
 
 type Subscription = {
   uuid: string;
   plan_code: string;
+  period?: string;
   status: string;
   amount: number;
+  currency?: string;
+  payment_method?: string | null;
+  midtrans_order_id?: string | null;
   starts_at: string | null;
   ends_at: string | null;
   paid_at: string | null;
   created_at: string;
+};
+
+type ReceiptData = {
+  plan_code: string;
+  period?: string;
+  amount: number;
+  currency?: string;
+  payment_method?: string | null;
+  midtrans_order_id?: string | null;
+  starts_at: string | null;
+  ends_at: string | null;
+  paid_at: string | null;
 };
 
 export default function SubscriptionPage() {
@@ -23,6 +39,8 @@ export default function SubscriptionPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [cancelTargetUuid, setCancelTargetUuid] = useState<string | null>(null);
+  const [receipt, setReceipt] = useState<ReceiptData | null>(null);
+  const [isLoadingReceipt, setIsLoadingReceipt] = useState(false);
   const router = useRouter();
 
   const fetchSubscriptions = async () => {
@@ -83,6 +101,21 @@ export default function SubscriptionPage() {
       setErrorMsg(err.message);
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handleViewReceipt = async () => {
+    if (!activeSubscription) return;
+    setIsLoadingReceipt(true);
+    try {
+      const res = await fetch(`/api/subscriptions/${activeSubscription.uuid}/receipt`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Gagal mengambil struk");
+      setReceipt(data.data);
+    } catch (err: any) {
+      setErrorMsg(err.message);
+    } finally {
+      setIsLoadingReceipt(false);
     }
   };
 
@@ -168,13 +201,23 @@ export default function SubscriptionPage() {
                   </p>
                 </div>
 
-                <button
-                  onClick={() => handleCancelClick(activeSubscription.uuid)}
-                  disabled={isProcessing}
-                  className="w-full md:w-auto px-6 py-3 bg-white border-2 border-red-100 text-red-600 font-semibold rounded-xl hover:bg-red-50 hover:border-red-200 transition-all disabled:opacity-50"
-                >
-                  {isProcessing ? "Memproses..." : "Batalkan Langganan"}
-                </button>
+                <div className="flex flex-col gap-3 w-full md:w-auto">
+                  <button
+                    onClick={handleViewReceipt}
+                    disabled={isLoadingReceipt}
+                    className="w-full md:w-auto px-6 py-3 bg-white border-2 border-emerald-100 text-emerald-700 font-semibold rounded-xl hover:bg-emerald-50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {isLoadingReceipt ? <Loader2 size={16} className="animate-spin" /> : <ReceiptText size={16} />}
+                    Lihat Struk
+                  </button>
+                  <button
+                    onClick={() => handleCancelClick(activeSubscription.uuid)}
+                    disabled={isProcessing}
+                    className="w-full md:w-auto px-6 py-3 bg-white border-2 border-red-100 text-red-600 font-semibold rounded-xl hover:bg-red-50 hover:border-red-200 transition-all disabled:opacity-50"
+                  >
+                    {isProcessing ? "Memproses..." : "Batalkan Langganan"}
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="flex flex-col items-center py-4">
@@ -252,6 +295,49 @@ export default function SubscriptionPage() {
           </div>
         </div>
       </main>
+
+      {/* Receipt Modal */}
+      {receipt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="bg-linear-to-r from-emerald-700 to-emerald-500 p-5 text-white flex items-center justify-between">
+              <h3 className="font-bold flex items-center gap-2">
+                <ReceiptText size={20} /> Struk Langganan
+              </h3>
+              <button onClick={() => setReceipt(null)} className="opacity-80 hover:opacity-100">
+                <XCircle size={22} />
+              </button>
+            </div>
+            <dl className="p-6 space-y-3 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="text-zinc-500">Nomor Order</dt>
+                <dd className="font-semibold text-zinc-800 text-right break-all">{receipt.midtrans_order_id ?? "-"}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-zinc-500">Paket</dt>
+                <dd className="font-semibold text-zinc-800 capitalize">{receipt.plan_code.replace("_", " ")}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-zinc-500">Metode Bayar</dt>
+                <dd className="font-semibold text-zinc-800">{receipt.payment_method ?? "-"}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-zinc-500">Dibayar Pada</dt>
+                <dd className="font-semibold text-zinc-800">
+                  {receipt.paid_at ? new Date(receipt.paid_at).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" }) : "-"}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4 pt-3 border-t border-dashed border-zinc-200">
+                <dt className="text-zinc-500 font-medium">Total</dt>
+                <dd className="font-black text-emerald-600 text-lg">
+                  {(receipt.currency ?? "IDR") === "IDR" ? "Rp" : `${receipt.currency} `}
+                  {receipt.amount.toLocaleString("id-ID")}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      )}
 
       {/* Cancel Confirmation Modal */}
       {isCancelModalOpen && (

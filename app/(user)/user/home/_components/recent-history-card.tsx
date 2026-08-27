@@ -4,6 +4,7 @@ import {
   getConfidencePercent,
   getToneBySeverity,
 } from "../_lib/home-utils";
+import { getConcernDisplayName } from "@/lib/utils/skin-labels";
 import { ArrowRightIcon } from "./icons";
 
 type RecentHistoryCardProps = {
@@ -45,7 +46,7 @@ export function RecentHistoryCard({ histories }: RecentHistoryCardProps) {
                     {formatDate(history.created_at)}
                   </p>
                   <p className='text-sm font-bold text-slate-800'>
-                    {history.predicted_class}
+                    {getConcernDisplayName(history.skin_concern?.name, history.predicted_class)}
                   </p>
                 </div>
                 <span

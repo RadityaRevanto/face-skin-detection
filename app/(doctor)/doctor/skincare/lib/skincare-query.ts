@@ -22,21 +22,22 @@ function formatDate(date: string | null | undefined) {
 }
 
 async function countSkinConcerns() {
+  // per_page harus termasuk whitelist backend [5,10,20,50]; meta.total
+  // tersedia karena endpoint skin-concerns kini dipaginasi.
   try {
-    const res = await fetchApi<{ meta: { total: number } }>("/skin-concerns?per_page=1");
-    return res.meta?.total ?? 0;
+    const res = await fetchApi<unknown[]>("/skin-concerns?per_page=50&page=1");
+    return res.meta?.total ?? res.data?.length ?? 0;
   } catch {
     return 0;
   }
 }
 
 interface ProductApi {
-  id: string;
+  uuid: string;
   name: string;
   category: string;
   key_ingredients?: string;
-  updated_at?: string;
-  created_at: string;
+  created_at?: string;
   concern?: { name: string };
   skin_type?: { name: string };
 }
@@ -60,14 +61,14 @@ export async function getSkincarePageData({
 
     const products: SkincareRow[] = productRows.map((product: ProductApi, index: number) => {
       return {
-        id: product.id,
+        id: product.uuid,
         no: from + index + 1,
         name: product.name ?? "-",
         category: product.category ?? "-",
         keyIngredients: product.key_ingredients ?? "-",
         concern: product.concern?.name ?? "-",
         skinType: product.skin_type?.name ?? "-",
-        updatedAt: formatDate(product.updated_at ?? product.created_at),
+        updatedAt: formatDate(product.created_at),
       };
     });
 

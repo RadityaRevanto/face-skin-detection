@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { UserProfile, updateProfile, deleteAvatar } from "@/lib/api/profile-query";
-import { Camera, Trash2, User, Mail, Calendar, Lock } from "lucide-react";
+import { Camera, Trash2, User, Mail, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CropImageModal } from "./crop-image-modal";
 
@@ -83,12 +83,6 @@ export function ProfileForm({ profile, onProfileUpdated }: ProfileFormProps) {
         formData.set("avatar", avatarFile);
       }
 
-      // Remove empty optional fields
-      const password = formData.get("password") as string;
-      if (!password || password.trim() === "") {
-        formData.delete("password");
-      }
-
       const res = await updateProfile(formData);
       setSuccessMsg(res.meta?.message || "Profil berhasil diperbarui");
       
@@ -97,10 +91,6 @@ export function ProfileForm({ profile, onProfileUpdated }: ProfileFormProps) {
       setAvatarFile(null);
       
       if (onProfileUpdated) onProfileUpdated(res.data);
-      
-      // Reset password field
-      const pwdInput = form.querySelector('input[name="password"]') as HTMLInputElement;
-      if (pwdInput) pwdInput.value = "";
       
       router.refresh(); // Refresh the layout to update the navbar avatar
     } catch (error: any) {
@@ -231,21 +221,6 @@ export function ProfileForm({ profile, onProfileUpdated }: ProfileFormProps) {
                     <option value="perempuan">Perempuan</option>
                   </select>
                 </div>
-              </div>
-
-              <div className="pt-2">
-                <label className="block text-sm font-semibold text-zinc-700 mb-1.5">Ubah Password <span className="text-zinc-400 font-normal">(Opsional)</span></label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400"><Lock size={18} /></span>
-                  <input 
-                    name="password"
-                    type="password" 
-                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-                    placeholder="Minimal 8 karakter"
-                    minLength={8}
-                  />
-                </div>
-                <p className="text-[11.5px] text-zinc-500 mt-1.5 ml-1">Biarkan kosong jika tidak ingin mengubah password.</p>
               </div>
             </div>
 

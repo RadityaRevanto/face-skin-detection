@@ -38,11 +38,11 @@ export async function fetchApi<T = unknown>(
   }
 
   const response = await fetch(url, {
+    ...restOptions,
     headers: {
       ...defaultHeaders,
       ...headers,
     },
-    ...restOptions,
   });
 
   if (!response.ok) {

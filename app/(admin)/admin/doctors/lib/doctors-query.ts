@@ -25,7 +25,7 @@ interface VerificationApi {
   uuid: string;
   specialization: string;
   str_number: string;
-  document_url: string;
+  documents: Array<{ uuid: string; url: string; file_name: string | null }>;
   verification_status: string;
   created_at: string;
   reviewed_at?: string;
@@ -61,12 +61,11 @@ export async function getDoctorsPageData({
         email: profile?.email ?? "-",
         identity: verification.str_number ?? "-",
         specialization: verification.specialization ?? "-",
-        document: "-",
-        documentUrl: verification.document_url,
+        documents: verification.documents ?? [],
         verifiedAt: formatDate(verification.reviewed_at ?? verification.created_at),
         status: "Approved",
         rawStatus: "approved",
-        isActive: true, // No is_active for users in default Laravel schema yet
+        isActive: true,
       };
     });
 

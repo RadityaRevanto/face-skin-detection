@@ -42,8 +42,8 @@ export function ProfileIncompleteModal({ onSuccess }: ProfileIncompleteModalProp
       }
       
       onSuccess();
-    } catch (err: any) {
-      setError(err.message || "Gagal menyimpan data.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Gagal menyimpan data.");
     } finally {
       setIsLoading(false);
     }

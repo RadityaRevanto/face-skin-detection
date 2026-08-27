@@ -22,15 +22,15 @@ function formatPriority(value: string | null | undefined) {
 
 async function countSkinConcerns() {
   try {
-    const res = await fetchApi<{ meta: { total: number } }>("/skin-concerns?per_page=1");
-    return res.meta?.total ?? 0;
+    const res = await fetchApi<unknown[]>("/skin-concerns?per_page=50&page=1");
+    return res.meta?.total ?? res.data?.length ?? 0;
   } catch {
     return 0;
   }
 }
 
 interface RecommendationApi {
-  id: string;
+  uuid: string;
   title: string;
   recommendation_text: string;
   priority_level: string;
@@ -56,7 +56,7 @@ export async function getRecommendationsPageData({
     const recommendations: RecommendationRow[] = recommendationRows.map(
       (recommendation: RecommendationApi, index: number) => {
         return {
-          id: recommendation.id,
+          id: recommendation.uuid,
           no: from + index + 1,
           concern: recommendation.concern?.name ?? "-",
           severity: formatPriority(recommendation.priority_level),

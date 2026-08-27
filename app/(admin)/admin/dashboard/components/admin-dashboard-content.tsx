@@ -37,40 +37,86 @@ function CardHeader({
   );
 }
 
-function PersonRow({
-  name,
-  email,
-  meta,
-}: {
-  name: string;
-  email: string;
-  meta: string;
-}) {
-  return (
-    <div className='flex items-center justify-between gap-4 rounded-xl bg-gray-50/80 p-3.5'>
-      <div className='min-w-0'>
-        <p className='truncate text-sm font-semibold text-gray-900'>{name}</p>
-        <p className='truncate text-xs text-gray-500'>{email}</p>
-      </div>
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
 
-      <span className='shrink-0 rounded-full bg-white px-3 py-1 text-xs font-semibold text-emerald-700 shadow-sm'>
-        {meta}
-      </span>
-    </div>
-  );
+function formatDate(dateStr: string | null): string {
+  if (!dateStr) return "-";
+  try {
+    return new Intl.DateTimeFormat("id-ID", {
+      dateStyle: "medium",
+      timeZone: "Asia/Jakarta",
+    }).format(new Date(dateStr));
+  } catch {
+    return "-";
+  }
 }
 
 export function AdminDashboardContent({
   stats,
-  latestUsers,
-  verifiedDoctors,
-  userRoleSummary,
-  verificationRequests,
+  pending_actions,
+  recent_verifications,
 }: AdminDashboardData) {
+  const statCards = [
+    {
+      label: "Total Users",
+      value: String(stats.total_users),
+      icon: "users",
+      tone: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "Total Doctors",
+      value: String(stats.total_doctors),
+      icon: "stethoscope",
+      tone: "bg-sky-50 text-sky-600",
+    },
+    {
+      label: "Verifikasi Pending",
+      value: String(pending_actions.doctor_verifications),
+      icon: "shield",
+      tone: "bg-amber-50 text-amber-600",
+    },
+    {
+      label: "Total Scans",
+      value: String(stats.total_scans),
+      icon: "blocked",
+      tone: "bg-violet-50 text-violet-600",
+    },
+    {
+      label: "Scans Hari Ini",
+      value: String(stats.scans_today),
+      icon: "users",
+      tone: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "User Baru (7 hari)",
+      value: String(stats.new_users_this_week),
+      icon: "stethoscope",
+      tone: "bg-sky-50 text-sky-600",
+    },
+    {
+      label: "Pro Subscriptions",
+      value: String(stats.active_pro_subscriptions),
+      icon: "shield",
+      tone: "bg-amber-50 text-amber-600",
+    },
+    {
+      label: "Revenue Bulanan",
+      value: formatCurrency(stats.monthly_revenue),
+      icon: "blocked",
+      tone: "bg-rose-50 text-rose-600",
+    },
+  ];
+
   return (
     <div className='w-full space-y-6'>
       <section className='grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4'>
-        {stats.map((item) => (
+        {statCards.map((item) => (
           <Card
             key={item.label}
             className={`overflow-visible rounded-2xl ${lightCardClass}`}
@@ -86,95 +132,13 @@ export function AdminDashboardContent({
                 <p className='text-sm font-semibold leading-snug text-slate-500'>
                   {item.label}
                 </p>
-
                 <p className='mt-1 text-2xl font-bold tracking-tight sm:mt-2 sm:text-3xl'>
                   {item.value}
-                </p>
-
-                <p className='mt-1 text-xs text-slate-500 sm:mt-2'>
-                  <span
-                    className={
-                      item.trend.startsWith("+")
-                        ? "font-semibold text-emerald-600"
-                        : "font-semibold text-rose-600"
-                    }
-                  >
-                    {item.trend}
-                  </span>{" "}
-                  {item.helper}
                 </p>
               </div>
             </div>
           </Card>
         ))}
-      </section>
-
-      <section className='grid grid-cols-1 gap-6 xl:grid-cols-2'>
-        <Card className='overflow-hidden rounded-3xl border-gray-100! bg-white! text-slate-950! shadow-sm dark:border-gray-100! dark:bg-white! dark:text-slate-950!'>
-          <CardHeader
-            title='Informasi User'
-            description='Ringkasan role dan user terbaru yang terdaftar.'
-            href='/admin/users'
-          />
-
-          <div className='space-y-5 p-6'>
-            <div className='grid grid-cols-1 gap-4 sm:grid-cols-3'>
-              {userRoleSummary.map((item) => (
-                <div
-                  key={item.label}
-                  className='rounded-xl bg-gray-50/80 p-3.5'
-                >
-                  <p className='text-xs text-gray-400'>{item.label}</p>
-                  <p className={`mt-1 text-2xl font-bold ${item.tone}`}>
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className='space-y-3'>
-              {latestUsers.length > 0 ? (
-                latestUsers.map((user) => (
-                  <PersonRow
-                    key={user.email}
-                    name={user.name}
-                    email={user.email}
-                    meta={user.join}
-                  />
-                ))
-              ) : (
-                <p className='rounded-xl bg-gray-50/80 p-3.5 text-sm font-semibold text-gray-500'>
-                  Belum ada user terbaru.
-                </p>
-              )}
-            </div>
-          </div>
-        </Card>
-
-        <Card className='overflow-hidden rounded-3xl border-gray-100! bg-white! text-slate-950! shadow-sm dark:border-gray-100! dark:bg-white! dark:text-slate-950!'>
-          <CardHeader
-            title='Informasi Dokter'
-            description='Dokter yang sudah diverifikasi dan aktif.'
-            href='/admin/doctors'
-          />
-
-          <div className='space-y-3 p-6'>
-            {verifiedDoctors.length > 0 ? (
-              verifiedDoctors.map((doctor) => (
-                <PersonRow
-                  key={doctor.email}
-                  name={doctor.name}
-                  email={doctor.email}
-                  meta={doctor.specialization}
-                />
-              ))
-            ) : (
-              <p className='rounded-xl bg-gray-50/80 p-3.5 text-sm font-semibold text-gray-500'>
-                Belum ada dokter terverifikasi.
-              </p>
-            )}
-          </div>
-        </Card>
       </section>
 
       <Card className='overflow-hidden rounded-3xl border-gray-100! bg-white! text-slate-950! shadow-sm dark:border-gray-100! dark:bg-white! dark:text-slate-950!'>
@@ -185,23 +149,23 @@ export function AdminDashboardContent({
         />
 
         <div className='grid grid-cols-1 gap-4 p-6 lg:grid-cols-2'>
-          {verificationRequests.length > 0 ? (
-            verificationRequests.slice(0, 4).map((doctor) => (
+          {recent_verifications.length > 0 ? (
+            recent_verifications.slice(0, 4).map((v) => (
               <Link
-                key={doctor.id}
-                href={`/admin/doctor-verifications/${doctor.id}`}
+                key={v.uuid}
+                href={`/admin/doctor-verifications/${v.uuid}`}
                 className='flex items-center justify-between gap-4 rounded-xl bg-gray-50/80 p-3.5 transition-colors hover:bg-emerald-50/70'
               >
                 <div className='min-w-0'>
                   <p className='truncate text-sm font-semibold text-gray-900'>
-                    {doctor.name}
+                    {v.doctor?.full_name ?? "Dokter"}
                   </p>
                   <p className='truncate text-xs text-gray-500'>
-                    {doctor.identity} - {doctor.submittedAt}
+                    {v.str_number ?? v.specialization ?? "Dokumen"} - {formatDate(v.created_at)}
                   </p>
                 </div>
 
-                <StatusBadge status={doctor.status} />
+                <StatusBadge status={v.verification_status ?? "pending"} />
               </Link>
             ))
           ) : (

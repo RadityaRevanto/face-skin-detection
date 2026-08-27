@@ -4,24 +4,19 @@ import { BulbIcon, CalendarIcon } from "./icons";
 
 type RecommendationCardProps = {
   recommendations: SkinRecommendation[];
-  concernId?: string | null;
+  mlLabel?: string | null;
   hasMore?: boolean;
   historyId?: string;
 };
 
 function getProduct(item: SkinRecommendation) {
-  const product = item.skincare_products;
-
-  if (Array.isArray(product)) {
-    return product[0] ?? null;
-  }
-
-  return product;
+  // Resource backend mengirim objek `product` tunggal.
+  return item.product ?? null;
 }
 
 export function RecommendationCard({
   recommendations,
-  concernId,
+  mlLabel,
   hasMore,
   historyId,
 }: RecommendationCardProps) {
@@ -44,7 +39,7 @@ export function RecommendationCard({
 
             return (
               <article
-                key={item.id}
+                key={item.uuid}
                 className='overflow-hidden rounded-2xl border border-emerald-100 bg-linear-to-br from-emerald-50/80 via-white to-white shadow-sm'
               >
                 <div className='flex items-start gap-4 p-4'>
@@ -137,10 +132,10 @@ export function RecommendationCard({
         )}
       </div>
 
-      {hasMore && concernId && (
+      {hasMore && mlLabel && (
         <div className='mt-6 text-center'>
           <Link
-            href={`/user/recommendations?concern_id=${concernId}&history_id=${historyId || ""}`}
+            href={`/user/recommendations?ml_label=${encodeURIComponent(mlLabel)}&history_id=${historyId || ""}`}
             className='inline-flex items-center justify-center rounded-xl bg-emerald-50 px-5 py-2.5 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-100'
           >
             Lihat Semua Rekomendasi

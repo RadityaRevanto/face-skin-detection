@@ -16,7 +16,7 @@ export default function NotificationsPage() {
   const fetchNotifications = async (page: number = 1) => {
     try {
       setIsLoading(true);
-      const res = await fetch(`/api/notifications?page=${page}&per_page=15`);
+      const res = await fetch(`/api/notifications?page=${page}&per_page=10`);
       const json = await res.json();
       
       if (json.data && Array.isArray(json.data)) {

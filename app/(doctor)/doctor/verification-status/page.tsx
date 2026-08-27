@@ -1,13 +1,25 @@
 import type { Metadata } from "next";
-import type { ReactNode } from "react";
-import { unstable_noStore as noStore } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { DoctorLogoutButton } from "@/components/doctor/doctor-logout-button";
 import { ResubmitVerificationClient } from "@/components/doctor/resubmit-verification-client";
 import { fetchApi } from "@/lib/api/server-client";
+import { ResubmissionForm } from "./_components/resubmission-form";
 
-export const dynamic = "force-dynamic";
+import type { DoctorProfile, DoctorVerification, ApiStatusError } from "./_components/verification-types";
+import { CheckIcon, XIcon, ClockIcon, ShieldIcon, DocumentIcon } from "./_components/verification-icons";
+import {
+  formatDate,
+  normalizeStatus,
+  isRevisionStatus,
+  getStatusConfig,
+} from "./_components/verification-utils";
+import {
+  getVerificationSteps,
+  getStepClass,
+  StepIcon,
+} from "./_components/verification-steps";
+
 export const revalidate = 0;
 
 export const metadata: Metadata = {
@@ -15,390 +27,34 @@ export const metadata: Metadata = {
   description: "Status verifikasi akun dokter Anda",
 };
 
-type IconProps = {
-  children: ReactNode;
-  className?: string;
-};
-
-type DoctorProfile = {
-  id: string;
-  full_name: string | null;
-  email: string | null;
-  role: string | null;
-  is_active: boolean | null;
-};
-
-type DoctorVerification = {
-  doctor_id: string;
-  str_number: string | null;
-  specialization: string | null;
-  document_url: string | null;
-  verification_status: string | null;
-  rejection_reason: string | null;
-  revision_note: string | null;
-  reviewed_by: string | null;
-  reviewed_at: string | null;
-  created_at: string | null;
-  updated_at: string | null;
-};
-
-type StepStatus = "completed" | "current" | "pending" | "failed";
-
-type VerificationStep = {
-  title: string;
-  description: string;
-  status: StepStatus;
-};
-
-function Icon({ children, className = "h-5 w-5" }: IconProps) {
-  return (
-    <svg
-      aria-hidden='true'
-      viewBox='0 0 24 24'
-      fill='none'
-      className={className}
-    >
-      {children}
-    </svg>
-  );
-}
-
-function ClockIcon() {
-  return (
-    <Icon className='h-6 w-6'>
-      <path
-        d='M12 7v5l3 2m6-2a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z'
-        stroke='currentColor'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth='1.8'
-      />
-    </Icon>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <Icon className='h-5 w-5'>
-      <path
-        d='m5 12 4 4L19 6'
-        stroke='currentColor'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth='2'
-      />
-    </Icon>
-  );
-}
-
-function XIcon() {
-  return (
-    <Icon className='h-5 w-5'>
-      <path
-        d='m6 6 12 12M18 6 6 18'
-        stroke='currentColor'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth='2'
-      />
-    </Icon>
-  );
-}
-
-function DocumentIcon() {
-  return (
-    <Icon className='h-5 w-5'>
-      <path
-        d='M7 3h7l4 4v14H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z'
-        stroke='currentColor'
-        strokeLinejoin='round'
-        strokeWidth='1.8'
-      />
-      <path
-        d='M14 3v5h5M8.5 13h7M8.5 17h5'
-        stroke='currentColor'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth='1.8'
-      />
-    </Icon>
-  );
-}
-
-function ShieldIcon() {
-  return (
-    <Icon className='h-6 w-6'>
-      <path
-        d='M12 3 5 6v5.3c0 4.4 2.9 8.4 7 9.7 4.1-1.3 7-5.3 7-9.7V6l-7-3Z'
-        stroke='currentColor'
-        strokeLinejoin='round'
-        strokeWidth='1.8'
-      />
-      <path
-        d='m9 12 2 2 4-4'
-        stroke='currentColor'
-        strokeLinecap='round'
-        strokeLinejoin='round'
-        strokeWidth='1.8'
-      />
-    </Icon>
-  );
-}
-
-function formatDate(date: string | null | undefined) {
-  if (!date) {
-    return "-";
-  }
-
-  return new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "medium",
-    timeStyle: "short",
-    timeZone: "Asia/Jakarta",
-  }).format(new Date(date));
-}
-
-function normalizeStatus(status: string | null | undefined) {
-  return status?.toLowerCase().trim() || "pending";
-}
-
-function isRevisionStatus(status: string) {
-  return (
-    status === "revision" ||
-    status === "revision_required" ||
-    status === "needs_revision"
-  );
-}
-
-function getStatusConfig(status: string | null | undefined) {
-  const normalizedStatus = normalizeStatus(status);
-
-  if (normalizedStatus === "approved") {
-    return {
-      label: "Disetujui",
-      badgeLabel: "Approved",
-      title: "Akun dokter telah disetujui",
-      description:
-        "Verifikasi dokter Anda telah disetujui. Dashboard dokter sudah dapat digunakan.",
-      cardTitle: "Akses dashboard aktif",
-      cardDescription:
-        "Akun Anda sudah lolos validasi admin dan dapat mengakses fitur dokter.",
-      headerClass: "from-emerald-600 to-teal-600",
-      badgeClass: "bg-emerald-50 text-emerald-700",
-      icon: "check",
-    };
-  }
-
-  if (normalizedStatus === "rejected") {
-    return {
-      label: "Ditolak",
-      badgeLabel: "Rejected",
-      title: "Verifikasi dokter ditolak",
-      description:
-        "Admin menolak verifikasi akun dokter Anda. Silakan periksa alasan penolakan dan hubungi admin jika diperlukan.",
-      cardTitle: "Akses belum aktif",
-      cardDescription:
-        "Dashboard dokter belum tersedia karena verifikasi belum disetujui.",
-      headerClass: "from-rose-600 to-red-600",
-      badgeClass: "bg-rose-50 text-rose-700",
-      icon: "x",
-    };
-  }
-
-  if (isRevisionStatus(normalizedStatus)) {
-    return {
-      label: "Perlu Revisi",
-      badgeLabel: "Revision",
-      title: "Dokumen perlu diperbaiki",
-      description:
-        "Admin meminta revisi data atau dokumen profesi Anda sebelum verifikasi dapat dilanjutkan.",
-      cardTitle: "Akses belum aktif",
-      cardDescription:
-        "Dashboard dokter akan tersedia setelah revisi disetujui oleh admin.",
-      headerClass: "from-amber-500 to-orange-500",
-      badgeClass: "bg-amber-50 text-amber-700",
-      icon: "clock",
-    };
-  }
-
-  return {
-    label: "Menunggu Review",
-    badgeLabel: "Pending",
-    title: "Akun dokter sedang ditinjau",
-    description:
-      "Tim admin sedang memvalidasi dokumen dan data profesi Anda. Setelah disetujui, Anda dapat mengakses dashboard dokter.",
-    cardTitle: "Akses belum aktif",
-    cardDescription:
-      "Untuk sementara Anda hanya dapat melihat halaman status ini. Dashboard dokter akan tersedia setelah admin menyetujui verifikasi.",
-    headerClass: "from-emerald-600 to-teal-600",
-    badgeClass: "bg-amber-50 text-amber-700",
-    icon: "clock",
-  };
-}
-
-function getVerificationSteps(
-  verification: DoctorVerification | null,
-): VerificationStep[] {
-  const status = normalizeStatus(verification?.verification_status);
-  const hasDocument = Boolean(verification?.document_url);
-
-  if (status === "approved") {
-    return [
-      {
-        title: "Pendaftaran akun",
-        description: "Data dasar dokter berhasil diterima.",
-        status: "completed",
-      },
-      {
-        title: "Upload dokumen",
-        description: "Dokumen STR dan identitas profesi sudah masuk ke sistem.",
-        status: "completed",
-      },
-      {
-        title: "Review admin",
-        description: "Admin telah menyetujui verifikasi dokter Anda.",
-        status: "completed",
-      },
-      {
-        title: "Akses dashboard",
-        description: "Dashboard dokter sudah aktif dan dapat digunakan.",
-        status: "completed",
-      },
-    ];
-  }
-
-  if (status === "rejected") {
-    return [
-      {
-        title: "Pendaftaran akun",
-        description: "Data dasar dokter berhasil diterima.",
-        status: "completed",
-      },
-      {
-        title: "Upload dokumen",
-        description: hasDocument
-          ? "Dokumen STR dan identitas profesi sudah masuk ke sistem."
-          : "Dokumen belum ditemukan di sistem.",
-        status: hasDocument ? "completed" : "pending",
-      },
-      {
-        title: "Review admin",
-        description: "Admin menolak verifikasi dokumen Anda.",
-        status: "failed",
-      },
-      {
-        title: "Akses dashboard",
-        description: "Dashboard dokter belum dapat diakses.",
-        status: "pending",
-      },
-    ];
-  }
-
-  if (isRevisionStatus(status)) {
-    return [
-      {
-        title: "Pendaftaran akun",
-        description: "Data dasar dokter berhasil diterima.",
-        status: "completed",
-      },
-      {
-        title: "Upload dokumen",
-        description: hasDocument
-          ? "Dokumen STR dan identitas profesi sudah masuk ke sistem."
-          : "Dokumen belum ditemukan di sistem.",
-        status: hasDocument ? "completed" : "current",
-      },
-      {
-        title: "Review admin",
-        description: "Admin meminta revisi data atau dokumen verifikasi.",
-        status: "current",
-      },
-      {
-        title: "Akses dashboard",
-        description: "Dashboard dokter aktif setelah revisi disetujui.",
-        status: "pending",
-      },
-    ];
-  }
-
-  return [
-    {
-      title: "Pendaftaran akun",
-      description: "Data dasar dokter berhasil diterima.",
-      status: "completed",
-    },
-    {
-      title: "Upload dokumen",
-      description: hasDocument
-        ? "Dokumen STR dan identitas profesi sudah masuk ke sistem."
-        : "Dokumen verifikasi belum ditemukan.",
-      status: hasDocument ? "completed" : "current",
-    },
-    {
-      title: "Review admin",
-      description: hasDocument
-        ? "Tim admin sedang memeriksa keaslian dokumen Anda."
-        : "Review admin akan dimulai setelah dokumen tersedia.",
-      status: hasDocument ? "current" : "pending",
-    },
-    {
-      title: "Akses dashboard",
-      description: "Dashboard dokter aktif setelah verifikasi disetujui.",
-      status: "pending",
-    },
-  ];
-}
-
-function getStepClass(status: StepStatus) {
-  if (status === "completed") {
-    return "bg-emerald-600 text-white";
-  }
-
-  if (status === "current") {
-    return "bg-amber-100 text-amber-700 ring-4 ring-amber-50";
-  }
-
-  if (status === "failed") {
-    return "bg-rose-100 text-rose-700 ring-4 ring-rose-50";
-  }
-
-  return "bg-slate-200 text-slate-500";
-}
-
-function StepIcon({ status, index }: { status: StepStatus; index: number }) {
-  if (status === "completed") {
-    return <CheckIcon />;
-  }
-
-  if (status === "failed") {
-    return <XIcon />;
-  }
-
-  return <>{index + 1}</>;
-}
-
 export default async function VerificationStatusPage() {
-  noStore();
-
-  let doctorProfile: any;
-  let verification: any = null;
+  let doctorProfile: DoctorProfile | null = null;
+  let verification: DoctorVerification | null = null;
 
   try {
-    const resProfile = await fetchApi<{ data: any }>("/profile");
-    doctorProfile = resProfile.data;
+    const resProfile = await fetchApi<DoctorProfile>("/profile");
+    doctorProfile = resProfile.data ?? null;
 
     if (!doctorProfile || doctorProfile.role !== "doctor") {
       redirect("/login");
     }
 
     try {
-      const resVerification = await fetchApi<{ data: any }>("/doctor-verifications");
-      verification = resVerification.data;
-    } catch (error: any) {
-      if (error.status !== 404) {
+      const resVerification =
+        await fetchApi<DoctorVerification>("/doctor-verifications");
+      verification = resVerification.data ?? null;
+    } catch (error) {
+      if ((error as ApiStatusError)?.status !== 404) {
         console.error("Failed to fetch doctor verification status:", error);
       }
     }
   } catch (error) {
+    if ((error as ApiStatusError)?.status !== 404) {
+      console.error("Failed to fetch doctor profile:", error);
+    }
+  }
+
+  if (!doctorProfile) {
     redirect("/login");
   }
 
@@ -577,6 +233,35 @@ export default async function VerificationStatusPage() {
                     </span>
                   </div>
 
+                  <div>
+                    <span className='font-semibold text-slate-500'>
+                      Dokumen terunggah
+                    </span>
+                    {verification?.documents?.length ? (
+                      <ul className='mt-2 space-y-2'>
+                        {verification.documents.map((doc) => (
+                          <li key={doc.uuid}>
+                            <a
+                              href={doc.url}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-50'
+                            >
+                              <DocumentIcon />
+                              <span className='truncate'>
+                                {doc.file_name ?? doc.uuid}
+                              </span>
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className='mt-2 rounded-xl bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700'>
+                        Belum ada dokumen tersimpan.
+                      </p>
+                    )}
+                  </div>
+
                   <div className='flex justify-between gap-4'>
                     <span className='font-semibold text-slate-500'>
                       Dikirim pada
@@ -615,6 +300,21 @@ export default async function VerificationStatusPage() {
           </section>
         ) : null}
 
+        {verification && (normalizedStatus === "rejected" || isRevisionStatus(normalizedStatus)) ? (
+          <ResubmissionForm
+            mode={normalizedStatus === "rejected" ? "rejected" : "needs_revision"}
+            verificationUuid={verification.uuid}
+            defaultValues={{
+              specialization: verification.specialization,
+              str_number: verification.str_number,
+              title: verification.title,
+              sub_specialization: verification.sub_specialization,
+              experience_years: verification.experience_years,
+              alma_mater: verification.alma_mater,
+            }}
+          />
+        ) : null}
+
         {!verification ? (
           <section className='mt-6 rounded-3xl bg-amber-50 p-6 shadow-sm ring-1 ring-amber-100'>
             <h2 className='font-bold text-amber-900'>
@@ -629,20 +329,26 @@ export default async function VerificationStatusPage() {
           </section>
         ) : null}
 
-        <section className='mt-6 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 sm:flex-row sm:items-center sm:justify-between'>
-          <div>
-            <h2 className='font-bold text-slate-900'>
-              Perlu memperbarui data?
-            </h2>
+        {!(verification && (normalizedStatus === "rejected" || isRevisionStatus(normalizedStatus))) ? (
+          <section className='mt-6 flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100 sm:flex-row sm:items-center sm:justify-between'>
+            <div>
+              <h2 className='font-bold text-slate-900'>
+                Perlu memperbarui data?
+              </h2>
 
-            <p className='mt-1 text-sm leading-6 text-slate-500'>
-              Jika dokumen atau data profesi Anda salah, hubungi admin agar
-              dapat dilakukan revisi.
-            </p>
-          </div>
+              <p className='mt-1 text-sm leading-6 text-slate-500'>
+                Jika dokumen atau data profesi Anda salah, hubungi admin agar
+                dapat dilakukan revisi.
+              </p>
+            </div>
 
-          <DoctorLogoutButton />
-        </section>
+            <DoctorLogoutButton />
+          </section>
+        ) : (
+          <section className='mt-6 flex justify-end rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100'>
+            <DoctorLogoutButton />
+          </section>
+        )}
       </div>
     </main>
   );

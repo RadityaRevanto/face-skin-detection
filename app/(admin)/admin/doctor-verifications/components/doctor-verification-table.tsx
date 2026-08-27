@@ -115,20 +115,20 @@ export function DoctorVerificationTable({
               </TableCell>
 
               <TableCell className='px-6 py-5 sm:px-8'>
-                {doctor.documentUrl ? (
+                {doctor.documents.length > 0 ? (
                   <a
-                    href={doctor.documentUrl}
+                    href={doctor.documents[0].url}
                     target='_blank'
                     rel='noreferrer'
                     className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700'
                   >
                     <DocumentIcon />
-                    {doctor.document}
+                    {doctor.documents[0].file_name ?? "Dokumen"}
                   </a>
                 ) : (
-                  <span className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700'>
+                  <span className='inline-flex w-fit items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-700'>
                     <DocumentIcon />
-                    {doctor.document}
+                    No Document
                   </span>
                 )}
               </TableCell>

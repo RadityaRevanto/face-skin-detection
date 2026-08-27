@@ -1,56 +1,42 @@
-import { redirect } from "next/navigation";
-
 import { fetchApi } from "@/lib/api/server-client";
+import type { PredictionResult } from "@/lib/api/scans-query";
 
 import type { PredictionHistory, TipItem, TipsGroup } from "./tips-types";
 
-import { requireUserRole } from "@/lib/auth";
-
-export async function getCurrentUserId() {
-  const profile = await requireUserRole();
-  return profile.uuid || profile.id;
-}
-
-interface PredictionHistoryApi {
-  id: string;
-  uuid?: string;
-  user_id: string;
-  predicted_class: string;
-  confidence: number;
-  severity_level: "mild" | "moderate" | "severe";
-  severity_score: number;
-  probabilities: Record<string, number>;
-  image_url: string;
-  cropped_image_url?: string | null;
-  created_at: string;
-}
-
-interface RecommendationApi {
-  id: string;
-  uuid?: string;
-  concern_id: string;
+type RecommendationApi = {
+  uuid: string;
   title: string;
-  priority_level: string;
+  priority_level: "low" | "medium" | "high";
   recommendation_text: string;
-  product?: {
-    id: string;
-    uuid?: string;
+  concern?: {
+    uuid: string;
     name: string;
-    category: string;
-  };
-}
+    ml_label: string;
+  } | null;
+};
 
-interface ConcernApi {
-  id: string;
+type ConcernApi = {
+  uuid: string;
   name: string;
-  description: string;
-}
+  description: string | null;
+};
 
-export async function getLatestPrediction(userId: string) {
+export async function getLatestPrediction(): Promise<PredictionHistory | null> {
   try {
-    const response = await fetchApi<PredictionHistoryApi[]>("scans");
-    const scans = response.data || [];
-    return (scans[0] as unknown as PredictionHistory) || null;
+    const response = await fetchApi<PredictionResult[]>("scans?per_page=5&page=1&sort=-created_at");
+    const scans = response.data ?? [];
+    const latest = Array.isArray(scans) ? scans[0] : null;
+
+    if (!latest) {
+      return null;
+    }
+
+    return {
+      id: latest.uuid,
+      predicted_class: latest.predicted_class,
+      skin_concern: latest.skin_concern ?? null,
+      created_at: latest.created_at,
+    };
   } catch (error) {
     console.error("Failed to fetch latest prediction from Laravel:", error);
     return null;
@@ -64,18 +50,18 @@ export async function getPersonalizedTips(predictedClass: string | null) {
 
   try {
     const encoded = encodeURIComponent(predictedClass);
-    const response = await fetchApi<RecommendationApi[]>(`skin-recommendations?ml_label=${encoded}`);
-    const recommendations = response.data || [];
+    const response = await fetchApi<RecommendationApi[]>(
+      `skin-recommendations?ml_label=${encoded}&per_page=20&page=1`
+    );
+    const recommendations = response.data ?? [];
 
-    const priorityOrder: Record<string, number> = {
-      high: 1,
-      medium: 2,
-      low: 3,
-    };
-
-    return recommendations.sort(
-      (a: RecommendationApi, b: RecommendationApi) => priorityOrder[a.priority_level] - priorityOrder[b.priority_level],
-    ) as unknown as TipItem[];
+    // Backend sudah mengurutkan prioritas high → medium → low.
+    return recommendations.slice(0, 4).map<TipItem>((rec) => ({
+      uuid: rec.uuid,
+      title: rec.title,
+      recommendation_text: rec.recommendation_text,
+      priority_level: rec.priority_level,
+    }));
   } catch (error) {
     console.error("Failed to fetch personalized tips from Laravel:", error);
     return [];
@@ -84,32 +70,31 @@ export async function getPersonalizedTips(predictedClass: string | null) {
 
 export async function getAllTipsGroups() {
   try {
-    // Ambil daftar concerns
+    // Ambil daftar concerns (uuid sebagai kunci join).
     const concernsRes = await fetchApi<ConcernApi[]>("skin-concerns");
-    const concerns = concernsRes?.data || [];
+    const concerns = concernsRes?.data ?? [];
 
-    // Ambil semua recommendations
-    const recsRes = await fetchApi<RecommendationApi[]>("skin-recommendations");
-    const allRecs = recsRes?.data || [];
-
-    const priorityOrder: Record<string, number> = {
-      high: 1,
-      medium: 2,
-      low: 3,
-    };
+    // Ambil semua rekomendasi aktif.
+    const recsRes = await fetchApi<RecommendationApi[]>("skin-recommendations?per_page=50&page=1");
+    const allRecs = recsRes?.data ?? [];
 
     const groups = concerns.map((concern: ConcernApi) => {
-      // Filter recommendations yang cocok dengan concern_id
+      // Join via objek `concern` pada resource (bukan `concern_id`
+      // yang tidak dikirim backend). Cocokkan lewat uuid concern.
       const tips = allRecs
-        .filter((rec: RecommendationApi) => rec.concern_id === concern.id)
-        .sort((a: RecommendationApi, b: RecommendationApi) => priorityOrder[a.priority_level] - priorityOrder[b.priority_level])
+        .filter((rec) => rec.concern?.uuid === concern.uuid)
         .slice(0, 4);
 
       return {
-        concernId: concern.id,
+        concernId: concern.uuid,
         concernName: concern.name,
         concernDescription: concern.description,
-        tips: tips as unknown as TipItem[],
+        tips: tips.map<TipItem>((rec) => ({
+          uuid: rec.uuid,
+          title: rec.title,
+          recommendation_text: rec.recommendation_text,
+          priority_level: rec.priority_level,
+        })),
       } satisfies TipsGroup;
     });
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getProfile, UserProfile } from "@/lib/api/profile-query";
-import { User as UserIcon, Shield, CreditCard, Clock, Download, Trash2, Bot, AlertTriangle } from "lucide-react";
+import { User as UserIcon, Shield, KeyRound, CreditCard, Clock, Download, Trash2, Bot, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -67,7 +67,9 @@ export default function UserPrivacyPage() {
       const res = await fetch("/api/profile/export", { method: "POST" });
       const json = await res.json();
       if (json.data?.download_url) {
-        window.location.href = json.data.download_url;
+        const backendUrl = new URL(json.data.download_url);
+        const proxyUrl = `/api/profile/exports/download${backendUrl.search}`;
+        window.location.href = proxyUrl;
       } else {
         alert(json.meta?.message || json.message || "Fitur ekspor data sedang dalam pengembangan oleh tim backend (Endpoint belum siap).");
       }
@@ -125,6 +127,9 @@ export default function UserPrivacyPage() {
           <Link href="/user/profile" className="flex items-center gap-3 px-4 py-3 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium rounded-xl transition-colors">
             <UserIcon size={18} /> Profil Akun
           </Link>
+          <Link href="/user/profile/login-security" className="flex items-center gap-3 px-4 py-3 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium rounded-xl transition-colors">
+            <KeyRound size={18} /> Login & Keamanan
+          </Link>
           <Link href="/user/profile/privacy" className="flex items-center gap-3 px-4 py-3 bg-emerald-50 text-emerald-700 font-medium rounded-xl border border-emerald-200/50">
             <Shield size={18} /> Privasi & Data
           </Link>
@@ -142,13 +147,16 @@ export default function UserPrivacyPage() {
               <div className="space-y-3">
                 <div className="bg-white/10 rounded-lg p-2.5 flex items-center justify-between backdrop-blur-sm">
                   <div className="flex items-center gap-2 text-xs">
-                    <Clock size={14} className="text-emerald-400" /> Sisa Scan
+                    <Clock size={14} className="text-emerald-400" /> Total Scan
                   </div>
-                  <span className="font-bold text-sm">{3 - (profile.scan_count || 0)} / 3</span>
+                  <span className="font-bold text-sm">{profile.scan_count || 0}</span>
                 </div>
-                <button className="w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold rounded-lg mt-2 transition-colors">
+                <p className="text-[10px] text-zinc-400 leading-snug px-1">
+                  Kuota scan gratis 3x/hari untuk pengguna Free.
+                </p>
+                <Link href="/user/subscription" className="block w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold rounded-lg mt-2 transition-colors text-center">
                   Upgrade Pro
-                </button>
+                </Link>
               </div>
             )}
           </div>

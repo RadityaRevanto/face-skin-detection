@@ -1,3 +1,4 @@
+import { translateSkinLabel } from "@/lib/utils/skin-labels";
 import type { PredictionHistory, Problem, ToneConfig } from "./home-types";
 
 export function formatDate(date: string) {
@@ -24,7 +25,9 @@ export function getToneBySeverity(
   severityLevel: PredictionHistory["severity_level"],
   severityScore: number | null,
 ): ToneConfig {
-  if (severityLevel === "severe" || Number(severityScore ?? 0) >= 70) {
+  // severity_level dari backend: "low" | "medium" | "high".
+  // severity_score berada pada skala integer 0–100.
+  if (severityLevel === "high" || Number(severityScore ?? 0) >= 70) {
     return {
       badge: "text-rose-600 bg-rose-50",
       title: "text-rose-600",
@@ -34,7 +37,7 @@ export function getToneBySeverity(
     };
   }
 
-  if (severityLevel === "moderate" || Number(severityScore ?? 0) >= 40) {
+  if (severityLevel === "medium" || Number(severityScore ?? 0) >= 40) {
     return {
       badge: "text-amber-600 bg-amber-50",
       title: "text-amber-600",
@@ -62,21 +65,7 @@ function normalizeProbabilityValue(value: number) {
 }
 
 function mapProblemName(name: string) {
-  // Normalize hyphens to spaces so both "Non-Inflammatory Acne" and the raw
-  // model classes ("non inflammatory acne black heads") match consistently.
-  const normalizedName = name.toLowerCase().replace(/-/g, " ");
-
-  // Check the more specific "non inflammatory" first — otherwise it also
-  // matches the broader "inflammatory acne" check and collapses to "Jerawat".
-  if (normalizedName.includes("non inflammatory acne")) return "Komedo";
-  if (normalizedName.includes("inflammatory acne")) return "Jerawat";
-  if (normalizedName.includes("dark spots")) return "Flek Hitam";
-  if (normalizedName.includes("redness")) return "Kemerahan";
-  if (normalizedName.includes("pores")) return "Pori-pori Besar";
-  if (normalizedName.includes("pigmentation")) return "Pigmentasi";
-  if (normalizedName.includes("wrinkles")) return "Kerutan";
-
-  return name;
+  return translateSkinLabel(name);
 }
 
 function getProblemColor(index: number) {

@@ -25,22 +25,30 @@ import { ProfileIncompleteModal } from "./profile-incomplete-modal";
 type PemeriksaanContentProps = {
   initialPrediction?: PredictionHistory | null;
   initialRecommendations?: Recommendation[];
-  initialProfile?: any;
+  initialProfile?: {
+    uuid?: string;
+    full_name?: string | null;
+    gender?: string | null;
+    date_of_birth?: string | null;
+  } | null;
 };
 
 function toPredictionHistory(result: LiveScanResult): PredictionHistory {
   return {
-    id: result.history_id ?? "live",
-    scan_mode: result.scan_mode ?? "livecam_yolo",
-    image_url: result.image_url ?? result.cropped_image_url ?? null,
-    cropped_image_url: result.cropped_image_url ?? null,
-    predicted_class: result.prediction.predicted_class,
-    confidence: result.prediction.confidence,
-    probabilities: result.prediction.probabilities,
-    severity_score: result.prediction.severity_score,
-    severity_level: normalizeSeverityLevel(result.prediction.severity_level),
-    model_used: result.prediction.model_used,
-    created_at: new Date().toISOString(),
+    id: result.uuid,
+    scan_mode: result.scan_mode,
+    image_url: result.image_url,
+    predicted_class: result.predicted_class,
+    confidence: result.confidence,
+    probabilities: result.probabilities,
+    severity_score: result.severity_score,
+    severity_level: normalizeSeverityLevel(result.severity_level),
+    model_used: result.model_used,
+    created_at: result.created_at ?? new Date().toISOString(),
+    disclaimer: result.disclaimer,
+    notice: result.notice,
+    skin_concern: result.skin_concern,
+    other_concerns: result.other_concerns,
   };
 }
 
@@ -63,7 +71,9 @@ export function PemeriksaanContent({
     ? toPredictionHistory(liveScan)
     : initialPrediction;
 
-  const recommendations = liveScan?.recommendations ?? initialRecommendations;
+  // Endpoint scan backend tidak mengembalikan rekomendasi;
+  // setelah scan live tampilkan kosong sampai user membuka halaman rekomendasi.
+  const recommendations = liveScan ? [] : initialRecommendations;
   const confidencePercent = getConfidencePercent(activePrediction?.confidence);
   const tone = getToneBySeverity(
     activePrediction?.severity_level ?? null,

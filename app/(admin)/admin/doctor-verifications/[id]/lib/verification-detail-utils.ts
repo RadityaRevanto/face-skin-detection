@@ -27,16 +27,6 @@ export function mapVerificationStatus(status: VerificationStatus | string) {
   return "Pending";
 }
 
-export function getDocumentLabel(documentUrl: string | null) {
-  if (!documentUrl) {
-    return "No Document";
-  }
-
-  const fileName = documentUrl.split("/").pop();
-
-  return fileName || "Document";
-}
-
 export function getInitials(name: string) {
   return name
     .replace(/^dr\.\s*/i, "")

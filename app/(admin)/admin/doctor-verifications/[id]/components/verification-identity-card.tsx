@@ -39,7 +39,10 @@ export function VerificationIdentityCard({
           <InfoBox label='Spesialisasi' value={doctor.specialization} />
         </div>
 
-        <InfoBox label='Dokumen Verifikasi' value={doctor.document} />
+        <InfoBox
+          label='Dokumen Verifikasi'
+          value={doctor.documents.length > 0 ? doctor.documents.map((d) => d.file_name ?? "Dokumen").join(", ") : "No Document"}
+        />
 
         <InfoBox label='Tanggal Pengajuan' value={doctor.submittedAt} />
       </div>

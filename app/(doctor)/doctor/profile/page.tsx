@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { getProfile, UserProfile } from "@/lib/api/profile-query";
 import { ProfileForm } from "@/components/users/profile-form";
-import { Info, User as UserIcon, Shield, Stethoscope, Star } from "lucide-react";
+import { Info, User as UserIcon, Shield, KeyRound, Stethoscope, Star } from "lucide-react";
 import Link from "next/link";
 
 export default function DoctorProfilePage() {

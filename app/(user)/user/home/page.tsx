@@ -17,7 +17,7 @@ import {
 
 export default async function HomePage() {
   const profile = await getCurrentUserProfile();
-  const histories = await getUserPredictionHistories(profile.id);
+  const histories = await getUserPredictionHistories();
 
   const latestPrediction = histories[0] ?? null;
 
