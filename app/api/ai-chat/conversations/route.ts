@@ -14,6 +14,7 @@ export async function POST() {
       { status: 201 }
     );
   } catch (error) {
+    console.error("AI CHAT ERROR:", error);
     const status = error instanceof ApiError ? error.status : 500;
     const message =
       error instanceof ApiError
