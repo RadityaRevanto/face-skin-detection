@@ -1,0 +1,36 @@
+{
+  "version": "v4",
+  "best_model_name": "SVM (RBF) (Tuned)",
+  "accuracy": 0.8016528925619835,
+  "f1_weighted": 0.8026131588330562,
+  "img_size": [
+    128,
+    128
+  ],
+  "augmentation": "flip_h + brightness_1.2 + brightness_0.8 (train only)",
+  "feature_pipeline": "HOG16 + LBP_multi(R=1,2,3) + ColorMoments(RGB+HSV+LAB) + ColorHist(fixed) + Gabor + GLCM",
+  "feature_dim_raw": 1965,
+  "feature_dim_final": 158,
+  "pca_components": 317,
+  "pca_variance": 0.900087833404541,
+  "kbest_k": 158,
+  "classes": [
+    "Redness",
+    "dark spots",
+    "inflammatory acne",
+    "non inflammatory acne black heads",
+    "non inflammatory acne white heads",
+    "pigmentation",
+    "pores",
+    "wrinkles"
+  ],
+  "preprocessing_order": [
+    "1. load_and_preprocess(path, IMG_SIZE)  # NO augmentation pada inference",
+    "2. extract_features(img)                # HOG+LBP+CM+CH+Gabor+GLCM",
+    "3. artifacts[scaler].transform([feats])",
+    "4. artifacts[pca].transform()",
+    "5. artifacts[selector].transform()",
+    "6. best_model.predict()",
+    "7. le.inverse_transform()"
+  ]
+}
