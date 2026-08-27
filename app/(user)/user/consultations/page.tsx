@@ -157,7 +157,7 @@ export default function UserConsultationsPage() {
           doctorId={activeConversation.doctor?.uuid} doctorName={activeConversation.doctor?.full_name || "Dokter"}
           onSuccess={() => { setIsRatingModalOpen(false); setSuccessMsg("Terima kasih, ulasan Anda berhasil disimpan."); }} />
       )}
-      <div className={`mx-auto w-full max-w-350 flex-1 flex flex-col lg:flex-row gap-6 ${showSidebar ? '' : 'min-h-0'}`}>
+      <div className={`mx-auto w-full max-w-350 flex-1 flex flex-col lg:flex-row gap-6 min-h-0`}>
         <ConversationSidebar conversations={conversations} activeConversation={activeConversation} showSidebar={showSidebar}
           isLoadingConversations={isLoadingConversations} isStartingAi={isStartingAi} userProfile={userProfile}
           setActiveConversation={setActiveConversation} setShowSidebar={setShowSidebar} setIsModalOpen={setIsModalOpen} handleStartAiChat={handleStartAiChat} />

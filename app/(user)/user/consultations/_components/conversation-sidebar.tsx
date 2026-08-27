@@ -43,7 +43,7 @@ export function ConversationSidebar({
   });
 
   return (
-    <div className={`flex flex-col gap-5 h-full lg:w-64 xl:w-72 shrink-0 ${showSidebar ? "flex" : "hidden lg:flex"}`}>
+    <div className={`flex flex-col gap-5 h-full min-h-0 lg:w-64 xl:w-72 shrink-0 ${showSidebar ? "flex" : "hidden lg:flex"}`}>
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">Konsultasi Medis</h1>
         <p className="text-zinc-500 mt-2 text-sm sm:text-base leading-relaxed">Tanya jawab langsung dengan dokter spesialis kami mengenai hasil skin check Anda.</p>
