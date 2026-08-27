@@ -10,6 +10,8 @@ import {
   getPersonalizedTips,
 } from "./lib/tips-query";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Tips | Face Skin Detection",
   description: "Tips perawatan kulit wajah berdasarkan kondisi kulit Anda",

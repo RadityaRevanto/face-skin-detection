@@ -56,3 +56,4 @@ app/api/seed/route.ts
 
 # ---gitignore untuk sementara---
 buat_sementara/
+docs/

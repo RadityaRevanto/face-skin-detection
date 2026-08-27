@@ -1,6 +1,8 @@
 import { fetchApi } from "@/lib/api/server-client";
 import { PemeriksaanContent } from "./_components/pemeriksaan-content";
 
+export const dynamic = "force-dynamic";
+
 type ProfileSummary = {
   uuid?: string;
   full_name?: string | null;
