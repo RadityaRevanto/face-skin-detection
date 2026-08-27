@@ -44,44 +44,6 @@ export function ConversationSidebar({
 
   return (
     <div className={`flex flex-col gap-5 h-full min-h-0 lg:w-64 xl:w-72 shrink-0 ${showSidebar ? "flex" : "hidden lg:flex"}`}>
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">Konsultasi Medis</h1>
-        <p className="text-zinc-500 mt-2 text-sm sm:text-base leading-relaxed">Tanya jawab langsung dengan dokter spesialis kami mengenai hasil skin check Anda.</p>
-      </div>
-
-      <div className="flex flex-row items-center gap-4 bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm shadow-emerald-900/5 shrink-0">
-        {userProfile?.subscription_status === "Pro" ? (
-          <>
-            <div className="flex -space-x-2">
-              <span className="w-10 h-10 rounded-full bg-amber-100 border-2 border-white flex items-center justify-center text-amber-600 font-bold text-sm z-20">
-                <Star size={18} fill="currentColor" />
-              </span>
-            </div>
-            <div>
-              <p className="font-semibold text-amber-600 text-base">SkinCek Pro Aktif</p>
-              <p className="text-sm text-zinc-500 mt-0.5">Konsultasi tanpa batas</p>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="flex -space-x-2">
-              {[1, 2, 3].map((num) => {
-                const isActive = num <= (userProfile?.remaining_free_messages ?? 3);
-                return (
-                  <span key={num} className={`w-10 h-10 rounded-full ${isActive ? "bg-emerald-100 text-emerald-700" : "bg-zinc-100 text-zinc-400"} border-2 border-white flex items-center justify-center font-bold text-sm z-${30 - num * 10}`}>
-                    {num}
-                  </span>
-                );
-              })}
-            </div>
-            <div>
-              <p className="font-semibold text-emerald-800 text-base">Sisa Kuota Gratis</p>
-              <p className="text-sm text-zinc-500 mt-0.5">{userProfile?.remaining_free_messages ?? 3} dari 3 sesi tersisa</p>
-            </div>
-          </>
-        )}
-      </div>
-
       <div className={`flex flex-1 min-w-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60 ${showSidebar ? "min-h-[400px] lg:min-h-0" : "min-h-0"}`}>
         <div className={`${showSidebar ? "flex" : "hidden"} md:flex w-full border-r border-zinc-100 flex-col min-h-0`}>
           <div className="p-5 border-b border-zinc-100 flex items-center justify-between">
