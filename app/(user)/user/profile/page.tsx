@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getProfile, UserProfile } from "@/lib/api/profile-query";
+import { getProfile, UserProfile, exportUserData, deleteAccount } from "@/lib/api/profile-query";
 import { ProfileForm } from "@/components/users/profile-form";
 import { Info, User as UserIcon, Shield, CreditCard, Clock } from "lucide-react";
 import Link from "next/link";
@@ -10,6 +10,8 @@ export default function UserProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -23,6 +25,32 @@ export default function UserProfilePage() {
       setError(err.message || "Gagal memuat profil");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleExportData = async () => {
+    setIsExporting(true);
+    try {
+      await exportUserData();
+    } catch (err: any) {
+      alert(err.message || "Gagal mengunduh data");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!confirm("PERINGATAN: Apakah Anda yakin ingin menghapus akun secara permanen? Semua data medis, riwayat scan, dan konsultasi akan hilang dan tidak dapat dikembalikan.")) {
+      return;
+    }
+    
+    setIsDeleting(true);
+    try {
+      await deleteAccount();
+      window.location.href = "/";
+    } catch (err: any) {
+      alert(err.message || "Gagal menghapus akun");
+      setIsDeleting(false);
     }
   };
 
@@ -116,6 +144,43 @@ export default function UserProfilePage() {
             profile={profile} 
             onProfileUpdated={(updated) => setProfile(updated)} 
           />
+          
+          {/* Danger Zone (UU PDP Compliance) */}
+          <div className="mt-8 pt-8 border-t border-zinc-200">
+            <h3 className="text-lg font-bold text-rose-600 mb-2">Zona Berbahaya</h3>
+            <p className="text-sm text-zinc-500 mb-6">Pengaturan ini bersifat permanen dan berkaitan dengan hak privasi data Anda sesuai hukum yang berlaku.</p>
+            
+            <div className="space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-zinc-50 border border-zinc-200 rounded-xl gap-4">
+                <div>
+                  <h4 className="font-semibold text-zinc-800 text-sm">Unduh Data Pribadi (Export)</h4>
+                  <p className="text-xs text-zinc-500 mt-1">Unduh seluruh riwayat konsultasi, scan wajah, dan informasi pribadi Anda dalam format file JSON.</p>
+                </div>
+                <button 
+                  onClick={handleExportData}
+                  disabled={isExporting}
+                  className="shrink-0 px-4 py-2 bg-white hover:bg-zinc-100 border border-zinc-300 text-zinc-700 text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
+                >
+                  {isExporting ? "Memproses..." : "Unduh Data"}
+                </button>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-rose-50 border border-rose-200 rounded-xl gap-4">
+                <div>
+                  <h4 className="font-semibold text-rose-800 text-sm">Hapus Akun Permanen</h4>
+                  <p className="text-xs text-rose-700 mt-1">Tindakan ini akan menghapus seluruh data Anda secara permanen. Data yang dihapus tidak dapat dipulihkan kembali.</p>
+                </div>
+                <button 
+                  onClick={handleDeleteAccount}
+                  disabled={isDeleting}
+                  className="shrink-0 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 shadow-sm shadow-rose-500/20"
+                >
+                  {isDeleting ? "Menghapus..." : "Hapus Akun Saya"}
+                </button>
+              </div>
+            </div>
+          </div>
+          
         </div>
       </div>
       

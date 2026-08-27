@@ -4,6 +4,7 @@ import { unstable_noStore as noStore } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { DoctorLogoutButton } from "@/components/doctor/doctor-logout-button";
+import { ResubmitVerificationClient } from "@/components/doctor/resubmit-verification-client";
 import { fetchApi } from "@/lib/api/server-client";
 
 export const dynamic = "force-dynamic";
@@ -609,6 +610,8 @@ export default async function VerificationStatusPage() {
                 verification?.revision_note ||
                 "Admin belum menambahkan catatan detail."}
             </p>
+
+            <ResubmitVerificationClient verificationId={verification?.id || verification?.uuid} />
           </section>
         ) : null}
 

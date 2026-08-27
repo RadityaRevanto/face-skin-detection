@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import type { UserDetail } from "../lib/user-detail-types";
 import { UserIdentityCard } from "./user-identity-card";
+import { RoleManagement } from "./role-management";
 
 type UserDetailContentProps = {
   user: UserDetail;
@@ -29,6 +30,10 @@ export function UserDetailContent({ user }: UserDetailContentProps) {
 
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
         <UserIdentityCard user={user} />
+        
+        <div className="space-y-6">
+          <RoleManagement userId={user.id} currentRole={user.role} />
+        </div>
       </div>
     </div>
   );

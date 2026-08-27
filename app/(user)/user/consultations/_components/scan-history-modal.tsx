@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Search, Check, AlertCircle } from "lucide-react";
-import { ScanHistory, getScans } from "@/lib/api/scans-query";
+import { X, Search, Check, AlertCircle, ThumbsUp, ThumbsDown } from "lucide-react";
+import { ScanHistory, getScans, submitScanFeedback } from "@/lib/api/scans-query";
 
 interface ScanHistoryModalProps {
   isOpen: boolean;
@@ -31,6 +31,17 @@ export function ScanHistoryModal({ isOpen, onClose, onSelectScan }: ScanHistoryM
       setErrorMsg(error.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleFeedback = async (e: React.MouseEvent, scanId: string, isAccurate: boolean) => {
+    e.stopPropagation();
+    try {
+      await submitScanFeedback(scanId, isAccurate);
+      // Optimistically update the UI to show feedback is given
+      setScans(scans.map(s => s.uuid === scanId ? { ...s, feedback_given: true, is_accurate: isAccurate } : s));
+    } catch (error: any) {
+      alert(error.message || "Gagal mengirim masukan");
     }
   };
 
@@ -134,9 +145,34 @@ export function ScanHistoryModal({ isOpen, onClose, onSelectScan }: ScanHistoryM
                       </span>
                     </div>
                     
-                    <p className="text-xs text-zinc-400 flex items-center gap-1 group-hover:text-emerald-600 transition-colors">
-                      <Check size={12} /> Klik untuk melampirkan
-                    </p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-zinc-400 flex items-center gap-1 group-hover:text-emerald-600 transition-colors">
+                        <Check size={12} /> Klik untuk melampirkan
+                      </p>
+                      
+                      {/* Feedback ML */}
+                      {(scan as any).feedback_given ? (
+                        <span className="text-[10px] text-zinc-400 italic">Terima kasih atas masukan Anda</span>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] text-zinc-400">Prediksi akurat?</span>
+                          <button 
+                            onClick={(e) => handleFeedback(e, scan.uuid, true)}
+                            className="p-1.5 text-zinc-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-md transition-colors"
+                            title="Ya, akurat"
+                          >
+                            <ThumbsUp size={14} />
+                          </button>
+                          <button 
+                            onClick={(e) => handleFeedback(e, scan.uuid, false)}
+                            className="p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
+                            title="Tidak akurat"
+                          >
+                            <ThumbsDown size={14} />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </button>
               ))}

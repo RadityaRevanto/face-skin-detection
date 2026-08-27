@@ -29,3 +29,25 @@ export async function getScans(page: number = 1) {
 
   return res.json();
 }
+
+export async function submitScanFeedback(id: string, isAccurate: boolean) {
+  const res = await fetch(`/api/scans/${id}/feedback`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ is_accurate: isAccurate }),
+  });
+
+  if (res.status === 401 && typeof window !== "undefined") {
+    window.location.href = "/login?clear_session=true";
+    return new Promise(() => {});
+  }
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Gagal mengirim ulasan");
+  }
+
+  return res.json();
+}

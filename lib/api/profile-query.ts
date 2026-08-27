@@ -72,3 +72,37 @@ export async function deleteAvatar() {
 
   return res.json();
 }
+
+export async function deleteAccount() {
+  const res = await fetch("/api/profile", {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Gagal menghapus akun");
+  }
+
+  return res.json();
+}
+
+export async function exportUserData() {
+  const res = await fetch("/api/profile/export", {
+    method: "POST",
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Gagal mengeskpor data");
+  }
+
+  // Parse JSON response which contains the download_url
+  const data = await res.json();
+  
+  if (data.data?.download_url) {
+    // Open the download URL in a new tab to start the download
+    window.open(data.data.download_url, "_blank");
+  } else {
+    throw new Error("Gagal mendapatkan link unduhan");
+  }
+}
