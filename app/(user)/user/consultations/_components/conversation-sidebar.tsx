@@ -87,7 +87,7 @@ export function ConversationSidebar({
               <span className="min-w-0">
                 <span className="block font-semibold text-sm text-zinc-900">Aura Skin</span>
                 <span className="block text-xs text-zinc-500 mt-0.5 truncate">
-                  Asisten AI skincare — tanya kapan saja
+                  Asisten AI skincare - tanya kapan saja
                 </span>
               </span>
             </button>

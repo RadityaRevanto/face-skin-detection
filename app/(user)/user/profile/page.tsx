@@ -93,8 +93,11 @@ export default function UserProfilePage() {
           <Link href="/user/profile" className="flex items-center gap-3 px-4 py-3 bg-emerald-50 text-emerald-700 font-medium rounded-xl border border-emerald-200/50">
             <UserIcon size={18} /> Profil Akun
           </Link>
-          <Link href="/user/security" className="flex items-center gap-3 px-4 py-3 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium rounded-xl transition-colors">
-            <Shield size={18} /> Keamanan & Sesi
+          <Link href="/user/profile/login-security" className="flex items-center gap-3 px-4 py-3 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium rounded-xl transition-colors">
+            <KeyRound size={18} /> Login & Keamanan
+          </Link>
+          <Link href="/user/profile/privacy" className="flex items-center gap-3 px-4 py-3 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium rounded-xl transition-colors">
+            <Shield size={18} /> Privasi & Data
           </Link>
           
           <div className="mt-4 p-5 bg-linear-to-br from-zinc-900 to-zinc-800 rounded-2xl text-white shadow-lg relative overflow-hidden">
