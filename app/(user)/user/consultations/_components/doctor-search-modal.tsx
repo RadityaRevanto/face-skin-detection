@@ -80,7 +80,7 @@ export function DoctorSearchModal({ isOpen, onClose, onSelectDoctor }: DoctorSea
                 className="flex items-center gap-4 p-3 hover:bg-zinc-50 rounded-xl cursor-pointer transition-colors"
               >
                 <img
-                  src={doctor.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(doctor.full_name) + "&background=10b981&color=fff"}
+                  src={doctor.avatar_url || doctor.avatar || "https://ui-avatars.com/api/?name=" + encodeURIComponent(doctor.full_name) + "&background=10b981&color=fff"}
                   alt={doctor.full_name}
                   className="w-12 h-12 rounded-full object-cover"
                 />
