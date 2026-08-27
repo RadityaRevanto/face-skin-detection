@@ -5,6 +5,7 @@ import {
   Sparkles,
   Star,
 } from "lucide-react";
+import { useState } from "react";
 import { Conversation } from "@/lib/api/consultations-query";
 import { UserProfile } from "@/lib/api/profile-query";
 import { isAiBotConversation, formatTime } from "./consultation-utils";
@@ -34,6 +35,13 @@ export function ConversationSidebar({
   setIsModalOpen,
   handleStartAiChat,
 }: ConversationSidebarProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredConversations = conversations.filter((conv) => {
+    const doctorName = isAiBotConversation(conv) ? "Aura Skin" : conv.doctor?.full_name || "Akun Dihapus";
+    return doctorName.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
   return (
     <div className={`flex flex-col gap-5 h-full lg:w-64 xl:w-72 shrink-0 ${showSidebar ? "flex" : "hidden lg:flex"}`}>
       <div>
@@ -74,8 +82,8 @@ export function ConversationSidebar({
         )}
       </div>
 
-      <div className={`flex flex-1 min-w-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60 ${showSidebar ? "min-h-100 lg:min-h-0" : "min-h-0"}`}>
-        <div className={`${showSidebar ? "flex" : "hidden"} md:flex w-full border-r border-zinc-100 flex-col`}>
+      <div className={`flex flex-1 min-w-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60 ${showSidebar ? "min-h-[400px] lg:min-h-0" : "min-h-0"}`}>
+        <div className={`${showSidebar ? "flex" : "hidden"} md:flex w-full border-r border-zinc-100 flex-col min-h-0`}>
           <div className="p-5 border-b border-zinc-100 flex items-center justify-between">
             <h2 className="font-semibold text-zinc-800 text-lg">Pesan</h2>
             <button 
@@ -91,6 +99,8 @@ export function ConversationSidebar({
               <input 
                 type="text" 
                 placeholder="Cari riwayat chat..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
               />
               <svg className="w-4 h-4 absolute left-3.5 top-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -126,14 +136,14 @@ export function ConversationSidebar({
               <div className="flex justify-center p-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
               </div>
-            ) : conversations.length === 0 ? (
+            ) : filteredConversations.length === 0 ? (
               <div className="flex flex-col items-center justify-center p-8 text-center text-zinc-500">
                 <MessageSquarePlus size={32} className="mb-3 text-zinc-300" />
                 <p className="text-sm">Belum ada riwayat konsultasi.</p>
                 <p className="text-xs mt-1">Klik tombol + di atas untuk mencari dokter.</p>
               </div>
             ) : (
-              conversations.map((conv) => {
+              filteredConversations.map((conv) => {
                 const isActive = activeConversation?.uuid === conv.uuid;
                 const isBot = isAiBotConversation(conv);
 
