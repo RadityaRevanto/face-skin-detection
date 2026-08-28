@@ -2,7 +2,7 @@ import Link from "next/link";
 import { type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
-import { HomeIcon, CalendarIcon, ClockIcon, ChatIcon, StarIcon } from "./navbar-users-icons";
+import { HomeIcon, CalendarIcon, ClockIcon, ChatIcon, StarIcon, SparklesIcon, DeviceTokenIcon } from "./navbar-users-icons";
 
 type NavItem = {
   label: string;
@@ -13,9 +13,11 @@ type NavItem = {
 const navItems: NavItem[] = [
   { label: "Beranda", href: "/user/home", icon: <HomeIcon /> },
   { label: "Pemeriksaan", href: "/user/pemeriksaan", icon: <CalendarIcon /> },
-  { label: "History", href: "/history", icon: <ClockIcon /> },
+  { label: "History", href: "/user/history", icon: <ClockIcon /> },
+  { label: "Skincare", href: "/user/skincare", icon: <SparklesIcon /> },
   { label: "Konsultasi", href: "/user/consultations", icon: <ChatIcon /> },
   { label: "Premium", href: "/user/subscription", icon: <StarIcon /> },
+  { label: "Device Tokens", href: "/user/device-tokens", icon: <DeviceTokenIcon /> },
 ];
 
 export function NavbarUsersItems() {

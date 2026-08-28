@@ -12,6 +12,7 @@ import {
   getProblemsFromPrediction,
   getToneBySeverity,
 } from "@/src/features/home";
+import { EmergencyHotlinesContainer } from "@/src/features/emergency/components/EmergencyHotlinesContainer";
 
 export default async function HomePage() {
   const [profile, histories] = await Promise.all([getCurrentUserProfile(), getUserPredictionHistories()]);
@@ -39,6 +40,9 @@ export default async function HomePage() {
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <RecentHistoryCard histories={histories} />
         <RecommendationCard recommendations={recommendations} />
+      </div>
+      <div className="mt-5">
+        <EmergencyHotlinesContainer />
       </div>
       <CtaReminder />
     </main>

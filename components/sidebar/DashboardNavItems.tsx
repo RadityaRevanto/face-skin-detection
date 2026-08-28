@@ -46,6 +46,15 @@ export function getUserNavItems(): SidebarNavItem[] {
       ),
     },
     {
+      label: "Skincare",
+      href: ROUTES.USER.SKINCARE,
+      icon: (
+        <Icon>
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" {...s} />
+        </Icon>
+      ),
+    },
+    {
       label: "Konsultasi",
       href: ROUTES.USER.CONSULTATIONS,
       icon: (
@@ -60,6 +69,15 @@ export function getUserNavItems(): SidebarNavItem[] {
       icon: (
         <Icon>
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" />
+        </Icon>
+      ),
+    },
+    {
+      label: "Device Tokens",
+      href: ROUTES.USER.DEVICE_TOKENS,
+      icon: (
+        <Icon>
+          <path d="M10 2h4m-2 0v2m0 0a4 4 0 104 4M10 2a4 4 0 00-4 4m6-4v2m0 0a4 4 0 104 4M10 2a4 4 0 00-4 4m12-2H8m12 6a4 4 0 11-8 0 4 4 0 018 0z" {...s} />
         </Icon>
       ),
     },
@@ -112,6 +130,17 @@ export function getAdminNavItems(pendingCount: number): SidebarNavItem[] {
         <Icon>
           <path d="M12 21s7-3.5 7-10V5l-7-3-7 3v6c0 6.5 7 10 7 10Z" {...s} />
           <path d="m9 12 2 2 4-4" {...s} />
+        </Icon>
+      ),
+    },
+    {
+      label: "Activity Logs",
+      href: ROUTES.ADMIN.ACTIVITY_LOG,
+      icon: (
+        <Icon>
+          <path d="M3 12a9 9 0 1 0 3-6.7" {...s} />
+          <path d="M3 4v5h5" {...s} />
+          <path d="M12 7v5l3 2" {...s} />
         </Icon>
       ),
     },
@@ -174,6 +203,17 @@ export function getDoctorNavItems(): SidebarNavItem[] {
           <path d="M4 12h10" {...s} />
           <path d="M4 17h7" {...s} />
           <path d="M17 14.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z" {...s} />
+        </Icon>
+      ),
+    },
+    {
+      label: "Skin Types",
+      href: ROUTES.DOCTOR.SKIN_TYPES,
+      icon: (
+        <Icon>
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" {...s} />
+          <rect x="9" y="3" width="6" height="4" rx="1" {...s} />
+          <path d="M9 14l2 2 4-4" {...s} />
         </Icon>
       ),
     },

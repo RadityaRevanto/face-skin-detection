@@ -66,6 +66,22 @@ function StarIcon() {
   );
 }
 
+function SparklesIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+      <path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+function DeviceTokenIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+      <path d="M10 2h4m-2 0v2m0 0a4 4 0 104 4M10 2a4 4 0 00-4 4m6-4v2m0 0a4 4 0 104 4M10 2a4 4 0 00-4 4m12-2H8m12 6a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
 function MenuIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-6 w-6">
@@ -124,6 +140,8 @@ export {
   LogoutIcon,
   ChatIcon,
   StarIcon,
+  SparklesIcon,
+  DeviceTokenIcon,
   MenuIcon,
   CloseIcon,
   LogoMark,

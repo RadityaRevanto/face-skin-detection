@@ -88,6 +88,17 @@ const doctorNavItems: SidebarNavItem[] = [
       </Icon>
     ),
   },
+  {
+    label: "Skin Types",
+    href: ROUTES.DOCTOR.SKIN_TYPES,
+    icon: (
+      <Icon>
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" {...iconStroke} />
+        <rect x="9" y="3" width="6" height="4" rx="1" {...iconStroke} />
+        <path d="M9 14l2 2 4-4" {...iconStroke} />
+      </Icon>
+    ),
+  },
 ];
 
 interface DoctorSidebarProps {
