@@ -38,11 +38,11 @@ export function SkinStatusCard({
 
   return (
     <section className='rounded-3xl bg-white p-7 shadow-sm ring-1 ring-slate-100'>
-      <div className='mb-7 flex items-center justify-between'>
-        <h2 className='text-lg font-bold text-slate-900'>Status Kulit</h2>
-        <span className='flex items-center gap-2 text-sm font-semibold text-slate-500'>
+      <div className='mb-7 flex items-center justify-between gap-4'>
+        <h2 className='text-lg font-bold text-slate-900 whitespace-nowrap'>Status Kulit</h2>
+        <span className='flex items-center gap-2 text-sm font-semibold text-slate-500 whitespace-nowrap text-right'>
           <span
-            className={`h-2.5 w-2.5 rounded-full ${isLiveResult ? "bg-amber-500" : "bg-emerald-500"}`}
+            className={`h-2.5 w-2.5 shrink-0 rounded-full ${isLiveResult ? "bg-amber-500" : "bg-emerald-500"}`}
           />
           {isLiveResult ? "Hasil Scan" : "Data Terbaru"}
         </span>
@@ -50,7 +50,7 @@ export function SkinStatusCard({
 
       {hasData ? (
         <>
-          <div className='mt-6 flex flex-col items-center gap-6 text-center sm:flex-row sm:items-center sm:gap-7 sm:text-left'>
+          <div className='mt-6 flex flex-wrap items-center justify-center gap-6 text-center sm:justify-start sm:gap-7 sm:text-left'>
             <div
               className='grid h-28 w-28 shrink-0 place-items-center rounded-full'
               style={{
@@ -64,7 +64,7 @@ export function SkinStatusCard({
               </div>
             </div>
 
-            <div className='min-w-0'>
+            <div className='flex-1 min-w-[240px]'>
               <h3 className={`text-xl font-black ${tone.titleClassName}`}>
                 {topPredictionLabel}
               </h3>
@@ -83,7 +83,7 @@ export function SkinStatusCard({
               </span>
 
               {latestPrediction?.skin_concern?.description && (
-                <div className='mt-4 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100'>
+                <div className='mt-4 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100 text-left'>
                   <p className='text-xs font-bold uppercase tracking-wider text-slate-400'>
                     Tentang Kondisi Ini
                   </p>
@@ -96,11 +96,11 @@ export function SkinStatusCard({
           </div>
         </>
       ) : (
-        <div className='flex flex-col items-center gap-6 text-center sm:flex-row sm:items-center sm:gap-7 sm:text-left'>
+        <div className='mt-6 flex flex-wrap items-center justify-center gap-6 text-center sm:justify-start sm:gap-7 sm:text-left'>
           <div className='grid h-32 w-32 shrink-0 place-items-center rounded-full bg-slate-100'>
             <span className='text-3xl font-black text-slate-300'>—</span>
           </div>
-          <div className='min-w-0'>
+          <div className='flex-1 min-w-[240px]'>
             <h3 className='text-2xl font-black text-slate-400'>Belum Ada Data</h3>
             <p className='mt-2 text-sm leading-6 text-slate-500'>
               Belum ada hasil pemeriksaan. Ambil foto untuk memulai analisis.
