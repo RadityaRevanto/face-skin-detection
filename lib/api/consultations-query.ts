@@ -102,7 +102,7 @@ export async function startAiConversation() {
   });
 
   if (!res.ok) {
-    throw await readError(res, "Gagal memulai chat dengan Aura Skin");
+    throw await readError(res, "Gagal memulai chat dengan Aura Skin. Harap aktifkan Persetujuan AI di pengaturan Profil terlebih dahulu.");
   }
 
   return res.json();
