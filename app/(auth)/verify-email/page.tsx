@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { VerifyEmailView } from "@/components/auth/verify-email-view";
+import { VerifyEmailView } from "@/src/features/auth/components/verify-email-view";
 import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
 
 export const metadata: Metadata = {

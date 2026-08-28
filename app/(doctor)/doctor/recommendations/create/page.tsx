@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { CreateRecommendationContent } from "./components/create-recommendation-content";
-import { getCreateRecommendationPageData } from "./lib/create-recommendation-query";
+import { CreateRecommendationContent } from "@/src/features/doctor/recommendations/create/components/CreateRecommendationContent";
+import { getCreateRecommendationPageData } from "@/src/features/doctor/recommendations/create/lib/createRecommendationQuery";
 
 
 export const metadata: Metadata = {

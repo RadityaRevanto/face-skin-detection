@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { DoctorsContent } from "./components/doctors-content";
-import { getDoctorsPageData } from "./lib/doctors-query";
+import { DoctorsContent } from "@/src/features/admin/doctors/components/DoctorsContent";
+import { getDoctorsPageData } from "@/src/features/admin/doctors/lib/doctorsQuery";
 
 
 export const metadata: Metadata = {

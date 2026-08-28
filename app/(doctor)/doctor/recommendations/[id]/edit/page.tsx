@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { RecommendationForm } from "@/app/(doctor)/doctor/recommendations/_components/recommendation-form";
+import { RecommendationForm } from "@/src/features/doctor/recommendations/components/RecommendationForm";
 import { ROUTES } from "@/lib/constants";
 
-import { getEditRecommendationPageData } from "./lib/edit-recommendation-query";
+import { getEditRecommendationPageData } from "@/src/features/doctor/recommendations/[id]/edit/lib/editRecommendationQuery";
 
 
 export const metadata: Metadata = {

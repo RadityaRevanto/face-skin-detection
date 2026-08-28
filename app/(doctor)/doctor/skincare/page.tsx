@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { SkincareContent } from "./components/skincare-content";
-import { getSkincarePageData } from "./lib/skincare-query";
+import { SkincareContent } from "@/src/features/doctor/skincare/components/SkincareContent";
+import { getSkincarePageData } from "@/src/features/doctor/skincare/lib/skincareQuery";
 
 
 export const metadata: Metadata = {

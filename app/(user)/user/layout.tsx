@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { DashboardLayout } from "@/components/AppShell";
 import { requireUserRole } from "@/lib/auth";
 
 export default async function UserLayout({ children }: { children: ReactNode }) {

@@ -1,5 +1,5 @@
 import { fetchApi } from "@/lib/api/server-client";
-import { PemeriksaanContent } from "./_components/pemeriksaan-content";
+import { PemeriksaanContent } from "@/src/features/scan/components/ScanContent";
 
 export const dynamic = "force-dynamic";
 

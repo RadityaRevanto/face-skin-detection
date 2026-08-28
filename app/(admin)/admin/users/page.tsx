@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { UsersContent } from "./components/users-content";
-import { getUsersPageData } from "./lib/users-query";
+import { UsersContent } from "@/src/features/admin/users/components/UsersContent";
+import { getUsersPageData } from "@/src/features/admin/users/lib/usersQuery";
 
 
 export const metadata: Metadata = {

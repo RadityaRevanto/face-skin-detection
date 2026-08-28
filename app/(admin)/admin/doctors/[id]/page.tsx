@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { DoctorDetailContent } from "./components/doctor-detail-content";
-import { getDoctorDetail } from "./lib/doctor-detail-query";
+import { DoctorDetailContent } from "@/src/features/admin/doctors/[id]/components/DoctorDetailContent";
+import { getDoctorDetail } from "@/src/features/admin/doctors/[id]/lib/doctorDetailQuery";
 
 
 export const metadata: Metadata = {

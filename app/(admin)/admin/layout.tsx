@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import { getPendingVerificationCount } from "./doctor-verifications/lib/doctor-verifications-query";
+import { DashboardLayout } from "@/components/AppShell";
+import { getPendingVerificationCount } from "@/src/features/admin/verifications/lib/doctorVerificationsQuery";
 
 type AdminLayoutProps = {
   children: ReactNode;

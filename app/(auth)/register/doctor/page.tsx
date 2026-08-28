@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { DoctorRegisterView } from "@/components/auth/doctor-register-view";
+import { DoctorRegisterView } from "@/src/features/auth/components/doctor-register-view";
 import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
 
 export const metadata: Metadata = {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { LoginView } from "@/components/auth/login-view";
+import { LoginView } from "@/src/features/auth/components/login-view";
 import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
 
 export const metadata: Metadata = {

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { DashboardLayout } from "@/components/layout/dashboard-layout";
+import { DashboardLayout } from "@/components/AppShell";
 import { requireDoctorProfile } from "@/lib/doctor-auth";
 
 type DoctorLayoutProps = {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { UserDetailContent } from "./components/user-detail-content";
-import { getUserDetail } from "./lib/user-detail-query";
+import { UserDetailContent } from "@/src/features/admin/users/[id]/components/UserDetailContent";
+import { getUserDetail } from "@/src/features/admin/users/[id]/lib/userDetailQuery";
 
 
 export const metadata: Metadata = {

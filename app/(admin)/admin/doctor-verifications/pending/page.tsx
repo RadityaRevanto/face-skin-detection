@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { DoctorVerificationContent } from "../components/doctor-verification-content";
-import { getDoctorVerificationPageData } from "../lib/doctor-verifications-query";
+import { DoctorVerificationContent } from "@/src/features/admin/verifications/components/DoctorVerificationContent";
+import { getDoctorVerificationPageData } from "@/src/features/admin/verifications/lib/doctorVerificationsQuery";
 
 
 export const metadata: Metadata = {
