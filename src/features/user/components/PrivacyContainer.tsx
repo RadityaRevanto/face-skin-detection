@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import { getProfile, UserProfile } from "@/lib/api/profile-query";
 import { useRouter } from "next/navigation";
 
-import { PrivacySidebar } from "./privacy-sidebar";
-import { AiConsentCard } from "./ai-consent-card";
-import { ExportDataCard } from "./export-data-card";
-import { DangerZoneCard } from "./danger-zone-card";
+import { PrivacySidebar } from "./PrivacySidebar";
+import { AiConsentCard } from "./AiConsentCard";
+import { ExportDataCard } from "./ExportDataCard";
+import { DangerZoneCard } from "./DangerZoneCard";
 
 export function PrivacyContainer() {
   const router = useRouter();

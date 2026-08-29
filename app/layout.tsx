@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
 
+import { AppProviders } from "@/components/providers/AppProviders";
+
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
@@ -31,7 +33,7 @@ export default function RootLayout({
       {/* suppressHydrationWarning: ekstensi browser (mis. ColorZilla) menyuntikkan
           atribut seperti cz-shortcut-listen ke <body> sebelum hydrate. */}
       <body suppressHydrationWarning className="min-h-full flex flex-col">
-        {children}
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );

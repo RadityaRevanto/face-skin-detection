@@ -33,7 +33,7 @@ export function ChatInput({
   fileInputRef,
 }: ChatInputProps) {
   return (
-    <div className="p-3 sm:p-4 bg-[#f0f2f5] border-t border-zinc-200 shrink-0">
+    <div className="p-3 sm:p-4 bg-chat-input border-t border-zinc-200 shrink-0">
       {selectedImagePreview && (
         <div className="mb-3 p-3 bg-zinc-50 rounded-xl border border-zinc-200 inline-block relative">
           <button
@@ -97,7 +97,7 @@ export function ChatInput({
         <button
           type="submit"
           disabled={isSending || (!inputText.trim() && !selectedImagePreview)}
-          className="bg-[#00a884] hover:bg-[#008f6f] disabled:bg-[#00a884]/50 disabled:cursor-not-allowed text-white p-3 rounded-full transition-all shadow-sm shrink-0 flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12"
+          className="bg-chat-accent hover:bg-chat-accent-hover disabled:bg-chat-accent/50 disabled:cursor-not-allowed text-white p-3 rounded-full transition-all shadow-sm shrink-0 flex items-center justify-center w-11 h-11 sm:w-12 sm:h-12"
         >
           {isSending ? (
              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>

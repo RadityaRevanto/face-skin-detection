@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getProfile, UserProfile } from "@/lib/api/profile-query";
-import { ProfileForm } from "@/src/features/user/components/profile-form";
+import { ProfileForm } from "@/src/features/user/components/ProfileForm";
 import { ProfileSidebar } from "@/src/features/user/components/ProfileSidebar";
 import { Info } from "lucide-react";
 

@@ -58,7 +58,7 @@ export function FeatureHero() {
         <div className='relative flex min-h-[280px] items-end justify-center'>
           <div className='absolute inset-x-8 top-10 h-40 rounded-[42px] border-4 border-white/90' />
           <div className='relative h-[270px] w-[230px] overflow-hidden rounded-t-[110px] bg-linear-to-b from-amber-100 to-amber-200 shadow-2xl shadow-emerald-100'>
-            <div className='absolute left-1/2 top-14 h-28 w-24 -translate-x-1/2 rounded-[45%] bg-[#f2c7a7]' />
+            <div className='absolute left-1/2 top-14 h-28 w-24 -translate-x-1/2 rounded-[45%] bg-illustration-skin' />
             <div className='absolute left-1/2 top-9 h-20 w-32 -translate-x-1/2 rounded-t-full bg-slate-950' />
             <div className='absolute left-[88px] top-[102px] h-2 w-2 rounded-full bg-slate-900' />
             <div className='absolute right-[88px] top-[102px] h-2 w-2 rounded-full bg-slate-900' />

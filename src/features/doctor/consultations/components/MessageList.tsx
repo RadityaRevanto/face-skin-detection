@@ -18,9 +18,9 @@ export function MessageList({
   messagesEndRef: RefObject<HTMLDivElement | null>;
 }) {
   return (
-    <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#efeae2]">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-chat-surface">
       <div className="flex justify-center mb-6 mt-2">
-        <div className="bg-[#ffeecd] text-zinc-600 text-xs py-1.5 px-3 rounded-lg shadow-sm font-medium inline-flex items-center gap-1.5">
+        <div className="bg-chat-notice text-zinc-600 text-xs py-1.5 px-3 rounded-lg shadow-sm font-medium inline-flex items-center gap-1.5">
           <Clock size={12} />
           Sesi Konsultasi Dimulai
         </div>
@@ -42,8 +42,8 @@ export function MessageList({
             <div
               className={`relative max-w-[85%] md:max-w-[70%] px-2.5 py-1.5 shadow-sm ${
                 isDoctor
-                  ? "bg-[#d9fdd3] text-[#111b21] rounded-lg rounded-tr-none"
-                  : "bg-white text-[#111b21] rounded-lg rounded-tl-none"
+                  ? "bg-chat-bubble-own text-chat-bubble-text rounded-lg rounded-tr-none"
+                  : "bg-white text-chat-bubble-text rounded-lg rounded-tl-none"
               }`}
             >
               {message.type === "image" && message.media_url && (
@@ -58,7 +58,7 @@ export function MessageList({
 
               {message.type === "scan_result" && (
                 <div className="mb-2 w-full max-w-xs sm:max-w-sm rounded-xl overflow-hidden border border-zinc-200 bg-zinc-50 shadow-sm mt-1">
-                  <div className="bg-[#00a884] text-white px-3 py-1.5 flex items-center gap-2">
+                  <div className="bg-chat-accent text-white px-3 py-1.5 flex items-center gap-2">
                     <CheckCheck size={16} />
                     <span className="font-semibold text-xs tracking-wide">
                       LAPORAN SCAN KULIT PASIEN

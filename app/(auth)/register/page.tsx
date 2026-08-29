@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { RegisterView } from "@/src/features/auth/components/register-view";
+import { RegisterView } from "@/src/features/auth/components/RegisterView";
 import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
 
 export const metadata: Metadata = {

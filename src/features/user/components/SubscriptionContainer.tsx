@@ -5,13 +5,13 @@ import Script from "next/script";
 import { Loader2 } from "lucide-react";
 
 import type { Subscription, ReceiptData } from "./types";
-import { SubscriptionErrorBanner } from "./subscription-error-banner";
-import { SubscriptionHero } from "./subscription-hero";
-import { ActiveSubscriptionCard } from "./active-subscription-card";
-import { InactiveSubscriptionCard } from "./inactive-subscription-card";
-import { SubscriptionHistory } from "./subscription-history";
-import { ReceiptModal } from "./receipt-modal";
-import { CancelModal } from "./cancel-modal";
+import { SubscriptionErrorBanner } from "./SubscriptionErrorBanner";
+import { SubscriptionHero } from "./SubscriptionHero";
+import { ActiveSubscriptionCard } from "./ActiveSubscriptionCard";
+import { InactiveSubscriptionCard } from "./InactiveSubscriptionCard";
+import { SubscriptionHistory } from "./SubscriptionHistory";
+import { ReceiptModal } from "./ReceiptModal";
+import { CancelModal } from "./CancelModal";
 
 export function SubscriptionContainer() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
@@ -111,7 +111,7 @@ export function SubscriptionContainer() {
           : "https://app.sandbox.midtrans.com/snap/snap.js"}
         data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
       />
-      <main className="min-h-[calc(100vh-72px)] bg-[#f7fbf8] p-4 sm:p-6 lg:p-10 flex flex-col items-center">
+      <main className="min-h-[calc(100vh-72px)] bg-shell p-4 sm:p-6 lg:p-10 flex flex-col items-center">
         <SubscriptionErrorBanner message={errorMsg} />
         <div className="w-full max-w-3xl bg-white rounded-3xl shadow-sm border border-emerald-100/50 overflow-hidden">
           <SubscriptionHero />

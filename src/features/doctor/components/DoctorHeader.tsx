@@ -4,7 +4,7 @@ import { DoctorProfileMenu } from "@/src/features/doctor/components/DoctorProfil
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-import { NotificationBell } from "@/components/ui/NotificationBell";
+import { NotificationBell } from "@/src/features/notification/components/NotificationBell";
 
 type DoctorHeaderProps = {
   title: string;

@@ -4,13 +4,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 
-import { NotificationBell } from "@/components/ui/NotificationBell";
+import { NotificationBell } from "@/src/features/notification/components/NotificationBell";
 import { logoutAction } from "@/lib/auth/actions";
 
-import { MenuIcon } from "./ui/NavbarIcons";
-import { NavbarLogo } from "./ui/NavbarLogo";
-import { NavbarProfile } from "./ui/NavbarProfile";
-import { NavbarMobileDrawer } from "./ui/NavbarMobileDrawer";
+import { MenuIcon } from "./navbar/NavbarIcons";
+import { NavbarLogo } from "./navbar/NavbarLogo";
+import { NavbarProfile } from "./navbar/NavbarProfile";
+import { NavbarMobileDrawer } from "./navbar/NavbarMobileDrawer";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getProfile, UserProfile } from "@/lib/api/profile-query";
-import { LoginSecurityContent } from "@/src/features/user/components/login-security-content";
+import { LoginSecurityContent } from "@/src/features/user/components/LoginSecurityContent";
 import { ProfileSidebar } from "@/src/features/user/components/ProfileSidebar";
 
 export function LoginSecurityContainer({ role }: { role: "user" | "doctor" }) {

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { ResetPasswordView } from "@/src/features/auth/components/reset-password-view";
+import { ResetPasswordView } from "@/src/features/auth/components/ResetPasswordView";
 import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
 
 export const metadata: Metadata = {

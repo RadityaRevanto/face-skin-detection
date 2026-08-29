@@ -148,7 +148,7 @@ export function ConsultationContainer() {
   };
 
   return (
-    <main className="bg-[#f7fbf8] flex flex-col h-[calc(100vh-72px)]">
+    <main className="bg-shell flex flex-col h-[calc(100vh-72px)]">
       <ErrorPopup errorState={errorState} setErrorState={setErrorState} successMsg={successMsg} setSuccessMsg={setSuccessMsg} />
       <DoctorSearchModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSelectDoctor={handleCreateOrOpenConversation} />
       <ScanHistoryModal isOpen={isScanModalOpen} onClose={() => setIsScanModalOpen(false)} onSelectScan={handleSendScanHistory} />

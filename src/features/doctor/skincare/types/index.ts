@@ -9,6 +9,29 @@ export type SkincareRow = {
   updatedAt: string;
 };
 
+export type SkincareApiConcern = {
+  uuid: string;
+  name: string;
+};
+
+export type SkincareApiSkinType = {
+  uuid: string;
+  name: string;
+};
+
+export type SkincareApiProduct = {
+  uuid: string;
+  name: string;
+  category: string;
+  gender?: string;
+  key_ingredients?: string | null;
+  usage_instruction?: string | null;
+  warning?: string | null;
+  is_active?: boolean;
+  concern?: SkincareApiConcern | null;
+  skin_type?: SkincareApiSkinType | null;
+};
+
 export type SkincareSummary = {
   totalProducts: number;
   totalCategories: number;

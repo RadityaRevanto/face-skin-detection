@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { NotificationData } from "@/components/ui/notification-types";
-import { NotificationItem } from "@/components/ui/notifications/notification-item";
-import { NotificationsHeader } from "@/components/ui/notifications/notifications-header";
-import { NotificationsLoading } from "@/components/ui/notifications/notifications-loading";
-import { NotificationsEmpty } from "@/components/ui/notifications/notifications-empty";
-import { NotificationsPagination } from "@/components/ui/notifications/notifications-pagination";
+import type { NotificationData } from "../lib/NotificationTypes";
+import { NotificationItem } from "./NotificationItem";
+import { NotificationsHeader } from "./NotificationsHeader";
+import { NotificationsLoading } from "./NotificationsLoading";
+import { NotificationsEmpty } from "./NotificationsEmpty";
+import { NotificationsPagination } from "./NotificationsPagination";
 
 export function NotificationsContainer() {
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
@@ -56,7 +56,7 @@ export function NotificationsContainer() {
   const formatTime = (dateStr: string) => new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(dateStr));
 
   return (
-    <main className="min-h-[calc(100vh-72px)] bg-[#f7fbf8] p-4 sm:p-6 lg:p-8">
+    <main className="min-h-[calc(100vh-72px)] bg-shell p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-3xl">
         <NotificationsHeader total={total} hasNotifications={notifications.length > 0} onMarkAllAsRead={markAllAsRead} />
         <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">

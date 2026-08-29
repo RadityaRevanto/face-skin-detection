@@ -5,10 +5,12 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 
 import { Sidebar } from "@/components/sidebar/Sidebar";
-import { NotificationBell } from "@/components/ui/NotificationBell";
+import { NotificationBell } from "@/src/features/notification/components/NotificationBell";
 import { logoutAction } from "@/lib/auth/actions";
-import { getUserNavItems, getAdminNavItems, getDoctorNavItems } from "./sidebar/DashboardNavItems";
-import { ProfileDropdown } from "./ui/ProfileDropdown";
+import { getUserNavItems } from "./sidebar/UserNavItems";
+import { getAdminNavItems } from "./sidebar/AdminNavItems";
+import { getDoctorNavItems } from "./sidebar/DoctorNavItems";
+import { ProfileDropdown } from "./navbar/ProfileDropdown";
 
 export type DashboardRole = "user" | "admin" | "doctor";
 
@@ -28,8 +30,8 @@ export type DashboardLayoutProps = {
 function LeafLogo() {
   return (
     <svg aria-hidden="true" className="h-9 w-9" viewBox="0 0 48 48" fill="none">
-      <path d="M30.5 4.5C19 8.8 11 17.2 11 27.4c0 8.3 5.5 14.2 13.3 15.7C22.7 31 25.9 20 34.8 11.8c-4.2 8-5.3 16.6-2.8 25.4C39 33.3 43 26.6 43 18.8c0-5.5-2.1-10.4-5.4-14.3-2.2-.6-4.5-.6-7.1 0Z" fill="#10B981" />
-      <path d="M23.8 42.9C14.6 39.7 5 32.2 5 21.6c0-5.1 2-9.5 5.1-12.9C18 14.4 22.8 23.1 23.8 42.9Z" fill="#047857" />
+      <path d="M30.5 4.5C19 8.8 11 17.2 11 27.4c0 8.3 5.5 14.2 13.3 15.7C22.7 31 25.9 20 34.8 11.8c-4.2 8-5.3 16.6-2.8 25.4C39 33.3 43 26.6 43 18.8c0-5.5-2.1-10.4-5.4-14.3-2.2-.6-4.5-.6-7.1 0Z" fill="var(--brand-primary)" />
+      <path d="M23.8 42.9C14.6 39.7 5 32.2 5 21.6c0-5.1 2-9.5 5.1-12.9C18 14.4 22.8 23.1 23.8 42.9Z" fill="var(--brand-primary-strong)" />
       <path d="M12 31.5c6.6-8.1 13.5-14.4 24-20.4" stroke="white" strokeWidth="2" strokeLinecap="round" />
     </svg>
   );
@@ -99,7 +101,7 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
   const activeLabel = navItems.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))?.label ?? "Dashboard";
 
   return (
-    <div className="min-h-screen bg-[#f7fbf8]">
+    <div className="min-h-screen bg-shell">
       <div className="flex min-h-screen flex-col lg:flex-row">
         <Sidebar
           brand={brand}
