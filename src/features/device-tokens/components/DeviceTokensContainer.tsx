@@ -75,7 +75,7 @@ export function DeviceTokensContainer() {
           <div className="divide-y divide-slate-100">
             {tokens.map((token) => (
               <div
-                key={token.id}
+                key={token.uuid}
                 className="flex items-center justify-between p-4 hover:bg-slate-50/50"
               >
                 <div className="flex items-center gap-3">
@@ -84,24 +84,26 @@ export function DeviceTokensContainer() {
                   </span>
                   <div>
                     <p className="text-sm font-semibold text-slate-900">
-                      {token.device_name ?? "Unknown Device"}
+                      Perangkat {token.platform}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {token.platform} • {token.token.slice(0, 20)}...
+                      {token.platform} • {token.fcm_token.slice(0, 20)}...
                     </p>
                     <p className="text-xs text-slate-400">
                       Ditambahkan:{" "}
-                      {new Date(token.created_at).toLocaleDateString("id-ID")}
+                      {token.created_at
+                        ? new Date(token.created_at).toLocaleDateString("id-ID")
+                        : "-"}
                     </p>
                   </div>
                 </div>
                 <button
                   type="button"
-                  onClick={() => handleDelete(token.id)}
-                  disabled={deletingId === token.id}
+                  onClick={() => handleDelete(token.uuid)}
+                  disabled={deletingId === token.uuid}
                   className="rounded-lg px-3 py-1.5 text-xs font-semibold text-rose-600 transition-colors hover:bg-rose-50 disabled:opacity-50"
                 >
-                  {deletingId === token.id ? "..." : "Hapus"}
+                  {deletingId === token.uuid ? "..." : "Hapus"}
                 </button>
               </div>
             ))}

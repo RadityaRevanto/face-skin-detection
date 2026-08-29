@@ -7,4 +7,18 @@ export { NotificationsEmpty } from "../components/NotificationsEmpty";
 export { NotificationsHeader } from "../components/NotificationsHeader";
 export { NotificationsLoading } from "../components/NotificationsLoading";
 export { NotificationsPagination } from "../components/NotificationsPagination";
-export type { NotificationData, NotificationBellProps } from "./NotificationTypes";
+export { useAppToast } from "../hooks/useAppToast";
+export { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
+export {
+  getNotificationHref,
+  getNotificationType,
+  getToastVariant,
+} from "./notificationToast";
+export type {
+  ToastVariant,
+} from "./notificationToast";
+export type {
+  NotificationData,
+  NotificationType,
+  NotificationBellProps,
+} from "./NotificationTypes";

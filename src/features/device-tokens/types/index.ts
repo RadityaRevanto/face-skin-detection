@@ -1,9 +1,8 @@
 export type DeviceToken = {
-  id: string;
-  token: string;
+  uuid: string;
+  fcm_token: string;
   platform: string;
-  device_name: string | null;
-  created_at: string;
+  created_at: string | null;
 };
 
 export type DeviceTokenListResponse = {

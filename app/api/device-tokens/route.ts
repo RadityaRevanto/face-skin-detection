@@ -9,11 +9,11 @@ export async function GET(request: NextRequest) {
   try {
     const res = await fetchApi(`/device-tokens?page=${page}&per_page=${per_page}`);
     return NextResponse.json(res);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to fetch device tokens:", error);
     return NextResponse.json(
       { data: [], meta: { current_page: 1, last_page: 1, per_page: 10, total: 0 } },
-      { status: 500 }
+      { status: error.status || 500 }
     );
   }
 }
@@ -27,11 +27,11 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(body),
     });
     return NextResponse.json(res);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to register device token:", error);
     return NextResponse.json(
-      { message: "Gagal mendaftarkan device token" },
-      { status: 500 }
+      { message: error.message || "Gagal mendaftarkan device token" },
+      { status: error.status || 500 }
     );
   }
 }

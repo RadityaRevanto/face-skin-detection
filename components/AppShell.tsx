@@ -117,7 +117,7 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
               <h1 className="truncate text-base font-bold text-slate-800 sm:text-lg">{activeLabel}</h1>
             </div>
             <div className="flex items-center gap-2">
-              {(role === "user" || role === "doctor") && userUuid && (
+              {userUuid && (
                 <NotificationBell userId={profile?.id} userUuid={userUuid} />
               )}
               <ProfileDropdown displayName={displayName} avatarUrl={avatarUrl} role={role} />

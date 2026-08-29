@@ -39,9 +39,8 @@ export async function getDeviceTokens(
 }
 
 export async function registerDeviceToken(data: {
-  token: string;
+  fcm_token: string;
   platform: string;
-  device_name?: string;
 }): Promise<DeviceToken | null> {
   try {
     const res = await fetch("/api/device-tokens", {
@@ -66,7 +65,7 @@ export async function deleteDeviceToken(uuid: string): Promise<boolean> {
   try {
     const res = await fetch(`/api/device-tokens/${uuid}`, {
       method: "DELETE",
-    });
+    });;
 
     if (!res.ok) {
       throw new Error(`API error: ${res.status}`);

@@ -3,6 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Surface tokens — dipakai border/background netral (slate-200/900 dari palet existing) */
+  --border: #e2e8f0;
+  --muted-foreground: #64748b;
   /* Brand tokens — satu sumber kebenaran untuk warna brand di seluruh shell */
   --brand-primary: #10b981;
   --brand-primary-strong: #047857;
@@ -25,6 +28,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-muted-foreground: var(--muted-foreground);
   --color-brand-primary: var(--brand-primary);
   --color-brand-primary-strong: var(--brand-primary-strong);
   --color-shell: var(--shell-background);

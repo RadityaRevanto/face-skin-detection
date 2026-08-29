@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Bell } from "lucide-react";
-import { getEcho } from "@/lib/echo";
+
 import type { NotificationBellProps, NotificationData } from "../lib/NotificationTypes";
+import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import { NotificationModal } from "./NotificationModal";
 
 export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
@@ -104,38 +105,13 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
     fetchNotifications();
   }, []);
 
-  // Listen to WebSocket for real-time notifications
-  useEffect(() => {
-    if (!userId && !userUuid) return;
+  // Realtime: increment unread + toast via useRealtimeNotifications hook
+  const handleNewNotification = useCallback((notification: NotificationData) => {
+    setUnreadCount((prev) => prev + 1);
+    setNotifications((prev) => [notification, ...prev]);
+  }, []);
 
-    try {
-      const echo = getEcho();
-      if (!echo) return;
-
-      const handleNewNotification = () => {
-        fetchNotifications();
-      };
-
-      // Backend broadcast notifikasi ke PrivateChannel('user.{uuid}')
-      // via receivesBroadcastNotificationsOn() pada model User.
-      let uuidChannel: any;
-
-      if (userUuid) {
-        uuidChannel = echo.private(`user.${userUuid}`);
-        uuidChannel.notification(handleNewNotification);
-        uuidChannel.listen(".Illuminate\\Notifications\\Events\\BroadcastNotificationCreated", handleNewNotification);
-      }
-
-      return () => {
-        if (uuidChannel) {
-          uuidChannel.stopListening(".Illuminate\\Notifications\\Events\\BroadcastNotificationCreated");
-          echo.leave(`user.${userUuid}`);
-        }
-      };
-    } catch (err) {
-      console.error("WebSocket subscription error:", err);
-    }
-  }, [userId, userUuid]);
+  useRealtimeNotifications({ userId, userUuid, basePath, onNewNotification: handleNewNotification });
 
   const markAllAsRead = async () => {
     try {
