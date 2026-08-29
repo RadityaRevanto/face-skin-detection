@@ -9,9 +9,10 @@ export { NotificationsLoading } from "../components/NotificationsLoading";
 export { NotificationsPagination } from "../components/NotificationsPagination";
 export { useAppToast } from "../hooks/useAppToast";
 export { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
+export { notificationService, resolveActionUrl } from "../services/notificationService";
 export {
   getNotificationHref,
-  getNotificationType,
+  getCategoryBadge,
   getToastVariant,
 } from "./notificationToast";
 export type {
@@ -20,5 +21,11 @@ export type {
 export type {
   NotificationData,
   NotificationType,
+  NotificationCategory,
   NotificationBellProps,
 } from "./NotificationTypes";
+export type {
+  NotificationListParams,
+  NotificationListResponse,
+  UnreadCountResponse,
+} from "../services/notificationService";

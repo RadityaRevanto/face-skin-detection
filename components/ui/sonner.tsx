@@ -1,33 +1,32 @@
 "use client";
 
 import { Toaster as Sonner } from "sonner";
+import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 /**
- * Toaster global (shadcn/ui style) — border & warna toast dipetakan ke
- * kelas tema existing (emerald = sukses, rose = error, sky = info,
- * amber = warning, slate = netral) tanpa mem-override aksesibilitas
- * bawaan Sonner (ARIA live region, role, focus management tetap utuh).
+ * Toaster global — dipakai bareng customToast (lib/custom-toast.tsx)
+ * yang rendering via toast.custom(). Icons di sini sebagai fallback
+ * untuk toast non-custom (mis. sonner bawaan).
  */
-const toastClassNames = {
-  success: "!border-emerald-200 !bg-emerald-50 !text-emerald-900",
-  error: "!border-rose-200 !bg-rose-50 !text-rose-900",
-  info: "!border-sky-200 !bg-sky-50 !text-sky-900",
-  warning: "!border-amber-200 !bg-amber-50 !text-amber-900",
-  default: "!border-slate-200 !bg-white !text-slate-900",
-} as const;
-
 export function Toaster(props: ToasterProps) {
   return (
     <Sonner
       position="top-right"
       theme="system"
       className="toaster group"
+      icons={{
+        success: <CircleCheckIcon className="size-4" />,
+        info: <InfoIcon className="size-4" />,
+        warning: <TriangleAlertIcon className="size-4" />,
+        error: <OctagonXIcon className="size-4" />,
+        loading: <Loader2Icon className="size-4 animate-spin" />,
+      }}
       toastOptions={{
         ...props.toastOptions,
         classNames: {
-          ...toastClassNames,
+          toast: "cn-toast",
           ...props.toastOptions?.classNames,
         },
         style: {
@@ -37,14 +36,9 @@ export function Toaster(props: ToasterProps) {
       }}
       style={
         {
-          /**
-           * Toaster wajib tampil di atas seluruh elemen shell (sidebar
-           * sticky z-40, header sticky z-40, modal z-50) dari refactor
-           * layout sebelumnya. Sonner membaca --z-index dari root style.
-           */
-          "--normal-border": "var(--border)",
-          "--normal-bg": "var(--background)",
-          "--normal-text": "var(--foreground)",
+          "--normal-bg": "#ffffff",
+          "--normal-text": "#1e293b",
+          "--normal-border": "#e2e8f0",
           "--z-index": "9999",
           ...props.style,
         } as React.CSSProperties

@@ -2,9 +2,12 @@
 
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { customToast } from "@/lib/custom-toast";
 import { googleLoginAction } from "@/lib/auth/actions";
 
 function GoogleLoginContent() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -26,25 +29,29 @@ function GoogleLoginContent() {
       const profile = result.user;
 
       if (profile.email_verified === false) {
-        window.location.href = `/verify-email?email=${encodeURIComponent(profile.email)}`;
+        router.push(`/verify-email?email=${encodeURIComponent(profile.email)}`);
         return;
       }
 
+      customToast.success("Selamat datang!", {
+        description: "Login berhasil. Selamat datang kembali!",
+      });
+
       if (profile.role === "admin") {
-        window.location.href = "/admin/dashboard";
+        router.push("/admin/dashboard");
         return;
       }
 
       if (profile.role === "doctor") {
         if (profile.verification_status === "approved") {
-          window.location.href = "/doctor/dashboard";
+          router.push("/doctor/dashboard");
         } else {
-          window.location.href = "/doctor/verification-status";
+          router.push("/doctor/verification-status");
         }
         return;
       }
 
-      window.location.href = "/user/home";
+      router.push("/user/home");
 
     } catch (err: any) {
       setErrorMsg(err.message || "Gagal login dengan Google.");

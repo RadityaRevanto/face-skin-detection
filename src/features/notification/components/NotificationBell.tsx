@@ -6,7 +6,10 @@ import { Bell } from "lucide-react";
 
 import type { NotificationBellProps, NotificationData } from "../lib/NotificationTypes";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
+import { notificationService } from "../services/notificationService";
 import { NotificationModal } from "./NotificationModal";
+
+const POLL_INTERVAL_MS = 60_000;
 
 export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
   const pathname = usePathname();
@@ -14,15 +17,13 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Menentukan basePath (apakah /user, /doctor, atau /admin)
   const basePath = pathname.startsWith("/doctor")
     ? "/doctor"
     : pathname.startsWith("/admin")
       ? "/admin"
       : "/user";
-
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -39,11 +40,11 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
     };
   }, [isOpen]);
 
-  // Sync state with NotificationsPage
+  // Sync state with NotificationsPage via DOM events
   useEffect(() => {
     const handleReadAll = () => {
       setUnreadCount(0);
-      setNotifications((prev) => prev.map((n) => ({ ...n, read_at: new Date().toISOString() })));
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true, read_at: new Date().toISOString() })));
     };
 
     const handleReadSingle = (e: Event) => {
@@ -51,10 +52,10 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
       const { id } = customEvent.detail;
       setNotifications((prev) => {
         const target = prev.find((n) => n.id === id);
-        if (target && !target.read_at) {
+        if (target && !target.is_read) {
           setUnreadCount((c) => Math.max(0, c - 1));
         }
-        return prev.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
+        return prev.map((n) => (n.id === id ? { ...n, is_read: true, read_at: new Date().toISOString() } : n));
       });
     };
 
@@ -63,7 +64,7 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
       const { id } = customEvent.detail;
       setNotifications((prev) => {
         const target = prev.find((n) => n.id === id);
-        if (target && !target.read_at) {
+        if (target && !target.is_read) {
           setUnreadCount((c) => Math.max(0, c - 1));
         }
         return prev.filter((n) => n.id !== id);
@@ -81,43 +82,52 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
     };
   }, []);
 
-  // Fetch initial notifications
-  const fetchNotifications = async () => {
+  // Fetch notifications via centralized service
+  const fetchNotifications = useCallback(async () => {
     try {
       setIsLoading(true);
-      const res = await fetch("/api/notifications?per_page=10");
-      const json = await res.json();
+      const [listRes, countRes] = await Promise.all([
+        notificationService.list({ per_page: 10 }),
+        notificationService.unreadCount(),
+      ]);
 
-      if (json.data && Array.isArray(json.data)) {
-        setNotifications(json.data);
+      if (listRes.data && Array.isArray(listRes.data)) {
+        setNotifications(listRes.data);
       }
-      if (json.meta && typeof json.meta.unread_count !== "undefined") {
-        setUnreadCount(json.meta.unread_count);
+      if (typeof countRes.unread_count !== "undefined") {
+        setUnreadCount(countRes.unread_count);
       }
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchNotifications();
   }, []);
 
-  // Realtime: increment unread + toast via useRealtimeNotifications hook
+  // Initial fetch + polling fallback (60s)
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, [fetchNotifications]);
+
+  // Realtime via Echo: prepend notification + toast
   const handleNewNotification = useCallback((notification: NotificationData) => {
     setUnreadCount((prev) => prev + 1);
-    setNotifications((prev) => [notification, ...prev]);
+    setNotifications((prev) => {
+      if (prev.some((n) => n.id === notification.id)) return prev;
+      return [notification, ...prev];
+    });
   }, []);
 
   useRealtimeNotifications({ userId, userUuid, basePath, onNewNotification: handleNewNotification });
 
   const markAllAsRead = async () => {
     try {
-      await fetch("/api/notifications/read-all", { method: "POST" });
+      await notificationService.markAllRead();
       setUnreadCount(0);
-      setNotifications(notifications.map((n) => ({ ...n, read_at: new Date().toISOString() })));
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true, read_at: new Date().toISOString() })));
+      window.dispatchEvent(new Event("notificationsReadAll"));
     } catch (err) {
       console.error(err);
     }
@@ -125,9 +135,10 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
 
   const markAsRead = async (id: string) => {
     try {
-      await fetch(`/api/notifications/${id}/read`, { method: "POST" });
-      setNotifications(notifications.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n)));
+      await notificationService.markRead(id);
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true, read_at: new Date().toISOString() } : n)));
       setUnreadCount((prev) => Math.max(0, prev - 1));
+      window.dispatchEvent(new CustomEvent("notificationReadSingle", { detail: { id } }));
     } catch (err) {
       console.error(err);
     }
@@ -135,12 +146,13 @@ export function NotificationBell({ userId, userUuid }: NotificationBellProps) {
 
   const deleteNotification = async (id: string) => {
     try {
-      await fetch(`/api/notifications/${id}`, { method: "DELETE" });
+      await notificationService.remove(id);
       const deletedItem = notifications.find((n) => n.id === id);
-      setNotifications(notifications.filter((n) => n.id !== id));
-      if (deletedItem && !deletedItem.read_at) {
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+      if (deletedItem && !deletedItem.is_read) {
         setUnreadCount((prev) => Math.max(0, prev - 1));
       }
+      window.dispatchEvent(new CustomEvent("notificationDeletedSingle", { detail: { id } }));
     } catch (err) {
       console.error(err);
     }

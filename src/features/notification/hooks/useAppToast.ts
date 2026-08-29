@@ -2,8 +2,8 @@
 
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
+import { customToast } from "@/lib/custom-toast";
 import type { NotificationData } from "../lib/NotificationTypes";
 import type { ToastVariant } from "../lib/notificationToast";
 import { getNotificationHref, getToastVariant } from "../lib/notificationToast";
@@ -18,7 +18,7 @@ type UseAppToastOptions = {
  * Integration point terpusat untuk memicu toast Sonner dari event
  * real-time BE (welcome / chat / logout / scan / verification /
  * subscription / general). Varian & routing otomatis dipetakan dari
- * `notification_type` payload.
+ * `category` payload backend.
  */
 export function useAppToast({ basePath, onNewNotification }: UseAppToastOptions) {
   const router = useRouter();
@@ -30,31 +30,30 @@ export function useAppToast({ basePath, onNewNotification }: UseAppToastOptions)
       const variant: ToastVariant = getToastVariant(notification);
       const href = getNotificationHref(notification, basePath);
 
-      const title = notification.title ?? notification.data?.title ?? "Notifikasi Baru";
-      const body = notification.body ?? notification.data?.body;
-
-      const options = {
-        description: body,
-        action: href
-          ? {
-              label: "Lihat",
-              onClick: () => router.push(href),
-            }
-          : undefined,
+      const opts = {
+        description: notification.message,
       };
 
       switch (variant) {
         case "success":
-          toast.success(title, options);
+          customToast.success(notification.title, opts);
           break;
         case "error":
-          toast.error(title, options);
+          customToast.error(notification.title, opts);
           break;
         case "info":
-          toast.info(title, options);
+          customToast.info(notification.title, opts);
+          break;
+        case "warning":
+          customToast.warning(notification.title, opts);
           break;
         default:
-          toast(title, options);
+          customToast.info(notification.title, opts);
+      }
+
+      // Navigate ke action_url setelah toast muncul
+      if (href) {
+        setTimeout(() => router.push(href), 300);
       }
     },
     [basePath, onNewNotification, router],

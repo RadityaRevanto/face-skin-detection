@@ -1,33 +1,36 @@
-export type NotificationType =
-  | "welcome"
-  | "chat"
-  | "logout"
-  | "scan"
-  | "verification"
-  | "subscription"
-  | "general";
+/**
+ * Visual notification type — sesuai backend NotificationType enum
+ * (success / warning / error / info). Digunakan untuk warna toast & badge.
+ */
+export type NotificationType = "success" | "warning" | "error" | "info";
 
+/**
+ * Business notification category — sesuai backend NotificationCategory enum.
+ * Menentukan routing action & badge label.
+ */
+export type NotificationCategory =
+  | "welcome"
+  | "scan_complete"
+  | "chat_message"
+  | "logout"
+  | "verification_approved"
+  | "verification_rejected"
+  | "verification_revision"
+  | "subscription_active";
+
+/**
+ * Notification data shape — langsung dari backend NotificationResource.
+ */
 export type NotificationData = {
   id: string;
-  title?: string;
-  body?: string;
+  type: NotificationType;
+  category: NotificationCategory;
+  title: string;
+  message: string;
+  action_url: string | null;
+  is_read: boolean;
   read_at: string | null;
   created_at: string;
-  /** Field payload berada di level root (bukan nested di data) — sesuai backend AppNotification. */
-  notification_type?: NotificationType;
-  prediction_id?: string;
-  conversation_id?: string;
-  verification_status?: string;
-  subscription_id?: string;
-  data?: {
-    title?: string;
-    body?: string;
-    conversation_id?: string;
-    notification_type?: NotificationType;
-    prediction_id?: string;
-    verification_status?: string;
-    subscription_id?: string;
-  };
 };
 
 export interface NotificationBellProps {

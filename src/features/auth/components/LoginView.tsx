@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/constants";
 import { loginAction } from "@/lib/auth/actions";
 import { useRouter } from "next/navigation";
+import { customToast } from "@/lib/custom-toast";
 import { LeafLogo } from "./BrandIcons";
 import { LoginForm } from "./LoginForm";
 
@@ -53,25 +54,29 @@ export function LoginView() {
       const profile = result.user;
 
       if (profile.email_verified === false) {
-        window.location.href = `/verify-email?email=${encodeURIComponent(email)}`;
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
         return;
       }
 
+      customToast.success("Selamat datang!", {
+        description: "Login berhasil. Selamat datang kembali!",
+      });
+
       if (profile.role === "admin") {
-        window.location.href = "/admin/dashboard";
+        router.push("/admin/dashboard");
         return;
       }
 
       if (profile.role === "doctor") {
         if (profile.verification_status === "approved") {
-          window.location.href = "/doctor/dashboard";
+          router.push("/doctor/dashboard");
         } else {
-          window.location.href = "/doctor/verification-status";
+          router.push("/doctor/verification-status");
         }
         return;
       }
 
-      window.location.href = "/user/home";
+      router.push("/user/home");
 
     } catch (error) {
       console.error("Login submit error:", error);

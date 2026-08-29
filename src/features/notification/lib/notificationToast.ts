@@ -1,49 +1,33 @@
-import type { NotificationData, NotificationType } from "./NotificationTypes";
+import type { NotificationData, NotificationCategory } from "./NotificationTypes";
+import { resolveActionUrl } from "../services/notificationService";
 
-export type ToastVariant = "success" | "error" | "info" | "default";
-const TOAST_VARIANTS: Record<NotificationType, ToastVariant> = {
-  welcome: "info",
-  chat: "info",
-  logout: "info",
-  scan: "success",
-  verification: "success",
-  subscription: "success",
-  general: "default",
+export type ToastVariant = "success" | "error" | "info" | "warning" | "default";
+
+const CATEGORY_BADGE: Record<string, { label: string; className: string }> = {
+  welcome: { label: "Info", className: "bg-sky-50 text-sky-600" },
+  scan_complete: { label: "Scan", className: "bg-emerald-50 text-emerald-600" },
+  chat_message: { label: "Chat", className: "bg-violet-50 text-violet-600" },
+  logout: { label: "Logout", className: "bg-slate-100 text-slate-600" },
+  verification_approved: { label: "Verifikasi", className: "bg-emerald-50 text-emerald-600" },
+  verification_rejected: { label: "Verifikasi", className: "bg-rose-50 text-rose-600" },
+  verification_revision: { label: "Verifikasi", className: "bg-amber-50 text-amber-600" },
+  subscription_active: { label: "Langganan", className: "bg-emerald-50 text-emerald-600" },
 };
 
-export function getNotificationType(notification: NotificationData): NotificationType {
-  return notification.notification_type ?? notification.data?.notification_type ?? "general";
-}
-
+/**
+ * Backend `type` field (success/warning/error/info) == Sonner toast variant.
+ */
 export function getToastVariant(notification: NotificationData): ToastVariant {
-  const type = getNotificationType(notification);
-
-  if (type === "verification" && notification.verification_status === "rejected") {
-    return "error";
-  }
-
-  return TOAST_VARIANTS[type];
+  return notification.type ?? "default";
 }
 
+export function getCategoryBadge(category: NotificationCategory): { label: string; className: string } {
+  return CATEGORY_BADGE[category] ?? { label: "Umum", className: "bg-slate-100 text-slate-600" };
+}
+
+/**
+ * Translate backend action_url + category ke frontend route.
+ */
 export function getNotificationHref(notification: NotificationData, basePath: string): string | null {
-  const type = getNotificationType(notification);
-
-  const conversationId = notification.conversation_id ?? notification.data?.conversation_id;
-  const predictionId = notification.prediction_id ?? notification.data?.prediction_id;
-
-  switch (type) {
-    case "chat":
-      return conversationId ? `/user/consultations/${conversationId}` : null;
-    case "scan":
-      return predictionId ? `${basePath}/history/${predictionId}` : null;
-    case "verification":
-      return "/doctor/verification-status";
-    case "subscription":
-      return "/user/subscription";
-    case "welcome":
-    case "logout":
-    case "general":
-    default:
-      return null;
-  }
+  return resolveActionUrl(notification.category, notification.action_url, basePath);
 }

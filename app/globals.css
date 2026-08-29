@@ -52,3 +52,20 @@ body {
   color: var(--foreground);
   font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
 }
+
+/* ─── Sonner / Custom Toast ─────────────────────────────────────────── */
+
+/* Progress bar countdown — berkurang ke kiri, pause saat hover */
+@keyframes shrinkProgress {
+  0% { width: 100%; }
+  100% { width: 0%; }
+}
+
+.group:hover .toast-progress {
+  animation-play-state: paused;
+}
+
+/* Base toast font */
+.cn-toast {
+  font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
+}

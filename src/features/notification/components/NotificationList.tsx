@@ -39,9 +39,9 @@ export function NotificationList({
   return (
     <div className="flex flex-col gap-1">
       {notifications.map((notif) => {
-        const title = notif.title || notif.data?.title || "Notifikasi Baru";
-        const body = notif.body || notif.data?.body || "";
-        const isRead = !!notif.read_at;
+        const title = notif.title || "Notifikasi Baru";
+        const body = notif.message || "";
+        const isRead = notif.is_read;
 
         return (
           <div

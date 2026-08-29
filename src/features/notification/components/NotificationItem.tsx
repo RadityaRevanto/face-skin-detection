@@ -1,16 +1,6 @@
 import { Bell, Check, Trash2 } from "lucide-react";
-import { NotificationData } from "../lib/NotificationTypes";
-import { getNotificationType } from "../lib/notificationToast";
-
-const TYPE_BADGE: Record<string, { label: string; className: string }> = {
-  welcome: { label: "Info", className: "bg-sky-50 text-sky-600" },
-  chat: { label: "Chat", className: "bg-violet-50 text-violet-600" },
-  logout: { label: "Logout", className: "bg-slate-100 text-slate-600" },
-  scan: { label: "Scan", className: "bg-emerald-50 text-emerald-600" },
-  verification: { label: "Verifikasi", className: "bg-amber-50 text-amber-600" },
-  subscription: { label: "Langganan", className: "bg-emerald-50 text-emerald-600" },
-  general: { label: "Umum", className: "bg-slate-100 text-slate-600" },
-};
+import type { NotificationData } from "../lib/NotificationTypes";
+import { getCategoryBadge } from "../lib/notificationToast";
 
 interface NotificationItemProps {
   notif: NotificationData;
@@ -20,10 +10,10 @@ interface NotificationItemProps {
 }
 
 export function NotificationItem({ notif, formatTime, onMarkAsRead, onDelete }: NotificationItemProps) {
-  const title = notif.title || notif.data?.title || "Notifikasi Baru";
-  const body = notif.body || notif.data?.body || "";
-  const isRead = !!notif.read_at;
-  const typeBadge = TYPE_BADGE[getNotificationType(notif)] ?? TYPE_BADGE.general;
+  const title = notif.title || "Notifikasi Baru";
+  const body = notif.message || "";
+  const isRead = notif.is_read;
+  const typeBadge = getCategoryBadge(notif.category);
 
   return (
     <div
