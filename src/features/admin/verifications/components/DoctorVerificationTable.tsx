@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
+import type { PagePagination } from "@/lib/types/pagination";
 import {
   Table,
   TableBody,
@@ -21,12 +22,7 @@ import { StatusBadge } from "./StatusBadge";
 type DoctorVerificationTableProps = {
   pageType: DoctorVerificationPageType;
   verificationRequests: DoctorVerificationRequest[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    pageSize: number;
-  };
+  pagination: PagePagination;
 };
 
 export function DoctorVerificationTable({
@@ -178,6 +174,8 @@ export function DoctorVerificationTable({
         totalPages={pagination.totalPages}
         totalItems={pagination.totalItems}
         pageSize={pagination.pageSize}
+        itemLabel={pagination.itemLabel}
+        basePath={pagination.basePath}
       />
     </Card>
   );

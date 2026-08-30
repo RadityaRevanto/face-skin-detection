@@ -9,7 +9,7 @@ import { getDashboardData } from "@/src/features/doctor/dashboard/lib/dashboardQ
 import { formatNumber, formatRelativeTime } from "@/src/features/doctor/dashboard/lib/formatHelpers";
 
 export const metadata: Metadata = {
-  title: "Dashboard Dokter | Face Skin Detection",
+  title: "Dashboard Dokter",
   description: "Dashboard dokter - kelola skincare dan rekomendasi",
 };
 

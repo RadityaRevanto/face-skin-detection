@@ -2,7 +2,21 @@ import { Card } from "@/components/ui/card";
 
 import type { AdminProfileData } from "../types";
 
-export function AdminSessionInfo({ activeSessions }: { activeSessions: AdminProfileData["active_sessions"] }) {
+type AdminSessionInfoProps = {
+  activeSessions: AdminProfileData["active_sessions"];
+  lastLogin: AdminProfileData["last_login"];
+};
+
+function formatLoginAt(iso: string | null) {
+  if (!iso) return "—";
+  return new Intl.DateTimeFormat("id-ID", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date(iso));
+}
+
+export function AdminSessionInfo({ activeSessions, lastLogin }: AdminSessionInfoProps) {
   return (
     <Card className="rounded-2xl border-slate-100! bg-white! p-5 text-slate-950! shadow-sm">
       <div className="flex items-start gap-4">
@@ -23,14 +37,34 @@ export function AdminSessionInfo({ activeSessions }: { activeSessions: AdminProf
           </svg>
         </div>
 
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h3 className="text-sm font-bold text-slate-950">Info Sesi</h3>
           <p className="mt-1 text-sm text-slate-600">
             Kamu login di{" "}
             <span className="font-bold text-slate-950">{activeSessions} perangkat</span> sekaligus.
           </p>
+
+          <div className="mt-3 rounded-xl bg-slate-50 px-4 py-3 text-xs leading-5 text-slate-500">
+            <p>
+              Login terakhir:{" "}
+              <span className="font-semibold text-slate-700">
+                {formatLoginAt(lastLogin?.at ?? null)}
+              </span>
+            </p>
+            {lastLogin?.ip_address && (
+              <p className="mt-1">
+                IP: <span className="font-semibold text-slate-700">{lastLogin.ip_address}</span>
+              </p>
+            )}
+            {lastLogin?.user_agent && (
+              <p className="mt-1 truncate">
+                Device: <span className="font-semibold text-slate-700">{lastLogin.user_agent}</span>
+              </p>
+            )}
+          </div>
+
           <p className="mt-1 text-xs text-slate-400">
-            Sesi mencakup semua device dengan token aktif. Logout semua device lewat menu keamanan akun bila perlu.
+            Cek rutin sesi tidak dikenal dan cabut langsung lewat Login &amp; Keamanan.
           </p>
         </div>
       </div>

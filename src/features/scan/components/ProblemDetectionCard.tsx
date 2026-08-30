@@ -1,4 +1,4 @@
-import type { SkinProblem } from "../lib/pemeriksaanTypes";
+import type { SkinProblem } from "../types";
 import { translateSkinLabel } from "@/lib/utils/skin-labels";
 
 type ProblemDetectionCardProps = {

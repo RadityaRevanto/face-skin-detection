@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
+import type { PagePagination } from "@/lib/types/pagination";
 import {
   Table,
   TableBody,
@@ -16,12 +17,7 @@ import { ActionIcon } from "./DoctorActionIcon";
 
 type DoctorsTableProps = {
   doctors: DoctorRow[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    pageSize: number;
-  };
+  pagination: PagePagination;
 };
 
 export function DoctorsTable({ doctors, pagination }: DoctorsTableProps) {
@@ -123,6 +119,8 @@ export function DoctorsTable({ doctors, pagination }: DoctorsTableProps) {
         totalPages={pagination.totalPages}
         totalItems={pagination.totalItems}
         pageSize={pagination.pageSize}
+        itemLabel={pagination.itemLabel}
+        basePath={pagination.basePath}
       />
     </Card>
   );

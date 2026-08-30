@@ -18,7 +18,7 @@ export function AiConsentCard({ consentStatus, isConsentLoading, onToggle }: Pro
         <div className="flex-1">
           <h3 className="text-lg font-bold text-slate-900 mb-1">Persetujuan Kecerdasan Buatan (AI)</h3>
           <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-            Dengan menyetujui, Anda mengizinkan SkinCek membagikan isi pesan teks *chat* Anda ke penyedia kecerdasan buatan (Google Gemini) agar bot Aura Skin dapat menjawab pertanyaan Anda. Pesan ini tidak digunakan untuk melatih model mereka. Anda dapat mencabut persetujuan ini kapan saja.
+            Dengan menyetujui, Anda mengizinkan Skincek membagikan isi pesan teks *chat* Anda ke penyedia kecerdasan buatan (Google Gemini) agar bot Aura Skin dapat menjawab pertanyaan Anda. Pesan ini tidak digunakan untuk melatih model mereka. Anda dapat mencabut persetujuan ini kapan saja.
           </p>
           <div className="flex items-center gap-4">
             <button

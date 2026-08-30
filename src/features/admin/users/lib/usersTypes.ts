@@ -1,3 +1,5 @@
+import type { PagePagination } from "@/lib/types/pagination";
+
 export type UserRow = {
   id: string;
   no: number;
@@ -10,10 +12,5 @@ export type UserRow = {
 
 export type UsersPageData = {
   users: UserRow[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    pageSize: number;
-  };
+  pagination: PagePagination;
 };

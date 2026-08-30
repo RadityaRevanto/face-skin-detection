@@ -4,6 +4,7 @@ import {
   MessageSquarePlus,
   Sparkles,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Conversation } from "@/lib/api/consultations-query";
 import { ConversationItem } from "./ConversationItem";
 
@@ -15,7 +16,6 @@ interface ConversationSidebarProps {
   isStartingAi: boolean;
   setActiveConversation: (conv: Conversation) => void;
   setShowSidebar: (val: boolean) => void;
-  setIsModalOpen: (val: boolean) => void;
   handleStartAiChat: () => void;
 }
 
@@ -27,9 +27,9 @@ export function ConversationSidebar({
   isStartingAi,
   setActiveConversation,
   setShowSidebar,
-  setIsModalOpen,
   handleStartAiChat,
 }: ConversationSidebarProps) {
+  const router = useRouter();
   return (
     <div className={`
       ${showSidebar ? "flex" : "hidden"} lg:flex
@@ -40,10 +40,7 @@ export function ConversationSidebar({
       bg-white lg:bg-transparent
     `}>
       <div className="flex flex-col gap-4 lg:gap-5 h-full p-4 lg:p-0">
-        <div className="shrink-0">
-          <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">Konsultasi Medis</h1>
-          <p className="text-zinc-500 mt-2 text-sm sm:text-base leading-relaxed">Tanya jawab langsung dengan dokter spesialis kami mengenai hasil skin check Anda.</p>
-        </div>
+        
 
         {/* Conversation list container */}
         <div className="flex flex-1 min-h-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60 flex-col">
@@ -51,10 +48,10 @@ export function ConversationSidebar({
             {/* Header */}
             <div className="p-4 sm:p-5 border-b border-zinc-100 flex items-center justify-between shrink-0">
               <h2 className="font-semibold text-zinc-800 text-lg">Pesan</h2>
-              <button 
-                onClick={() => setIsModalOpen(true)}
+              <button
+                onClick={() => router.push("/user/consultations")}
                 className="flex items-center justify-center bg-emerald-100 hover:bg-emerald-200 text-emerald-700 p-2 rounded-full transition-colors"
-                title="Mulai Chat Baru"
+                title="Cari dokter untuk konsultasi baru"
               >
                 <MessageSquarePlus size={20} />
               </button>

@@ -121,7 +121,7 @@ export function ForgotPasswordView() {
           <LeafLogo />
           <span>
             <span className='block text-base font-bold tracking-tight'>
-              Skin Detection
+              Skincek
             </span>
             <span className='block text-xs font-medium text-emerald-600'>
               Lupa Password

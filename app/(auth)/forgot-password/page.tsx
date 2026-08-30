@@ -4,7 +4,7 @@ import { ForgotPasswordView } from "@/src/features/auth/components/ForgotPasswor
 import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
 
 export const metadata: Metadata = {
-  title: "Lupa Password | Face Skin Detection",
+  title: "Lupa Password",
   description: "Reset password akun Anda",
 };
 

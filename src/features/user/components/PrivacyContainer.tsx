@@ -1,15 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getProfile, UserProfile } from "@/lib/api/profile-query";
 import { useRouter } from "next/navigation";
 
 import { PrivacySidebar } from "./PrivacySidebar";
 import { AiConsentCard } from "./AiConsentCard";
 import { ExportDataCard } from "./ExportDataCard";
+import { AdminDangerZoneCard } from "./AdminDangerZoneCard";
 import { DangerZoneCard } from "./DangerZoneCard";
 
-export function PrivacyContainer() {
+type PrivacyContainerProps = {
+  role: "user" | "doctor" | "admin";
+  basePath: string;
+};
+
+export function PrivacyContainer({ role, basePath }: PrivacyContainerProps) {
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -20,19 +26,26 @@ export function PrivacyContainer() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
 
-  useEffect(() => { fetchData(); }, []);
+  // Consent AI hanya relevan untuk user & doctor (admin tidak pakai AI chat).
+  const needsConsent = role !== "admin";
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const [resProfile, resConsent] = await Promise.all([
-        getProfile(),
-        fetch("/api/ai-chat/consent").then(r => r.json())
-      ]);
-      setProfile(resProfile.data);
-      if (resConsent.data) setConsentStatus(resConsent.data.accepted);
+      const requests: Promise<unknown>[] = [getProfile()];
+      if (needsConsent) {
+        requests.push(fetch("/api/ai-chat/consent").then((r) => r.json()));
+      }
+      const [resProfile, resConsent] = await Promise.all(requests);
+      setProfile((resProfile as { data: UserProfile }).data);
+      if (needsConsent) {
+        const consentJson = resConsent as { data?: { accepted: boolean } };
+        if (consentJson?.data) setConsentStatus(consentJson.data.accepted);
+      }
     } catch (err) { console.error(err); }
     finally { setIsLoading(false); setIsConsentLoading(false); }
-  };
+  }, [needsConsent]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
 
   const toggleConsent = async () => {
     try {
@@ -84,14 +97,35 @@ export function PrivacyContainer() {
         <p className="text-zinc-500 mt-1.5 text-sm sm:text-base">Kelola persetujuan AI, ekspor data Anda, atau hapus akun permanen.</p>
       </div>
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
-        <PrivacySidebar profile={profile} />
+        <PrivacySidebar basePath={basePath} activePage="privacy" />
         <div className="flex-1 w-full min-w-0 space-y-6">
-          <AiConsentCard consentStatus={consentStatus} isConsentLoading={isConsentLoading} onToggle={toggleConsent} />
+          {needsConsent && (
+            <AiConsentCard consentStatus={consentStatus} isConsentLoading={isConsentLoading} onToggle={toggleConsent} />
+          )}
           <ExportDataCard isExporting={isExporting} onExport={exportData} />
-          <DangerZoneCard showDeleteConfirm={showDeleteConfirm} deleteConfirmText={deleteConfirmText} isDeleting={isDeleting}
-            onRequestDelete={() => setShowDeleteConfirm(true)} onConfirmDelete={deleteAccount}
-            onCancelDelete={() => { setShowDeleteConfirm(false); setDeleteConfirmText(""); }}
-            onConfirmTextChange={setDeleteConfirmText} />
+
+          {role === "admin" ? (
+            <AdminDangerZoneCard
+              showDeleteConfirm={showDeleteConfirm}
+              deleteConfirmText={deleteConfirmText}
+              isDeleting={isDeleting}
+              onRequestDelete={() => setShowDeleteConfirm(true)}
+              onConfirmDelete={deleteAccount}
+              onCancelDelete={() => { setShowDeleteConfirm(false); setDeleteConfirmText(""); }}
+              onConfirmTextChange={setDeleteConfirmText}
+            />
+          ) : (
+            <DangerZoneCard
+              role={role}
+              showDeleteConfirm={showDeleteConfirm}
+              deleteConfirmText={deleteConfirmText}
+              isDeleting={isDeleting}
+              onRequestDelete={() => setShowDeleteConfirm(true)}
+              onConfirmDelete={deleteAccount}
+              onCancelDelete={() => { setShowDeleteConfirm(false); setDeleteConfirmText(""); }}
+              onConfirmTextChange={setDeleteConfirmText}
+            />
+          )}
         </div>
       </div>
     </main>

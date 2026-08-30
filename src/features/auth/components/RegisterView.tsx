@@ -23,7 +23,7 @@ export function RegisterView() {
             <LeafLogo />
             <span>
               <span className='block text-base font-bold tracking-tight'>
-                Skin Detection
+                Skincek
               </span>
               <span className='block text-xs font-medium text-emerald-600'>
                 Analisis Kulit Berbasis AI

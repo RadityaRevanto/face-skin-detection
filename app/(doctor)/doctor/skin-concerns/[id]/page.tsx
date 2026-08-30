@@ -7,7 +7,7 @@ import { SkinConcernDetail } from "@/src/features/doctor/skin-concerns/component
 import type { SkinConcern } from "@/src/features/doctor/skin-concerns/types";
 
 export const metadata: Metadata = {
-  title: "Detail Skin Concern | Face Skin Detection",
+  title: "Detail Skin Concern",
   description: "Detail skin concern - Dashboard Dokter",
 };
 

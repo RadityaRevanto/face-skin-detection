@@ -5,7 +5,9 @@ import type {
   PredictionResult,
   ScanMode,
   SeverityLevel,
+  SkincareRecommendation,
   SkinConcernInfo,
+  TreatmentRecommendation,
 } from "@/lib/api/scans-query";
 
 // Hasil live dari /api/predict/* identik dengan resource backend,
@@ -60,6 +62,8 @@ export type PredictionHistory = {
   notice?: string | null;
   skin_concern?: SkinConcernInfo | null;
   other_concerns?: OtherConcern[];
+  treatment_recommendations?: TreatmentRecommendation[];
+  skincare_recommendations?: SkincareRecommendation[];
 };
 
 export type {
@@ -67,5 +71,7 @@ export type {
   PredictionResult,
   ScanMode,
   SeverityLevel,
+  SkincareRecommendation,
   SkinConcernInfo,
+  TreatmentRecommendation,
 } from "@/lib/api/scans-query";

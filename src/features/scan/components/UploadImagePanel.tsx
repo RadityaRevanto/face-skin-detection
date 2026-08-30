@@ -2,7 +2,7 @@
 
 import { ChangeEvent, useRef, useState } from "react";
 
-import type { LiveScanResult } from "../lib/pemeriksaanTypes";
+import type { LiveScanResult } from "../types";
 import { UploadPanelHeader } from "./UploadPanelHeader";
 import { UploadPreview } from "./UploadPreview";
 

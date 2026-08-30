@@ -2,8 +2,8 @@ import type { PredictionHistory } from "../types";
 import { ScanImageCard } from "./ScanImageCard";
 import { SeverityScoreCard } from "./SeverityScoreCard";
 import { ProbabilityChart } from "./ProbabilityChart";
-import { OtherConcernsCard } from "./OtherConcernsCard";
-import { ScanFeedbackCard } from "./ScanFeedbackCard";
+import { OtherConcernsCard } from "@/src/features/scan/components/OtherConcernsCard";
+import { ScanFeedbackCard } from "@/src/features/scan/components/ScanFeedbackCard";
 import { DisclaimerNotice } from "./DisclaimerNotice";
 
 type HistoryDetailProps = {

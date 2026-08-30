@@ -1,3 +1,5 @@
+import type { PagePagination } from "@/lib/types/pagination";
+
 export type RecommendationRow = {
   id: string;
   no: number;
@@ -19,10 +21,5 @@ export type RecommendationSummary = {
 export type RecommendationsPageData = {
   recommendations: RecommendationRow[];
   summary: RecommendationSummary;
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    pageSize: number;
-  };
+  pagination: PagePagination;
 };

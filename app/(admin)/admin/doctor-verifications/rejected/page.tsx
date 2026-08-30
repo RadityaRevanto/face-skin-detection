@@ -5,7 +5,7 @@ import { getDoctorVerificationPageData } from "@/src/features/admin/verification
 
 
 export const metadata: Metadata = {
-  title: "Rejected Verifikasi Dokter | Face Skin Detection",
+  title: "Rejected Verifikasi Dokter",
   description: "Riwayat dokter yang ditolak saat proses verifikasi",
 };
 

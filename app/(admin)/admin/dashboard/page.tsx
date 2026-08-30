@@ -5,7 +5,7 @@ import { getAdminDashboardData } from "@/src/features/admin/dashboard/lib/adminD
 
 
 export const metadata: Metadata = {
-  title: "Dashboard Admin | Face Skin Detection",
+  title: "Dashboard Admin",
   description: "Dashboard administrasi sistem",
 };
 

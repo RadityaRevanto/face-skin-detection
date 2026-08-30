@@ -1,3 +1,5 @@
+import type { PagePagination } from "@/lib/types/pagination";
+
 export type SkincareRow = {
   id: string;
   no: number;
@@ -18,10 +20,5 @@ export type SkincareSummary = {
 export type SkincarePageData = {
   products: SkincareRow[];
   summary: SkincareSummary;
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    pageSize: number;
-  };
+  pagination: PagePagination;
 };

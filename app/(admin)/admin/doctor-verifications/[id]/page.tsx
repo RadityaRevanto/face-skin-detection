@@ -5,7 +5,7 @@ import { getDoctorVerificationDetail } from "@/src/features/admin/verifications/
 
 
 export const metadata: Metadata = {
-  title: "Detail Verifikasi Dokter | Face Skin Detection",
+  title: "Detail Verifikasi Dokter",
   description: "Detail review dokumen verifikasi dokter",
 };
 

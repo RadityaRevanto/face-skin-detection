@@ -11,7 +11,7 @@ export function LandingFooter() {
             <Link href="/" className="flex items-center gap-2.5">
               <Logo className="h-9 w-9" />
               <span className="text-lg font-bold tracking-tight text-slate-900">
-                SkinCheck
+                Skincek
               </span>
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-6 text-slate-500">
@@ -83,7 +83,7 @@ export function LandingFooter() {
 
         <div className="mt-10 flex flex-col gap-3 border-t border-slate-100 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-slate-500">
-            © 2026 SkinCheck. Semua hak dilindungi.
+            © 2026 Skincek. Semua hak dilindungi.
           </p>
           <p className="text-xs text-slate-400">
             Hasil analisis bersifat informatif, bukan pengganti diagnosis

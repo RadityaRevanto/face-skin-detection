@@ -5,7 +5,7 @@ import { getDoctorDetail } from "@/src/features/admin/doctors/[id]/lib/doctorDet
 
 
 export const metadata: Metadata = {
-  title: "Detail Dokter | Face Skin Detection",
+  title: "Detail Dokter",
   description: "Detail profil dokter",
 };
 

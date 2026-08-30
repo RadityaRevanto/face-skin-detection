@@ -1,5 +1,5 @@
 // =============================================================
-// Constants - Face Skin Detection System
+// Constants - Face Skincek System
 // =============================================================
 
 export const SKIN_CLASSES = [
@@ -55,8 +55,6 @@ export const ROUTES = {
     SCAN: "/user/pemeriksaan",
     HISTORY: "/user/history",
     CONSULTATIONS: "/user/consultations",
-    SKINCARE: "/user/skincare",
-    DEVICE_TOKENS: "/user/device-tokens",
   },
   DOCTOR: {
     DASHBOARD: "/doctor/dashboard",

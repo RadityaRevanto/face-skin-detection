@@ -5,7 +5,7 @@ import { getUsersPageData } from "@/src/features/admin/users/lib/usersQuery";
 
 
 export const metadata: Metadata = {
-  title: "Manajemen User | Face Skin Detection",
+  title: "Manajemen User",
   description: "Kelola daftar user terdaftar",
 };
 

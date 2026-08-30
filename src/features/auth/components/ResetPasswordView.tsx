@@ -103,7 +103,7 @@ export function ResetPasswordView() {
         <Link href={ROUTES.HOME} className='mb-10 flex items-center gap-3'>
           <LeafLogo />
           <span>
-            <span className='block text-base font-bold tracking-tight'>Skin Detection</span>
+            <span className='block text-base font-bold tracking-tight'>Skincek</span>
             <span className='block text-xs font-medium text-emerald-600'>Buat Sandi Baru</span>
           </span>
         </Link>

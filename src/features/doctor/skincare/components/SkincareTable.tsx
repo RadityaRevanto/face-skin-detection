@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
+import type { PagePagination } from "@/lib/types/pagination";
 import {
   Table,
   TableBody,
@@ -19,12 +20,7 @@ import { SkincareActionIcon } from "./SkincareActionIcon";
 
 type SkincareTableProps = {
   products: SkincareRow[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    pageSize: number;
-  };
+  pagination: PagePagination;
 };
 
 export function SkincareTable({ products, pagination }: SkincareTableProps) {
@@ -124,6 +120,8 @@ export function SkincareTable({ products, pagination }: SkincareTableProps) {
         totalPages={pagination.totalPages}
         totalItems={pagination.totalItems}
         pageSize={pagination.pageSize}
+        itemLabel={pagination.itemLabel}
+        basePath={pagination.basePath}
       />
     </Card>
   );

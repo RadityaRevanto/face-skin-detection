@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
-import type { LiveScanResult } from "../lib/pemeriksaanTypes";
+import type { LiveScanResult } from "../types";
 import { CameraIcon, RefreshIcon } from "./Icons";
 import { CameraControls } from "./CameraControls";
 import { CameraView } from "./CameraView";

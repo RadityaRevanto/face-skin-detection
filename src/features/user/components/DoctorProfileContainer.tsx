@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getProfile, UserProfile } from "@/lib/api/profile-query";
 import { ProfileForm } from "@/src/features/user/components/ProfileForm";
 import { ProfileSidebar } from "@/src/features/user/components/ProfileSidebar";
+import { DoctorVerificationInfoCard } from "@/src/features/user/components/DoctorVerificationInfoCard";
 import { Info } from "lucide-react";
 
 export function DoctorProfileContainer() {
@@ -38,6 +39,9 @@ export function DoctorProfileContainer() {
             </div>
           )}
           <ProfileForm profile={profile} onProfileUpdated={(updated) => setProfile(updated)} />
+          <div className="mt-6">
+            <DoctorVerificationInfoCard />
+          </div>
         </div>
       </div>
     </main>

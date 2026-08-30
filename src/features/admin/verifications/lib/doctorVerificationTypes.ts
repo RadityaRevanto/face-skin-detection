@@ -1,3 +1,5 @@
+import type { PagePagination } from "@/lib/types/pagination";
+
 export type VerificationStatus = "pending" | "approved" | "rejected";
 
 export type DoctorVerificationPageType = "pending" | "rejected";
@@ -32,10 +34,5 @@ export type DoctorVerificationPageData = {
   pageType: DoctorVerificationPageType;
   verificationRequests: DoctorVerificationRequest[];
   stats: DoctorVerificationStats;
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    pageSize: number;
-  };
+  pagination: PagePagination;
 };

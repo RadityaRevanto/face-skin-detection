@@ -13,7 +13,7 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Tips | Face Skin Detection",
+  title: "Tips",
   description: "Tips perawatan kulit wajah berdasarkan kondisi kulit Anda",
 };
 

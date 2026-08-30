@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import {
-  getConversations, createConversation, getMessages, sendMessage,
+  getConversations, getMessages, sendMessage,
   startAiConversation, deleteAiConversation, Conversation, Message,
 } from "@/lib/api/consultations-query";
-import { DoctorSearchModal } from "./DoctorSearchModal";
 import { ScanHistoryModal } from "./ScanHistoryModal";
 import { DoctorRatingModal } from "./DoctorRatingModal";
 import { getEcho } from "@/lib/echo";
@@ -16,6 +16,7 @@ import { ChatPanel } from "@/src/features/consultation/components/ChatPanel";
 import { ErrorCta, buildApiError } from "../utils/consultationHelpers";
 
 export function ConsultationContainer() {
+  const searchParams = useSearchParams();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -23,7 +24,6 @@ export function ConsultationContainer() {
   const [inputText, setInputText] = useState("");
   const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
@@ -38,7 +38,32 @@ export function ConsultationContainer() {
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, selectedImagePreview]);
 
-  useEffect(() => { fetchConversations(); }, []);
+  const fetchConversations = useCallback(async () => {
+    try { const res = await getConversations(1); setConversations(res.data || []); }
+    catch (error) { console.error(error); }
+    finally { setIsLoadingConversations(false); }
+  }, []);
+
+  const fetchMessages = useCallback(async (conversationId: string) => {
+    try { const res = await getMessages(conversationId, 1); setMessages([...(res.data || [])].reverse()); }
+    catch (error) { console.error(error); }
+  }, []);
+
+  useEffect(() => { fetchConversations(); }, [fetchConversations]);
+
+  // Buka conversation spesifik via ?c=<uuid> (datang dari halaman profil dokter).
+  const initialConversationId = searchParams.get("c");
+  const [initializedFromUrl, setInitializedFromUrl] = useState(false);
+
+  useEffect(() => {
+    if (initializedFromUrl || isLoadingConversations || !initialConversationId) return;
+    const target = conversations.find((c) => c.uuid === initialConversationId);
+    if (target) {
+      setActiveConversation(target);
+      setShowSidebar(false);
+      setInitializedFromUrl(true);
+    }
+  }, [conversations, isLoadingConversations, initialConversationId, initializedFromUrl]);
 
   useEffect(() => {
     if (!activeConversation) { setMessages([]); return; }
@@ -46,35 +71,13 @@ export function ConsultationContainer() {
     const echo = getEcho();
     if (!echo) return;
     const channelName = `conversation.${activeConversation.uuid}`;
-    echo.private(channelName).listen('.chat_message_received', (e: any) => {
+    echo.private(channelName).listen('.chat_message_received', (e: { message?: Message }) => {
       if (!e.message) return;
-      setMessages((prev) => prev.some(m => m.uuid === e.message.uuid) ? prev : [...prev, e.message]);
+      setMessages((prev) => prev.some(m => m.uuid === e.message!.uuid) ? prev : [...prev, e.message!]);
       setConversations((prev) => prev.map((c) => c.uuid === activeConversation.uuid ? { ...c, last_message: e.message } : c));
     });
     return () => { echo.leave(channelName); };
-  }, [activeConversation]);
-
-  const fetchConversations = async () => {
-    try { const res = await getConversations(1); setConversations(res.data || []); }
-    catch (error) { console.error(error); }
-    finally { setIsLoadingConversations(false); }
-  };
-
-  const fetchMessages = async (conversationId: string) => {
-    try { const res = await getMessages(conversationId, 1); setMessages([...(res.data || [])].reverse()); }
-    catch (error) { console.error(error); }
-  };
-
-  const handleCreateOrOpenConversation = async (doctorId: string) => {
-    setIsModalOpen(false);
-    try {
-      const res = await createConversation(doctorId);
-      const newConversation = res.data;
-      setConversations((prev) => prev.some((c) => c.uuid === newConversation.uuid) ? prev : [newConversation, ...prev]);
-      setActiveConversation(newConversation);
-      setShowSidebar(false);
-    } catch (error) { showApiError(error); }
-  };
+  }, [activeConversation, fetchMessages]);
 
   const handleStartAiChat = async () => {
     if (isStartingAi) return;
@@ -143,7 +146,6 @@ export function ConsultationContainer() {
   return (
     <main className="bg-shell flex flex-col h-screen overflow-hidden">
       <ErrorPopup errorState={errorState} setErrorState={setErrorState} successMsg={successMsg} setSuccessMsg={setSuccessMsg} />
-      <DoctorSearchModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSelectDoctor={handleCreateOrOpenConversation} />
       <ScanHistoryModal isOpen={isScanModalOpen} onClose={() => setIsScanModalOpen(false)} onSelectScan={handleSendScanHistory} />
       {activeConversation && (
         <DoctorRatingModal isOpen={isRatingModalOpen} onClose={() => setIsRatingModalOpen(false)}
@@ -153,7 +155,7 @@ export function ConsultationContainer() {
       <div className="mx-auto w-full max-w-7xl flex-1 flex flex-col lg:flex-row lg:gap-6 lg:p-8 min-h-0">
         <ConversationSidebar conversations={conversations} activeConversation={activeConversation} showSidebar={showSidebar}
           isLoadingConversations={isLoadingConversations} isStartingAi={isStartingAi}
-          setActiveConversation={setActiveConversation} setShowSidebar={setShowSidebar} setIsModalOpen={setIsModalOpen} handleStartAiChat={handleStartAiChat} />
+          setActiveConversation={setActiveConversation} setShowSidebar={setShowSidebar} handleStartAiChat={handleStartAiChat} />
         <ChatPanel activeConversation={activeConversation} messages={messages} showSidebar={showSidebar} inputText={inputText}
           selectedImagePreview={selectedImagePreview} isSending={isSending} setShowSidebar={setShowSidebar}
           setIsRatingModalOpen={setIsRatingModalOpen} setIsScanModalOpen={setIsScanModalOpen} handleSendMessage={handleSendMessage}

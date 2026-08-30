@@ -8,7 +8,7 @@ import { requireDoctorProfile } from "@/lib/doctor-auth";
 import { fetchApi } from "@/lib/api/server-client";
 
 export const metadata: Metadata = {
-  title: "Tambah Skincare | Face Skin Detection",
+  title: "Tambah Skincare",
   description: "Tambah produk skincare baru - Dashboard Dokter",
 };
 

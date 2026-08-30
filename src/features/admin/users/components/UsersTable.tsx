@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
+import type { PagePagination } from "@/lib/types/pagination";
 import {
   Table,
   TableBody,
@@ -16,12 +17,7 @@ import { UserActionIcon } from "./UserActionIcon";
 
 type UsersTableProps = {
   users: UserRow[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    pageSize: number;
-  };
+  pagination: PagePagination;
 };
 
 export function UsersTable({ users, pagination }: UsersTableProps) {
@@ -126,6 +122,8 @@ export function UsersTable({ users, pagination }: UsersTableProps) {
         totalPages={pagination.totalPages}
         totalItems={pagination.totalItems}
         pageSize={pagination.pageSize}
+        itemLabel={pagination.itemLabel}
+        basePath={pagination.basePath}
       />
     </Card>
   );

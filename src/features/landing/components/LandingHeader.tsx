@@ -20,7 +20,7 @@ export function LandingHeader() {
         <Link href="/" className="flex items-center gap-2.5">
           <Logo className="h-9 w-9" />
           <span className="text-lg font-bold tracking-tight text-slate-900">
-            SkinCheck
+            Skincek
           </span>
         </Link>
 

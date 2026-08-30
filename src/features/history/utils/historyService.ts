@@ -1,85 +1,121 @@
 import { fetchApi } from "@/lib/api/server-client";
 import type { PredictionResult } from "@/lib/api/scans-query";
+import type { PagePagination } from "@/lib/types/pagination";
 
-import type { PredictionHistory, SkinRecommendation } from "../types";
+import type { PredictionHistory } from "../types";
 
-type RecommendationApi = {
-  uuid: string;
-  title: string;
-  priority_level: "low" | "medium" | "high";
-  recommendation_text: string;
-  product?: {
-    uuid: string;
-    name: string;
-    category: string;
-    key_ingredients?: string;
-    usage_instruction?: string;
-    warning?: string;
-  } | null;
-  concern?: {
-    uuid: string;
-    name: string;
-    ml_label: string;
-  } | null;
+export type HistorySortOrder = "newest" | "oldest";
+export type HistoryScanModeFilter = "all" | "upload" | "livecam";
+
+export type HistoryFilters = {
+  scanMode: HistoryScanModeFilter;
+  predictedClass: string;
+  sort: HistorySortOrder;
 };
 
-const HISTORY_PAGE_SIZE = 50;
+export const DEFAULT_HISTORY_FILTERS: HistoryFilters = {
+  scanMode: "all",
+  predictedClass: "",
+  sort: "newest",
+};
 
-export async function getPredictionHistories() {
+const HISTORY_PAGE_SIZE = 5;
+
+function toPredictionHistory(scan: PredictionResult): PredictionHistory {
+  return {
+    ...scan,
+    id: scan.uuid,
+    confidence: Number(scan.confidence),
+  };
+}
+
+function buildHistoryQuery(
+  page: number,
+  filters: HistoryFilters,
+): string {
+  const params = new URLSearchParams();
+  params.set("per_page", String(HISTORY_PAGE_SIZE));
+  params.set("page", String(page));
+  params.set(
+    "sort",
+    filters.sort === "newest" ? "-created_at" : "created_at",
+  );
+  if (filters.scanMode !== "all") {
+    params.set("filter[scan_mode]", filters.scanMode);
+  }
+  if (filters.predictedClass) {
+    params.set("filter[predicted_class]", filters.predictedClass);
+  }
+  return params.toString();
+}
+
+export type HistoryPageData = {
+  histories: PredictionHistory[];
+  pagination: PagePagination;
+  filters: HistoryFilters;
+};
+
+export async function getHistoryPageData({
+  page = 1,
+  filters = DEFAULT_HISTORY_FILTERS,
+}: {
+  page?: number;
+  filters?: HistoryFilters;
+} = {}): Promise<HistoryPageData> {
+  const safePage = Number.isNaN(page) || page < 1 ? 1 : page;
+
+  const pagination: PagePagination = {
+    currentPage: safePage,
+    totalPages: 1,
+    totalItems: 0,
+    pageSize: HISTORY_PAGE_SIZE,
+    basePath: "/history",
+    itemLabel: "pemeriksaan",
+  };
+
   try {
     const response = await fetchApi<PredictionResult[]>(
-      `scans?per_page=${HISTORY_PAGE_SIZE}&page=1&sort=-created_at`
+      `scans?${buildHistoryQuery(safePage, filters)}`,
     );
-    const scans = response.data ?? [];
 
-    return scans.map<PredictionHistory>((scan) => ({
-      ...scan,
-      id: scan.uuid,
-      confidence: Number(scan.confidence),
-    }));
+    return {
+      histories: (response.data ?? []).map(toPredictionHistory),
+      pagination: {
+        ...pagination,
+        totalPages: response.meta?.last_page ?? 1,
+        totalItems: response.meta?.total ?? 0,
+      },
+      filters,
+    };
   } catch (error) {
     console.error("Failed to fetch prediction histories from Laravel:", error);
-    return [];
+    return { histories: [], pagination, filters };
   }
 }
 
-export async function getRecommendations(predictedClass: string | null) {
-  if (!predictedClass) {
-    return { recommendations: [] as SkinRecommendation[], mlLabel: null as string | null, hasMore: false };
-  }
-
+export async function getHistoryDetail(
+  uuid: string,
+): Promise<PredictionHistory | null> {
   try {
-    const encoded = encodeURIComponent(predictedClass);
-    const response = await fetchApi<RecommendationApi[]>(
-      `skin-recommendations?ml_label=${encoded}&per_page=20&page=1`
-    );
-    const recommendations = response.data ?? [];
-
-    const itemsToDisplay = recommendations.slice(0, 5);
-
-    return {
-      recommendations: itemsToDisplay.map<SkinRecommendation>((rec) => ({
-        uuid: rec.uuid,
-        title: rec.title,
-        recommendation_text: rec.recommendation_text,
-        priority_level: rec.priority_level,
-        product: rec.product
-          ? {
-              uuid: rec.product.uuid,
-              name: rec.product.name,
-              category: rec.product.category,
-              key_ingredients: rec.product.key_ingredients ?? null,
-              usage_instruction: rec.product.usage_instruction ?? null,
-              warning: rec.product.warning ?? null,
-            }
-          : null,
-        concern: rec.concern ?? null,
-      })),
-      mlLabel: predictedClass,
-      hasMore: recommendations.length > itemsToDisplay.length,
-    };
+    const response = await fetchApi<PredictionResult>(`scans/${uuid}`);
+    if (!response.data) return null;
+    return toPredictionHistory(response.data);
   } catch (error) {
-    console.error("Failed to fetch recommendations from Laravel:", error);
-    return { recommendations: [] as SkinRecommendation[], mlLabel: null as string | null, hasMore: false };
+    console.error("Failed to fetch scan detail from Laravel:", error);
+    return null;
+  }
+}
+
+/** Scan terakhir untuk homepage — embedded recommendations ikut terbawa. */
+export async function getLatestHistory(): Promise<PredictionHistory | null> {
+  try {
+    const response = await fetchApi<PredictionResult[]>(
+      "scans?per_page=1&page=1&sort=-created_at",
+    );
+    const latest = response.data?.[0];
+    return latest ? toPredictionHistory(latest) : null;
+  } catch (error) {
+    console.error("Failed to fetch latest scan from Laravel:", error);
+    return null;
   }
 }

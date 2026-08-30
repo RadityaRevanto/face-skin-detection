@@ -11,7 +11,7 @@ export function UsersContent({ users, pagination }: UsersContentProps) {
           Users
         </h1>
         <p className='mt-1 text-sm text-slate-500'>
-          Daftar user biasa yang terdaftar di sistem Face Skin Detection.
+          Daftar user biasa yang terdaftar di sistem Face Skincek.
         </p>
       </div>
 

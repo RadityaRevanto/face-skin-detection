@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SkinTypesContainer } from "@/src/features/skin-types/components/SkinTypesContainer";
 
 export const metadata: Metadata = {
-  title: "Kelola Skin Types | Face Skin Detection",
+  title: "Kelola Skin Types",
   description: "Kelola jenis kulit untuk sistem rekomendasi",
 };
 

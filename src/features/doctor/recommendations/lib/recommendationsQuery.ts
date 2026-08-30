@@ -1,5 +1,6 @@
 import { requireDoctorProfile } from "@/lib/doctor-auth";
 import { fetchApi } from "@/lib/api/server-client";
+import { ROUTES } from "@/lib/constants";
 
 import type {
   RecommendationRow,
@@ -87,6 +88,8 @@ export async function getRecommendationsPageData({
         totalPages: res.meta?.last_page ?? 1,
         totalItems: res.meta?.total ?? 0,
         pageSize: PAGE_SIZE,
+        basePath: ROUTES.DOCTOR.RECOMMENDATIONS,
+        itemLabel: "rekomendasi",
       },
     };
   } catch (error) {
@@ -104,6 +107,8 @@ export async function getRecommendationsPageData({
         totalPages: 1,
         totalItems: 0,
         pageSize: PAGE_SIZE,
+        basePath: ROUTES.DOCTOR.RECOMMENDATIONS,
+        itemLabel: "rekomendasi",
       },
     };
   }

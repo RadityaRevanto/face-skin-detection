@@ -1,5 +1,6 @@
 import { requireAdminProfile } from "@/lib/admin-auth";
 import { fetchApi } from "@/lib/api/server-client";
+import { ROUTES } from "@/lib/constants";
 
 import type { UserRow, UsersPageData } from "./usersTypes";
 
@@ -70,6 +71,8 @@ export async function getUsersPageData({
         totalPages: res.meta?.last_page ?? 1,
         totalItems: res.meta?.total ?? 0,
         pageSize: PAGE_SIZE,
+        basePath: ROUTES.ADMIN.USERS,
+        itemLabel: "user",
       },
     };
   } catch (error) {
@@ -82,6 +85,8 @@ export async function getUsersPageData({
         totalPages: 1,
         totalItems: 0,
         pageSize: PAGE_SIZE,
+        basePath: ROUTES.ADMIN.USERS,
+        itemLabel: "user",
       },
     };
   }

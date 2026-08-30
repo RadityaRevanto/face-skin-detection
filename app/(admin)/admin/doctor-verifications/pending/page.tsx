@@ -5,7 +5,7 @@ import { getDoctorVerificationPageData } from "@/src/features/admin/verification
 
 
 export const metadata: Metadata = {
-  title: "Pending Verifikasi Dokter | Face Skin Detection",
+  title: "Pending Verifikasi Dokter",
   description: "Daftar dokter yang menunggu proses verifikasi",
 };
 

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { PasswordChangeSection } from "./PasswordChangeSection";
 import { LoginActivitySection } from "./LoginActivitySection";
 import { LogoutAllSection } from "./LogoutAllSection";
+import { DeviceTokensSection } from "./DeviceTokensSection";
 
 interface LoginActivity {
   uuid: string;
@@ -16,7 +17,7 @@ interface LoginActivity {
   created_at: string;
 }
 
-export function LoginSecurityContent() {
+export function LoginSecurityContent({ showDeviceTokens = false }: { showDeviceTokens?: boolean }) {
   const [sessions, setSessions] = useState<LoginActivity[]>([]);
   const [isLoadingSessions, setIsLoadingSessions] = useState(true);
   const [revokingId, setRevokingId] = useState<string | null>(null);
@@ -148,6 +149,8 @@ export function LoginSecurityContent() {
         formatLocation={formatLocation}
         formatDate={formatDate}
       />
+
+      {showDeviceTokens && <DeviceTokensSection />}
 
       <LogoutAllSection
         showLogoutAll={showLogoutAll}

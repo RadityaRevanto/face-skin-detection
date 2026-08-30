@@ -9,7 +9,7 @@ export function SubscriptionHero() {
         <Sparkles size={120} />
       </div>
 
-      <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3 relative z-10">SkinCek Pro</h1>
+      <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-3 relative z-10">Skincek Pro</h1>
       <p className="text-emerald-100 max-w-xl mx-auto relative z-10 text-sm sm:text-base">
         Akses konsultasi tanpa batas dengan dokter spesialis dan nikmati prioritas dalam menganalisis kesehatan kulit Anda.
       </p>

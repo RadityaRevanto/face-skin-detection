@@ -11,8 +11,4 @@ export { CropImageModal } from "./components/CropImageModal";
 export { LoginActivitySection } from "./components/LoginActivitySection";
 export { PasswordChangeSection } from "./components/PasswordChangeSection";
 export { LogoutAllSection } from "./components/LogoutAllSection";
-export { default as NavbarUsers } from "./components/NavbarUsers";
-export { NavbarUsersItems, navItems } from "./components/NavbarUsersItems";
-export { NavbarUsersProfileMenu } from "./components/NavbarUsersProfileMenu";
-export { NavbarUsersMobileMenu } from "./components/NavbarUsersMobileMenu";
 export type { Subscription, ReceiptData } from "./components/types";

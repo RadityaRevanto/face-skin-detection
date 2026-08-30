@@ -26,7 +26,7 @@ export function ActiveSubscriptionCard({
             <CheckCircle2 size={14} /> Aktif
           </div>
         </div>
-        <h2 className="text-2xl font-bold text-slate-800 mb-1">Paket SkinCek Pro</h2>
+        <h2 className="text-2xl font-bold text-slate-800 mb-1">Paket Skincek Pro</h2>
         <p className="text-slate-500 text-sm">
           Berlaku hingga: <span className="font-semibold text-slate-700">{subscription.ends_at ? new Date(subscription.ends_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Selamanya'}</span>
         </p>

@@ -2,25 +2,38 @@
 
 import Link from "next/link";
 import { User as UserIcon, KeyRound, Shield } from "lucide-react";
-import type { UserProfile } from "@/lib/api/profile-query";
-import { SubscriptionCard } from "./SubscriptionCard";
 
-export function PrivacySidebar({ profile }: { profile: UserProfile }) {
+type PrivacySidebarProps = {
+  basePath: string;
+  activePage: "profile" | "login-security" | "privacy";
+};
+
+/**
+ * Sidebar 3-section pengaturan akun — shared semua role
+ * (Profil Akun → Login & Keamanan → Privasi & Data).
+ */
+export function PrivacySidebar({ basePath, activePage }: PrivacySidebarProps) {
+  const navItems = [
+    { key: "profile", label: "Profil Akun", icon: <UserIcon size={18} />, href: basePath },
+    { key: "login-security", label: "Login & Keamanan", icon: <KeyRound size={18} />, href: `${basePath}/login-security` },
+    { key: "privacy", label: "Privasi & Data", icon: <Shield size={18} />, href: `${basePath}/privacy` },
+  ] as const;
+
   return (
-    <div className="w-full lg:w-64 shrink-0 flex flex-col gap-2">
-      <Link href="/user/profile" className="flex items-center gap-3 px-4 py-3 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium rounded-xl transition-colors">
-        <UserIcon size={18} /> Profil Akun
-      </Link>
-      <Link href="/user/profile/login-security" className="flex items-center gap-3 px-4 py-3 text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900 font-medium rounded-xl transition-colors">
-        <KeyRound size={18} /> Login & Keamanan
-      </Link>
-      <Link href="/user/profile/privacy" className="flex items-center gap-3 px-4 py-3 bg-emerald-50 text-emerald-700 font-medium rounded-xl border border-emerald-200/50">
-        <Shield size={18} /> Privasi & Data
-      </Link>
-
-      <div className="order-last lg:order-none">
-        <SubscriptionCard profile={profile} />
-      </div>
+    <div className="flex w-full flex-col gap-2 lg:w-64 lg:shrink-0">
+      {navItems.map((item) => (
+        <Link
+          key={item.key}
+          href={item.href}
+          className={`flex items-center gap-3 rounded-xl px-4 py-3 font-medium transition-colors ${
+            activePage === item.key
+              ? "border border-emerald-200/50 bg-emerald-50 text-emerald-700"
+              : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+          }`}
+        >
+          {item.icon} {item.label}
+        </Link>
+      ))}
     </div>
   );
 }

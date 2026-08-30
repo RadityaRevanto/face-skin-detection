@@ -1,5 +1,6 @@
 import { requireDoctorProfile } from "@/lib/doctor-auth";
 import { fetchApi } from "@/lib/api/server-client";
+import { ROUTES } from "@/lib/constants";
 
 import type { SkincarePageData, SkincareRow } from "./skincareTypes";
 
@@ -90,6 +91,8 @@ export async function getSkincarePageData({
         totalPages: res.meta?.last_page ?? 1,
         totalItems: res.meta?.total ?? 0,
         pageSize: PAGE_SIZE,
+        basePath: ROUTES.DOCTOR.SKINCARE,
+        itemLabel: "produk",
       },
     };
   } catch (error) {
@@ -107,6 +110,8 @@ export async function getSkincarePageData({
         totalPages: 1,
         totalItems: 0,
         pageSize: PAGE_SIZE,
+        basePath: ROUTES.DOCTOR.SKINCARE,
+        itemLabel: "produk",
       },
     };
   }

@@ -4,7 +4,7 @@ import { DoctorRegisterView } from "@/src/features/auth/components/DoctorRegiste
 import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
 
 export const metadata: Metadata = {
-  title: "Register Dokter | Face Skin Detection",
+  title: "Register Dokter",
   description: "Daftar sebagai dokter terverifikasi",
 };
 

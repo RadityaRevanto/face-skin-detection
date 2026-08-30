@@ -42,7 +42,7 @@ function getHeaderContent(pathname: string) {
 
   return {
     title: "Admin",
-    description: "Manage Face Skin Detection system",
+    description: "Manage Face Skincek system",
   };
 }
 

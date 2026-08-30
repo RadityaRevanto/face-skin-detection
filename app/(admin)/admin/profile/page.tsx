@@ -4,7 +4,7 @@ import { AdminProfileContent } from "@/src/features/admin/profile/components/Adm
 import { getAdminProfileData } from "@/src/features/admin/profile/lib/adminProfileQuery";
 
 export const metadata: Metadata = {
-  title: "Profil Admin | Face Skin Detection",
+  title: "Profil Admin",
   description: "Profil admin, ringkasan platform, dan info sesi",
 };
 

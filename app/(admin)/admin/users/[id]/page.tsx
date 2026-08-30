@@ -5,7 +5,7 @@ import { getUserDetail } from "@/src/features/admin/users/[id]/lib/userDetailQue
 
 
 export const metadata: Metadata = {
-  title: "Detail User | Face Skin Detection",
+  title: "Detail User",
   description: "Detail profil user",
 };
 

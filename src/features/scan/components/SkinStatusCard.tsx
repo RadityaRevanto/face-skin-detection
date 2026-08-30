@@ -1,4 +1,4 @@
-import type { PredictionHistory, ToneConfig } from "../lib/pemeriksaanTypes";
+import type { PredictionHistory, ToneConfig } from "../types";
 import { getConcernDisplayName } from "@/lib/utils/skin-labels";
 import { ShieldIcon } from "./Icons";
 

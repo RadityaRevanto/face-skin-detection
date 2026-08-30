@@ -3,7 +3,6 @@ import type { PredictionResult } from "@/lib/api/scans-query";
 
 import type {
   PredictionHistory,
-  Recommendation,
   UserProfile,
 } from "./homeTypes";
 
@@ -21,13 +20,6 @@ export async function getCurrentUserProfile() {
   } as UserProfile;
 }
 
-type RecommendationApi = {
-  uuid: string;
-  title: string;
-  priority_level: "low" | "medium" | "high";
-  recommendation_text: string;
-};
-
 export async function getUserPredictionHistories() {
   try {
     const response = await fetchApi<PredictionResult[]>(
@@ -42,35 +34,6 @@ export async function getUserPredictionHistories() {
     }));
   } catch (error) {
     console.error("Failed to fetch user prediction histories from Laravel:", error);
-    return [];
-  }
-}
-
-export async function getRecommendationsByPredictedClass(
-  predictedClass: string | null
-) {
-  if (!predictedClass) {
-    return [];
-  }
-
-  try {
-    // Backend memfilter rekomendasi via parameter ml_label dan sudah
-    // mengurutkan prioritas high → medium → low otomatis.
-    const encoded = encodeURIComponent(predictedClass);
-    const response = await fetchApi<RecommendationApi[]>(
-      `skin-recommendations?ml_label=${encoded}&per_page=20&page=1`
-    );
-
-    const recommendations = response.data ?? [];
-
-    return recommendations.slice(0, 5).map<Recommendation>((rec) => ({
-      uuid: rec.uuid,
-      title: rec.title,
-      recommendation_text: rec.recommendation_text,
-      priority_level: rec.priority_level,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch recommendations from Laravel:", error);
     return [];
   }
 }

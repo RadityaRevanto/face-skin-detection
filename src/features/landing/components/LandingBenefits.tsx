@@ -70,13 +70,13 @@ export function LandingBenefits({ benefits }: { benefits: string[] }) {
       <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-24">
         <div>
           <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-600">
-            Kenapa SkinCheck
+            Kenapa Skincek
           </p>
           <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
             Perawatan kulit yang cerdas, praktis, dan personal
           </h2>
           <p className="mt-4 text-base leading-7 text-slate-600">
-            SkinCheck membantu Anda memahami kondisi kulit tanpa ribet,
+            Skincek membantu Anda memahami kondisi kulit tanpa ribet,
             kapan pun Anda butuh.
           </p>
 

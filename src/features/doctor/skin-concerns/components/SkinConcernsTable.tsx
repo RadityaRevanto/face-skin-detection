@@ -4,14 +4,12 @@ import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-type SkinConcern = { uuid: string; name: string; description?: string; default_severity_score?: number | string; is_active?: boolean };
+import type { PagePagination } from "@/lib/types/pagination";
+import type { SkinConcernRow } from "../lib/skinConcernsTypes";
 
 type SkinConcernsTableProps = {
-  concerns: SkinConcern[];
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  pageSize: number;
+  concerns: SkinConcernRow[];
+  pagination: PagePagination;
 };
 
 function DetailIcon() {
@@ -23,8 +21,8 @@ function DetailIcon() {
   );
 }
 
-export function SkinConcernsTable({ concerns, currentPage, totalPages, totalItems, pageSize }: SkinConcernsTableProps) {
-  const from = (currentPage - 1) * pageSize;
+export function SkinConcernsTable({ concerns, pagination }: SkinConcernsTableProps) {
+  const from = (pagination.currentPage - 1) * pagination.pageSize;
 
   return (
     <Card className="overflow-hidden rounded-2xl border-slate-100! bg-white! text-slate-950! shadow-sm">
@@ -60,7 +58,14 @@ export function SkinConcernsTable({ concerns, currentPage, totalPages, totalItem
       {concerns.length === 0 && (
         <div className="border-t border-gray-100 bg-white px-6 py-8 text-sm font-semibold text-gray-500 sm:px-8">Belum ada data skin concern.</div>
       )}
-      <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={totalItems} pageSize={pageSize} />
+      <Pagination
+        currentPage={pagination.currentPage}
+        totalPages={pagination.totalPages}
+        totalItems={pagination.totalItems}
+        pageSize={pagination.pageSize}
+        itemLabel={pagination.itemLabel}
+        basePath={pagination.basePath}
+      />
     </Card>
   );
 }

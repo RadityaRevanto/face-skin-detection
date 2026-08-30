@@ -12,7 +12,7 @@ export function SubscriptionCard({ profile }: { profile: UserProfile }) {
       <div className="absolute top-0 right-0 p-4 opacity-10"><CreditCard size={64} /></div>
       <p className="text-xs text-zinc-400 font-medium uppercase tracking-wider mb-1">Status Langganan</p>
       <h3 className="text-xl font-bold mb-3 flex items-center gap-2">
-        SkinCek {profile.subscription_status === 'Pro' ? <span className="text-amber-400">PRO</span> : 'FREE'}
+        Skincek {profile.subscription_status === 'Pro' ? <span className="text-amber-400">PRO</span> : 'FREE'}
       </h3>
       {profile.subscription_status !== 'Pro' && (
         <div className="space-y-3">
@@ -33,7 +33,7 @@ export function SubscriptionCard({ profile }: { profile: UserProfile }) {
                 style={{ width: `${quotaPercent}%` }}
               />
             </div>
-            <p className="text-[10px] text-zinc-400 mt-1.5 leading-snug">Sisa sesi konsultasi gratis hari ini.</p>
+            <p className="text-[10px] text-zinc-400 mt-1.5 leading-snug">Sisa pesan gratis konsultasi dengan dokter.</p>
           </div>
 
           <Link href="/user/subscription" className="block w-full py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold rounded-lg mt-2 transition-colors text-center">Upgrade Pro</Link>

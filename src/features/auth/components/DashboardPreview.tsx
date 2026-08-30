@@ -119,7 +119,7 @@ export function DoctorDashboardPreview() {
                 <LeafLogo />
                 <span>
                   <span className='block text-sm font-bold'>
-                    Skin Detection
+                    Skincek
                   </span>
                   <span className='block text-[11px] text-emerald-600'>
                     Doctor Portal

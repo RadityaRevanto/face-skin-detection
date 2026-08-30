@@ -3,16 +3,15 @@ import {
   FeatureHero,
   HealthScoreCard,
   LatestProblemsCard,
-  RecommendationCard,
   RecentHistoryCard,
   getCurrentUserProfile,
-  getRecommendationsByPredictedClass,
   getUserPredictionHistories,
   getConfidencePercent,
   getProblemsFromPrediction,
   getToneBySeverity,
 } from "@/src/features/home";
 import { EmergencyHotlinesContainer } from "@/src/features/emergency/components/EmergencyHotlinesContainer";
+import { ScanRecommendationsSection } from "@/src/features/scan/components/ScanRecommendationsSection";
 
 export default async function HomePage() {
   const [profile, histories] = await Promise.all([getCurrentUserProfile(), getUserPredictionHistories()]);
@@ -20,7 +19,6 @@ export default async function HomePage() {
   const selectedConfidence = getConfidencePercent(latestPrediction?.confidence);
   const tone = getToneBySeverity(latestPrediction?.severity_level ?? null, latestPrediction?.severity_score ?? null);
   const problems = getProblemsFromPrediction(latestPrediction);
-  const recommendations = await getRecommendationsByPredictedClass(latestPrediction?.predicted_class ?? null);
 
   return (
     <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
@@ -37,9 +35,14 @@ export default async function HomePage() {
           <LatestProblemsCard problems={problems} />
         </div>
       </div>
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+      <div className="mt-5">
         <RecentHistoryCard histories={histories} />
-        <RecommendationCard recommendations={recommendations} />
+      </div>
+      <div className="mt-5">
+        <ScanRecommendationsSection
+          treatmentRecommendations={latestPrediction?.treatment_recommendations}
+          skincareRecommendations={latestPrediction?.skincare_recommendations}
+        />
       </div>
       <div className="mt-5">
         <EmergencyHotlinesContainer />

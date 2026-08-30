@@ -3,7 +3,9 @@ import type {
   OtherConcern,
   ScanMode,
   SeverityLevel,
+  SkincareRecommendation,
   SkinConcernInfo,
+  TreatmentRecommendation,
 } from "@/lib/api/scans-query";
 
 // `id` diisi dari `uuid` backend (PK internal disembunyikan).
@@ -20,6 +22,8 @@ export type PredictionHistory = {
   created_at: string;
   skin_concern?: SkinConcernInfo | null;
   other_concerns?: OtherConcern[];
+  treatment_recommendations?: TreatmentRecommendation[];
+  skincare_recommendations?: SkincareRecommendation[];
 };
 
 export type UserProfile = {
@@ -35,13 +39,6 @@ export type Problem = {
   name: string;
   value: number;
   color: string;
-};
-
-export type Recommendation = {
-  uuid: string;
-  title: string;
-  recommendation_text: string;
-  priority_level: "low" | "medium" | "high";
 };
 
 export type ToneConfig = {

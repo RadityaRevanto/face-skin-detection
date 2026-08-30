@@ -32,15 +32,6 @@ export function getUserNavItems(): SidebarNavItem[] {
       ),
     },
     {
-      label: "Skincare",
-      href: ROUTES.USER.SKINCARE,
-      icon: (
-        <NavIcon>
-          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" {...s} />
-        </NavIcon>
-      ),
-    },
-    {
       label: "Konsultasi",
       href: ROUTES.USER.CONSULTATIONS,
       icon: (
@@ -50,20 +41,20 @@ export function getUserNavItems(): SidebarNavItem[] {
       ),
     },
     {
+      label: "Riwayat Chat",
+      href: "/user/chats",
+      icon: (
+        <NavIcon>
+          <path d="M8 10h8M8 14h5m6.5 5.5-2.3-2.3A6 6 0 1 0 4 15.5c1.5 1.5 3.5 2.5 5.7 2.5h4.3a6 6 0 0 0 3.5-1.3Z" {...s} />
+        </NavIcon>
+      ),
+    },
+    {
       label: "Premium",
       href: "/user/subscription",
       icon: (
         <NavIcon>
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor" />
-        </NavIcon>
-      ),
-    },
-    {
-      label: "Device Tokens",
-      href: ROUTES.USER.DEVICE_TOKENS,
-      icon: (
-        <NavIcon>
-          <path d="M10 2h4m-2 0v2m0 0a4 4 0 104 4M10 2a4 4 0 00-4 4m6-4v2m0 0a4 4 0 104 4M10 2a4 4 0 00-4 4m12-2H8m12 6a4 4 0 11-8 0 4 4 0 018 0z" {...s} />
         </NavIcon>
       ),
     },

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ActivityLogContainer } from "@/src/features/activity-log/components/ActivityLogContainer";
 
 export const metadata: Metadata = {
-  title: "Activity Log | Face Skin Detection",
+  title: "Activity Log",
   description: "Log aktivitas sistem",
 };
 

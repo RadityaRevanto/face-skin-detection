@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
   getConversations,
   getMessages,
@@ -26,6 +26,9 @@ export function DoctorConsultationContainer() {
     string | null
   >(null);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [conversationPage, setConversationPage] = useState(1);
+  const [hasMoreConversations, setHasMoreConversations] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -33,13 +36,39 @@ export function DoctorConsultationContainer() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const fetchConversations = useCallback(async (page: number = 1, append: boolean = false) => {
+    try {
+      if (append) setIsLoadingMore(true);
+      const res = await getConversations(page);
+      const items = res.data || [];
+      setConversations((prev) => (append ? [...prev, ...items] : items));
+      setConversationPage(page);
+      setHasMoreConversations(Boolean(res.meta?.next_page_url ?? (res.meta?.last_page ?? 1) > page));
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingConversations(false);
+      setIsLoadingMore(false);
+    }
+  }, []);
+
+  const fetchMessages = useCallback(async (conversationId: string) => {
+    try {
+      const res = await getMessages(conversationId, 1);
+      const sortedMessages = [...(res.data || [])].reverse();
+      setMessages(sortedMessages);
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, selectedImagePreview]);
 
   useEffect(() => {
     fetchConversations();
-  }, []);
+  }, [fetchConversations]);
 
   useEffect(() => {
     if (activeConversation) {
@@ -49,17 +78,18 @@ export function DoctorConsultationContainer() {
       if (echo) {
         const channelName = `conversation.${activeConversation.uuid}`;
 
-        echo.private(channelName).listen(".chat_message_received", (e: any) => {
+        echo.private(channelName).listen(".chat_message_received", (e: { message?: Message }) => {
           if (e.message) {
+            const incoming = e.message;
             setMessages((prev) => {
-              if (prev.some((m) => m.uuid === e.message.uuid)) return prev;
-              return [...prev, e.message];
+              if (prev.some((m) => m.uuid === incoming.uuid)) return prev;
+              return [...prev, incoming];
             });
 
             setConversations((prev) =>
               prev.map((c) => {
                 if (c.uuid === activeConversation.uuid) {
-                  return { ...c, last_message: e.message };
+                  return { ...c, last_message: incoming };
                 }
                 return c;
               })
@@ -74,28 +104,7 @@ export function DoctorConsultationContainer() {
     } else {
       setMessages([]);
     }
-  }, [activeConversation]);
-
-  const fetchConversations = async () => {
-    try {
-      const res = await getConversations(1);
-      setConversations(res.data || []);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoadingConversations(false);
-    }
-  };
-
-  const fetchMessages = async (conversationId: string) => {
-    try {
-      const res = await getMessages(conversationId, 1);
-      const sortedMessages = [...(res.data || [])].reverse();
-      setMessages(sortedMessages);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  }, [activeConversation, fetchMessages]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -138,8 +147,8 @@ export function DoctorConsultationContainer() {
       setInputText("");
       setSelectedImageFile(null);
       setSelectedImagePreview(null);
-    } catch (error: any) {
-      setErrorMsg(error.message);
+    } catch (error: unknown) {
+      setErrorMsg(error instanceof Error ? error.message : "Gagal mengirim pesan");
     } finally {
       setIsSending(false);
     }
@@ -168,7 +177,10 @@ export function DoctorConsultationContainer() {
           searchQuery={searchQuery}
           isLoadingConversations={isLoadingConversations}
           showSidebar={showSidebar}
+          hasMoreConversations={hasMoreConversations}
+          isLoadingMore={isLoadingMore}
           onSearchChange={setSearchQuery}
+          onLoadMore={() => fetchConversations(conversationPage + 1, true)}
           onSelectConversation={(conv) => {
             setActiveConversation(conv);
             setShowSidebar(false);

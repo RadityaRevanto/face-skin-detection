@@ -15,16 +15,22 @@ export function ConversationSidebar({
   searchQuery,
   isLoadingConversations,
   showSidebar,
+  hasMoreConversations,
+  isLoadingMore,
   onSearchChange,
   onSelectConversation,
+  onLoadMore,
 }: {
   conversations: Conversation[];
   activeConversation: Conversation | null;
   searchQuery: string;
   isLoadingConversations: boolean;
   showSidebar: boolean;
+  hasMoreConversations: boolean;
+  isLoadingMore: boolean;
   onSearchChange: (value: string) => void;
   onSelectConversation: (conv: Conversation) => void;
+  onLoadMore: () => void;
 }) {
   const filtered = conversations.filter((c) =>
     c.user?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
@@ -34,7 +40,7 @@ export function ConversationSidebar({
     <div
       className={`${
         showSidebar ? "flex" : "hidden"
-      } md:flex w-full md:w-80 lg:w-96 border-r border-zinc-100 flex-col`}
+      } lg:flex w-full lg:w-80 lg:w-96 border-r border-zinc-100 flex-col`}
     >
       <div className="p-5 border-b border-zinc-100">
         <h2 className="font-semibold text-zinc-800 text-lg">Pesan Masuk</h2>
@@ -127,6 +133,19 @@ export function ConversationSidebar({
               </div>
             );
           })
+        )}
+
+        {!isLoadingConversations && hasMoreConversations && (
+          <div className="p-3 border-b border-zinc-50">
+            <button
+              type="button"
+              disabled={isLoadingMore}
+              onClick={onLoadMore}
+              className="w-full rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 disabled:opacity-50"
+            >
+              {isLoadingMore ? "Memuat..." : "Muat percakapan lainnya"}
+            </button>
+          </div>
         )}
       </div>
     </div>

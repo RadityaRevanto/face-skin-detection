@@ -1,3 +1,5 @@
+import type { PagePagination } from "@/lib/types/pagination";
+
 export type DoctorVerificationStatus = "approved";
 
 export type DoctorDocument = {
@@ -23,10 +25,5 @@ export type DoctorRow = {
 
 export type DoctorsPageData = {
   doctors: DoctorRow[];
-  pagination: {
-    currentPage: number;
-    totalPages: number;
-    totalItems: number;
-    pageSize: number;
-  };
+  pagination: PagePagination;
 };

@@ -8,7 +8,7 @@ import { normalizeStatus } from "@/src/features/doctor/verification/utils/verifi
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Status Verifikasi | Face Skin Detection",
+  title: "Status Verifikasi",
   description: "Status verifikasi akun dokter Anda",
 };
 

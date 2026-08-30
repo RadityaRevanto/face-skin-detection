@@ -1,5 +1,6 @@
 import { requireAdminProfile } from "@/lib/admin-auth";
 import { fetchApi } from "@/lib/api/server-client";
+import { ROUTES } from "@/lib/constants";
 
 import type { DoctorRow, DoctorsPageData } from "./doctorsTypes";
 
@@ -76,6 +77,8 @@ export async function getDoctorsPageData({
         totalPages: res.meta?.last_page ?? 1,
         totalItems: res.meta?.total ?? 0,
         pageSize: PAGE_SIZE,
+        basePath: ROUTES.ADMIN.DOCTORS,
+        itemLabel: "dokter",
       },
     };
   } catch (error) {
@@ -88,6 +91,8 @@ export async function getDoctorsPageData({
         totalPages: 1,
         totalItems: 0,
         pageSize: PAGE_SIZE,
+        basePath: ROUTES.ADMIN.DOCTORS,
+        itemLabel: "dokter",
       },
     };
   }

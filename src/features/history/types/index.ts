@@ -1,9 +1,12 @@
 // Tipe area history mengikuti kontrak kanonik backend (PredictionHistoryResource).
 import type {
   OtherConcern,
+  PredictionResult,
   ScanMode,
   SeverityLevel,
+  SkincareRecommendation,
   SkinConcernInfo,
+  TreatmentRecommendation,
 } from "@/lib/api/scans-query";
 
 // `id` diisi dari `uuid` backend (PK internal disembunyikan).
@@ -20,34 +23,14 @@ export type PredictionHistory = {
   created_at: string;
   skin_concern?: SkinConcernInfo | null;
   other_concerns?: OtherConcern[];
+  treatment_recommendations?: TreatmentRecommendation[];
+  skincare_recommendations?: SkincareRecommendation[];
   disclaimer?: string;
   notice?: string | null;
 };
 
-export type SkincareProduct = {
-  uuid: string;
-  name: string;
-  category: string;
-  key_ingredients: string | null;
-  usage_instruction: string | null;
-  warning: string | null;
-};
-
-export type SkinRecommendation = {
-  uuid: string;
-  title: string;
-  recommendation_text: string;
-  priority_level: "low" | "medium" | "high";
-  // Resource backend mengirim objek `product` tunggal (bukan array).
-  product?: SkincareProduct | null;
-  concern?: {
-    uuid: string;
-    name: string;
-    ml_label: string;
-  } | null;
-};
-
 export type { ScanMode, SeverityLevel };
+export type { SkincareRecommendation, TreatmentRecommendation };
 
 export type ProblemDetail = {
   name: string;

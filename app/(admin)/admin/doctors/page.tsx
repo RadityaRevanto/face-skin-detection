@@ -5,7 +5,7 @@ import { getDoctorsPageData } from "@/src/features/admin/doctors/lib/doctorsQuer
 
 
 export const metadata: Metadata = {
-  title: "Manajemen Dokter | Face Skin Detection",
+  title: "Manajemen Dokter",
   description: "Kelola daftar dokter terdaftar",
 };
 

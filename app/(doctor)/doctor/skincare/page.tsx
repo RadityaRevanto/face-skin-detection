@@ -5,7 +5,7 @@ import { getSkincarePageData } from "@/src/features/doctor/skincare/lib/skincare
 
 
 export const metadata: Metadata = {
-  title: "Kelola Skincare | Face Skin Detection",
+  title: "Kelola Skincare",
   description: "Kelola produk skincare - Dashboard Dokter",
 };
 

@@ -24,7 +24,7 @@ export function DoctorRegisterView() {
               </span>
               <span>
                 <span className='block text-base font-bold tracking-tight'>
-                  Skin Detection
+                  Skincek
                 </span>
                 <span className='block text-xs font-medium text-emerald-600'>
                   Doctor Portal
@@ -42,7 +42,7 @@ export function DoctorRegisterView() {
               Buat Akun Dokter
             </h1>
             <p className='mt-3 text-sm leading-6 text-zinc-600'>
-              Bergabunglah dengan platform AI Skin Detection untuk memberikan
+              Bergabunglah dengan platform AI Skincek untuk memberikan
               layanan analisis kulit yang lebih akurat dan terpercaya.
             </p>
           </div>

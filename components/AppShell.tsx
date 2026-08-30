@@ -10,7 +10,7 @@ import { logoutAction } from "@/lib/auth/actions";
 import { getUserNavItems } from "./sidebar/UserNavItems";
 import { getAdminNavItems } from "./sidebar/AdminNavItems";
 import { getDoctorNavItems } from "./sidebar/DoctorNavItems";
-import { ProfileDropdown } from "./navbar/ProfileDropdown";
+import { ProfileDropdown } from "./ProfileDropdown";
 
 export type DashboardRole = "user" | "admin" | "doctor";
 
@@ -41,11 +41,11 @@ function getBrandConfig(role: DashboardRole) {
   const logo = <LeafLogo />;
   switch (role) {
     case "user":
-      return { href: "/user/home", logo, title: "SkinCheck", subtitle: "Health", mobileTitle: "SkinCheck", mobileSubtitle: "Health" };
+      return { href: "/user/home", logo, title: "Skincek", subtitle: "Health", mobileTitle: "Skincek", mobileSubtitle: "Health" };
     case "admin":
-      return { href: "/admin/dashboard", logo, title: "Skin Detection", subtitle: "Admin Panel", mobileTitle: "Admin Panel", mobileSubtitle: "Skin Detection" };
+      return { href: "/admin/dashboard", logo, title: "Skincek", subtitle: "Admin Panel", mobileTitle: "Admin Panel", mobileSubtitle: "Skincek" };
     case "doctor":
-      return { href: "/doctor/dashboard", logo, title: "Skin Detection", subtitle: "Doctor Panel", mobileTitle: "Doctor Panel", mobileSubtitle: "Skin Detection" };
+      return { href: "/doctor/dashboard", logo, title: "Skincek", subtitle: "Doctor Panel", mobileTitle: "Doctor Panel", mobileSubtitle: "Skincek" };
   }
 }
 
@@ -96,7 +96,9 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
   const userUuid = profile?.uuid || null;
   const pendingCount = (headerExtra?.pendingCount as number) || 0;
 
-  const isConsultationPage = pathname.startsWith("/user/consultations") || pathname.startsWith("/doctor/consultations");
+  // Chat butuh viewport penuh tanpa padding shell; daftar dokter & profil
+  // dokter adalah halaman dashboard biasa.
+  const isConsultationPage = pathname.startsWith("/user/chats") || pathname.startsWith("/doctor/consultations");
 
   const navItems = role === "admin" ? getAdminNavItems(pendingCount) : role === "doctor" ? getDoctorNavItems() : getUserNavItems();
   const brand = getBrandConfig(role);

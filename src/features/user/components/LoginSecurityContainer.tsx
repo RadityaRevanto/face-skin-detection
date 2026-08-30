@@ -5,7 +5,7 @@ import { getProfile, UserProfile } from "@/lib/api/profile-query";
 import { LoginSecurityContent } from "@/src/features/user/components/LoginSecurityContent";
 import { ProfileSidebar } from "@/src/features/user/components/ProfileSidebar";
 
-export function LoginSecurityContainer({ role }: { role: "user" | "doctor" }) {
+export function LoginSecurityContainer({ role }: { role: "user" | "doctor" | "admin" }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,7 +25,7 @@ export function LoginSecurityContainer({ role }: { role: "user" | "doctor" }) {
       </div>
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
         <ProfileSidebar profile={profile} role={role} activePage="login-security" />
-        <div className="flex-1 w-full min-w-0"><LoginSecurityContent /></div>
+        <div className="flex-1 w-full min-w-0"><LoginSecurityContent showDeviceTokens={role !== "admin"} /></div>
       </div>
     </main>
   );

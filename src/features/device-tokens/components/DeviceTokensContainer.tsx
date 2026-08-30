@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import type { DeviceToken } from "../types";
 import { getDeviceTokens, deleteDeviceToken } from "../lib/deviceTokensService";
 
-export function DeviceTokensContainer() {
+export function DeviceTokensContainer({ embedded = false }: { embedded?: boolean }) {
   const [tokens, setTokens] = useState<DeviceToken[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -53,15 +53,17 @@ export function DeviceTokensContainer() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-          Device Tokens
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Kelola device yang menerima notifikasi push
-        </p>
-      </div>
+      {/* Header — hanya saat dipakai sebagai halaman mandiri */}
+      {!embedded && (
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+            Device Tokens
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Kelola device yang menerima notifikasi push
+          </p>
+        </div>
+      )}
 
       {/* Token List */}
       <div className="rounded-2xl border border-slate-100 bg-white shadow-sm">

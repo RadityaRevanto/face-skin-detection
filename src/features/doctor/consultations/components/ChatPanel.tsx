@@ -48,7 +48,7 @@ export function ChatPanel({
       <div
         className={`${
           !showSidebar ? "flex" : "hidden"
-        } md:flex flex-1 flex-col bg-zinc-50/30`}
+        } lg:flex flex-1 flex-col bg-zinc-50/30`}
       >
         <div className="flex-1 flex flex-col items-center justify-center text-zinc-400 p-8 text-center">
           <div className="w-20 h-20 bg-zinc-50 rounded-full flex items-center justify-center mb-4">
@@ -70,14 +70,14 @@ export function ChatPanel({
     <div
       className={`${
         !showSidebar ? "flex" : "hidden"
-      } md:flex flex-1 flex-col bg-zinc-50/30`}
+      } lg:flex flex-1 flex-col bg-zinc-50/30`}
     >
       {/* Chat Header */}
       <div className="h-18 border-b border-zinc-100 bg-white/80 backdrop-blur-md px-4 sm:px-6 flex justify-between items-center shrink-0">
         <div className="flex items-center gap-2 sm:gap-4">
           <button
             onClick={onShowSidebar}
-            className="md:hidden p-2 -ml-2 text-zinc-500 hover:text-emerald-600 transition-colors"
+            className="lg:hidden p-2 -ml-2 text-zinc-500 hover:text-emerald-600 transition-colors"
           >
             <ChevronLeft size={24} />
           </button>

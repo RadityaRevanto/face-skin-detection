@@ -28,13 +28,13 @@ export function NotificationModal({
   return (
     <div
       className={`
-        fixed md:absolute right-0 z-50 flex flex-col bg-white overflow-hidden shadow-2xl transition-all
+        fixed lg:absolute right-0 z-50 flex flex-col bg-white overflow-hidden shadow-2xl transition-all
 
         /* Mobile: Fullscreen sliding from bottom or center */
-        bottom-0 left-0 w-full h-[85vh] rounded-t-3xl md:bottom-auto md:left-auto
+        bottom-0 left-0 w-full h-[85vh] rounded-t-3xl lg:bottom-auto lg:left-auto
 
         /* Desktop: Dropdown */
-        md:top-full md:mt-3 md:w-80 md:h-auto md:max-h-125 md:rounded-2xl md:border md:border-slate-100
+        lg:top-full lg:mt-3 lg:w-80 lg:h-auto lg:max-h-125 lg:rounded-2xl lg:border lg:border-slate-100
       `}
     >
       {/* Header */}
@@ -50,7 +50,7 @@ export function NotificationModal({
             </button>
           )}
           <button
-            className="md:hidden text-slate-400 hover:text-slate-600 p-1"
+            className="lg:hidden text-slate-400 hover:text-slate-600 p-1"
             onClick={onClose}
           >
             <X size={18} />

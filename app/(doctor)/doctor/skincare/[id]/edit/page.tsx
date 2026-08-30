@@ -9,7 +9,7 @@ import { requireDoctorProfile } from "@/lib/doctor-auth";
 import { fetchApi } from "@/lib/api/server-client";
 
 export const metadata: Metadata = {
-  title: "Edit Skincare | Face Skin Detection",
+  title: "Edit Skincare",
   description: "Edit produk skincare - Dashboard Dokter",
 };
 

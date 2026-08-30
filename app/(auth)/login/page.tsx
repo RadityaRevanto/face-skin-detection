@@ -4,7 +4,7 @@ import { LoginView } from "@/src/features/auth/components/LoginView";
 import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
 
 export const metadata: Metadata = {
-  title: "Login | Face Skin Detection",
+  title: "Login",
   description: "Login ke akun Anda",
 };
 

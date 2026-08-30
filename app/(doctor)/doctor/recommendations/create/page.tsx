@@ -5,7 +5,7 @@ import { getCreateRecommendationPageData } from "@/src/features/doctor/recommend
 
 
 export const metadata: Metadata = {
-  title: "Tambah Rekomendasi | Face Skin Detection",
+  title: "Tambah Rekomendasi",
   description: "Tambah rule rekomendasi skincare - Dashboard Dokter",
 };
 

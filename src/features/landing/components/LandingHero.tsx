@@ -66,7 +66,7 @@ export function LandingHero() {
           </h1>
 
           <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-slate-600 sm:text-lg lg:mx-0">
-            SkinCheck menganalisis kulit wajah Anda secara real-time,
+            Skincek menganalisis kulit wajah Anda secara real-time,
             mendeteksi masalah kulit, dan memberikan rekomendasi perawatan
             yang tepat — semuanya dari kamera atau foto Anda.
           </p>

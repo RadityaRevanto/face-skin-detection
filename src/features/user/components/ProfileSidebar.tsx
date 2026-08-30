@@ -7,20 +7,22 @@ import { SubscriptionCard } from "./SubscriptionCard";
 
 type ProfileSidebarProps = {
   profile: UserProfile;
-  role: "user" | "doctor";
+  role: "user" | "doctor" | "admin";
   activePage: "profile" | "login-security" | "privacy";
 };
 
+/**
+ * Sidebar 3-section pengaturan akun — struktur sama untuk SEMUA role
+ * (PROFILE_PAGE.md): Profil Akun → Login & Keamanan → Privasi & Data.
+ */
 export function ProfileSidebar({ profile, role, activePage }: ProfileSidebarProps) {
-  const basePath = role === "doctor" ? "/doctor/profile" : "/user/profile";
+  const basePath = role === "doctor" ? "/doctor/profile" : role === "admin" ? "/admin/profile" : "/user/profile";
 
   const navItems: { key: "profile" | "login-security" | "privacy"; label: string; icon: React.ReactNode; href: string }[] = [
     { key: "profile", label: "Profil Akun", icon: <UserIcon size={18} />, href: basePath },
     { key: "login-security", label: "Login & Keamanan", icon: <KeyRound size={18} />, href: `${basePath}/login-security` },
+    { key: "privacy", label: "Privasi & Data", icon: <Shield size={18} />, href: `${basePath}/privacy` },
   ];
-  if (role === "user") {
-    navItems.push({ key: "privacy", label: "Privasi & Data", icon: <Shield size={18} />, href: `${basePath}/privacy` });
-  }
 
   return (
     <div className="w-full lg:w-64 shrink-0 flex flex-col gap-2">
