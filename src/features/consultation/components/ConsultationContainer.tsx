@@ -10,7 +10,6 @@ import { ScanHistoryModal } from "./ScanHistoryModal";
 import { DoctorRatingModal } from "./DoctorRatingModal";
 import { getEcho } from "@/lib/echo";
 import { ScanHistory } from "@/lib/api/scans-query";
-import { getProfile, UserProfile } from "@/lib/api/profile-query";
 import { ErrorPopup } from "./ErrorPopup";
 import { ConversationSidebar } from "@/src/features/consultation/components/ConversationSidebar";
 import { ChatPanel } from "@/src/features/consultation/components/ChatPanel";
@@ -32,7 +31,6 @@ export function ConsultationContainer() {
   const [isStartingAi, setIsStartingAi] = useState(false);
   const [errorState, setErrorState] = useState<{ message: string; cta?: ErrorCta } | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const showApiError = (error: unknown) => setErrorState(buildApiError(error));
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -40,12 +38,7 @@ export function ConsultationContainer() {
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, selectedImagePreview]);
 
-  useEffect(() => { fetchConversations(); fetchProfileData(); }, []);
-
-  const fetchProfileData = async () => {
-    try { const res = await getProfile(); setUserProfile(res.data); }
-    catch (error) { console.error("Failed to fetch profile", error); }
-  };
+  useEffect(() => { fetchConversations(); }, []);
 
   useEffect(() => {
     if (!activeConversation) { setMessages([]); return; }
@@ -148,7 +141,7 @@ export function ConsultationContainer() {
   };
 
   return (
-    <main className="bg-shell flex flex-col h-[calc(100vh-72px)]">
+    <main className="bg-shell flex flex-col h-screen overflow-hidden">
       <ErrorPopup errorState={errorState} setErrorState={setErrorState} successMsg={successMsg} setSuccessMsg={setSuccessMsg} />
       <DoctorSearchModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSelectDoctor={handleCreateOrOpenConversation} />
       <ScanHistoryModal isOpen={isScanModalOpen} onClose={() => setIsScanModalOpen(false)} onSelectScan={handleSendScanHistory} />
@@ -157,9 +150,9 @@ export function ConsultationContainer() {
           doctorId={activeConversation.doctor?.uuid} doctorName={activeConversation.doctor?.full_name || "Dokter"}
           onSuccess={() => { setIsRatingModalOpen(false); setSuccessMsg("Terima kasih, ulasan Anda berhasil disimpan."); }} />
       )}
-      <div className="mx-auto w-full max-w-7xl flex-1 flex flex-col lg:flex-row gap-0 lg:gap-6 p-4 sm:p-6 lg:p-8 min-h-0">
+      <div className="mx-auto w-full max-w-7xl flex-1 flex flex-col lg:flex-row lg:gap-6 lg:p-8 min-h-0">
         <ConversationSidebar conversations={conversations} activeConversation={activeConversation} showSidebar={showSidebar}
-          isLoadingConversations={isLoadingConversations} isStartingAi={isStartingAi} userProfile={userProfile}
+          isLoadingConversations={isLoadingConversations} isStartingAi={isStartingAi}
           setActiveConversation={setActiveConversation} setShowSidebar={setShowSidebar} setIsModalOpen={setIsModalOpen} handleStartAiChat={handleStartAiChat} />
         <ChatPanel activeConversation={activeConversation} messages={messages} showSidebar={showSidebar} inputText={inputText}
           selectedImagePreview={selectedImagePreview} isSending={isSending} setShowSidebar={setShowSidebar}

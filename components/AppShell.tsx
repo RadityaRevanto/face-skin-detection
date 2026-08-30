@@ -96,6 +96,8 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
   const userUuid = profile?.uuid || null;
   const pendingCount = (headerExtra?.pendingCount as number) || 0;
 
+  const isConsultationPage = pathname.startsWith("/user/consultations") || pathname.startsWith("/doctor/consultations");
+
   const navItems = role === "admin" ? getAdminNavItems(pendingCount) : role === "doctor" ? getDoctorNavItems() : getUserNavItems();
   const brand = getBrandConfig(role);
   const activeLabel = navItems.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))?.label ?? "Dashboard";
@@ -109,11 +111,8 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
           mobileFooter={<MobileProfileFooter displayName={displayName} avatarUrl={avatarUrl} role={role} />}
         />
         <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-40 flex h-14 w-full items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 sm:h-16 sm:gap-6 sm:px-6">
-            <div className="flex min-w-0 flex-1 items-center md:hidden">
-              <h1 className="truncate text-base font-bold text-slate-800">{activeLabel}</h1>
-            </div>
-            <div className="hidden min-w-0 flex-1 items-center md:flex">
+          <header className="hidden lg:flex sticky top-0 z-40 h-14 w-full items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 sm:h-16 sm:gap-6 sm:px-6">
+            <div className="min-w-0 flex-1">
               <h1 className="truncate text-base font-bold text-slate-800 sm:text-lg">{activeLabel}</h1>
             </div>
             <div className="flex items-center gap-2">
@@ -123,7 +122,7 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
               <ProfileDropdown displayName={displayName} avatarUrl={avatarUrl} role={role} />
             </div>
           </header>
-          <div className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8">{children}</div>
+          <div className={`${isConsultationPage ? "h-screen" : "px-4 py-6 sm:px-6 sm:py-8 lg:px-8"}`}>{children}</div>
         </div>
       </div>
     </div>

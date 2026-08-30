@@ -55,7 +55,7 @@ export function ChatPanel({
   messagesEndRef,
 }: ChatPanelProps) {
   return (
-    <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60">
+    <div className={`${showSidebar ? "hidden" : "flex"} lg:flex flex-1 flex-col min-w-0 min-h-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60`}>
       <div className="flex flex-1 flex-col bg-zinc-50/30 min-h-0">
         {activeConversation ? (
           <>
