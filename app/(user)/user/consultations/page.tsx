@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { DoctorsContent } from "@/src/features/doctors/components/DoctorsContent";
 import { getDoctorsPageData } from "@/src/features/doctors/lib/doctorsQuery";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Konsultasi Dokter",
   description: "Cari dan pilih dokter spesialis untuk konsultasi",

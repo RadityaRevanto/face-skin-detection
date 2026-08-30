@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { DoctorsContent } from "@/src/features/admin/doctors/components/DoctorsContent";
 import { getDoctorsPageData } from "@/src/features/admin/doctors/lib/doctorsQuery";
 
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Manajemen Dokter",

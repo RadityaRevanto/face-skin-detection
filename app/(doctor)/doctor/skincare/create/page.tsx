@@ -7,6 +7,8 @@ import type { SkincareApiConcern, SkincareApiSkinType } from "@/src/features/doc
 import { requireDoctorProfile } from "@/lib/doctor-auth";
 import { fetchApi } from "@/lib/api/server-client";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Tambah Skincare",
   description: "Tambah produk skincare baru - Dashboard Dokter",

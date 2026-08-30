@@ -3,6 +3,7 @@ import { ScanImageCard } from "./ScanImageCard";
 import { SeverityScoreCard } from "./SeverityScoreCard";
 import { ProbabilityChart } from "./ProbabilityChart";
 import { OtherConcernsCard } from "@/src/features/scan/components/OtherConcernsCard";
+import { ScanRecommendationsSection } from "@/src/features/scan/components/ScanRecommendationsSection";
 import { ScanFeedbackCard } from "@/src/features/scan/components/ScanFeedbackCard";
 import { DisclaimerNotice } from "./DisclaimerNotice";
 
@@ -24,6 +25,11 @@ export function HistoryDetail({ history }: HistoryDetailProps) {
           {history.other_concerns && <OtherConcernsCard concerns={history.other_concerns} />}
         </div>
       </div>
+
+      <ScanRecommendationsSection
+        treatmentRecommendations={history.treatment_recommendations}
+        skincareRecommendations={history.skincare_recommendations}
+      />
 
       <ScanFeedbackCard historyId={history.id} />
       <DisclaimerNotice disclaimer={history.disclaimer} notice={history.notice} />

@@ -20,6 +20,7 @@ import { ScanFeedbackCard } from "@/src/features/scan/components/ScanFeedbackCar
 import { ScanNoticeBanner } from "@/src/features/scan/components/ScanNoticeBanner";
 import { ScanRecommendationsSection } from "@/src/features/scan/components/ScanRecommendationsSection";
 import { SkinStatusCard } from "@/src/features/scan/components/SkinStatusCard";
+import { SeverityScoreCard } from "@/src/features/history/components/SeverityScoreCard";
 import { StepsCard } from "@/src/features/scan/components/StepsCard";
 import { UploadImagePanel } from "@/src/features/scan/components/UploadImagePanel";
 
@@ -105,6 +106,13 @@ export function PemeriksaanContent({
             tone={tone}
             isLiveResult={Boolean(liveScan)}
           />
+
+          {activePrediction?.severity_score != null && (
+            <SeverityScoreCard
+              severityScore={activePrediction.severity_score}
+              severityLevel={activePrediction.severity_level}
+            />
+          )}
 
           {activePrediction?.notice ? (
             <ScanNoticeBanner notice={activePrediction.notice} />

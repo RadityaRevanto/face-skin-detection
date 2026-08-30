@@ -7,6 +7,8 @@ import {
   getDoctorReviewsPageData,
 } from "@/src/features/doctors/lib/doctorsQuery";
 
+export const dynamic = "force-dynamic";
+
 type DoctorProfilePageProps = {
   params: Promise<{ uuid: string }>;
   searchParams?: Promise<{ page?: string }>;

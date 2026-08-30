@@ -5,6 +5,8 @@ import { ScanRecommendationsSection } from "@/src/features/scan/components/ScanR
 import { getHistoryDetail } from "@/src/features/history/utils/historyService";
 import { getConcernDisplayName } from "@/lib/utils/skin-labels";
 
+export const dynamic = "force-dynamic";
+
 type HistoryDetailPageProps = {
   params: Promise<{ id: string }>;
 };

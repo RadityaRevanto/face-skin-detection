@@ -5,6 +5,8 @@ import type { DoctorProfile, DoctorVerification, ApiStatusError } from "@/src/fe
 import { VerificationStatusContent } from "@/src/features/doctor/verification/components/VerificationStatusContent";
 import { normalizeStatus } from "@/src/features/doctor/verification/utils/verificationUtils";
 
+export const dynamic = "force-dynamic";
+
 export const revalidate = 0;
 
 export const metadata: Metadata = {

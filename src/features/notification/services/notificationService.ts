@@ -92,8 +92,8 @@ export function resolveActionUrl(
 
   switch (category) {
     case "scan_complete": {
-      const uuid = actionUrl.split("/").pop();
-      return uuid ? `/history/${uuid}` : null;
+      // User sudah di /user/pemeriksaan — jangan auto-navigate.
+      return null;
     }
     case "chat_message": {
       // action_url berisi UUID conversation (bukan UUID dokter).

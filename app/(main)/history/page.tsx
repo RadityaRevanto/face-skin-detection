@@ -7,6 +7,8 @@ import {
   type HistoryScanModeFilter,
 } from "@/src/features/history/utils/historyService";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "History",
   description: "Riwayat prediksi kondisi kulit Anda",

@@ -8,6 +8,8 @@ import { StatCard } from "@/src/features/doctor/dashboard/components/StatCard";
 import { getDashboardData } from "@/src/features/doctor/dashboard/lib/dashboardQuery";
 import { formatNumber, formatRelativeTime } from "@/src/features/doctor/dashboard/lib/formatHelpers";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Dashboard Dokter",
   description: "Dashboard dokter - kelola skincare dan rekomendasi",
