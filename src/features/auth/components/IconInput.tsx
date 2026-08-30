@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type ReactNode, type ChangeEvent } from "react";
 import { Input } from "@/components/ui/input";
 import { FieldIcon } from "./Icons";
 
@@ -12,6 +12,10 @@ type IconInputProps = {
   className?: string;
   required?: boolean;
   disabled?: boolean;
+  value?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  min?: number;
+  max?: number;
 };
 
 export function IconInput({
@@ -24,6 +28,10 @@ export function IconInput({
   className = "h-11 rounded-xl pl-10 focus-visible:ring-emerald-500",
   required,
   disabled,
+  value,
+  onChange,
+  min,
+  max,
 }: IconInputProps) {
   return (
     <div className='relative'>
@@ -37,6 +45,10 @@ export function IconInput({
         className={className}
         required={required}
         disabled={disabled}
+        value={value}
+        onChange={onChange}
+        min={min}
+        max={max}
       />
     </div>
   );

@@ -81,7 +81,7 @@ export const notificationService = {
 /**
  * Map backend NotificationCategory ke frontend route.
  * Backend action_url bersifat hint, frontend tetap butuh mapping
- * karena route structure berbeda (mis. /scan/history → /user/history).
+ * karena route structure berbeda (mis. /scan/history → /history).
  */
 export function resolveActionUrl(
   category: NotificationCategory,
@@ -93,11 +93,17 @@ export function resolveActionUrl(
   switch (category) {
     case "scan_complete": {
       const uuid = actionUrl.split("/").pop();
-      return uuid ? `${basePath}/history/${uuid}` : null;
+      return uuid ? `/history/${uuid}` : null;
     }
     case "chat_message": {
+      // action_url berisi UUID conversation (bukan UUID dokter).
+      // User → buka percakapan di /user/chats?c=<uuid>.
+      // Doctor → buka halaman konsultasi dokter (chat container sendiri).
       const uuid = actionUrl.split("/").pop();
-      return uuid ? `/user/consultations/${uuid}` : null;
+      if (!uuid) return null;
+      return basePath.startsWith("/doctor")
+        ? "/doctor/consultations"
+        : `/user/chats?c=${uuid}`;
     }
     case "verification_approved":
     case "verification_rejected":

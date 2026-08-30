@@ -153,6 +153,7 @@ export function UploadImagePanel({
       </div>
 
       <input
+        ref={inputRef}
         type='file'
         accept='image/jpeg,image/jpg,image/png'
         className='hidden'

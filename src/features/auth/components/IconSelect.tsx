@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { type ReactNode, type ChangeEvent } from "react";
 import { FieldIcon } from "./Icons";
 
 type IconSelectProps = {
@@ -9,6 +9,8 @@ type IconSelectProps = {
   required?: boolean;
   disabled?: boolean;
   defaultValue?: string;
+  value?: string;
+  onChange?: (e: ChangeEvent<HTMLSelectElement>) => void;
   children: ReactNode;
 };
 
@@ -39,6 +41,8 @@ export function IconSelect({
   required,
   disabled,
   defaultValue = "",
+  value,
+  onChange,
   children,
 }: IconSelectProps) {
   return (
@@ -50,6 +54,8 @@ export function IconSelect({
         className={className}
         required={required}
         defaultValue={defaultValue}
+        value={value}
+        onChange={onChange}
         disabled={disabled}
       >
         {children}

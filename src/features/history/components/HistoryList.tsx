@@ -5,6 +5,7 @@ import type { PagePagination } from "@/lib/types/pagination";
 
 import type { PredictionHistory } from "../types";
 import type { HistoryFilters } from "../utils/historyService";
+import { HistoryRecommendationChips } from "./HistoryRecommendationChips";
 import {
   formatDate,
   getConfidencePercent,
@@ -92,6 +93,8 @@ export function HistoryList({ histories, pagination, filters }: HistoryListProps
                       {item.scan_mode === "livecam" ? "📷 Kamera" : "🖼️ Upload"}
                     </span>
                   </div>
+
+                  <HistoryRecommendationChips history={item} />
                 </div>
               </Link>
             );

@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import { type ReactNode, type ChangeEvent, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { EyeIcon, FieldIcon } from "./Icons";
 
@@ -14,6 +14,8 @@ type PasswordInputProps = {
   autoComplete?: string;
   ariaLabelShow?: string;
   ariaLabelHide?: string;
+  value?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 };
 
 export function PasswordInput({
@@ -28,6 +30,8 @@ export function PasswordInput({
   autoComplete = "new-password",
   ariaLabelShow = "Show password",
   ariaLabelHide = "Hide password",
+  value,
+  onChange,
 }: PasswordInputProps) {
   const [show, setShow] = useState(false);
 
@@ -44,6 +48,8 @@ export function PasswordInput({
         required={required}
         minLength={minLength}
         disabled={disabled}
+        value={value}
+        onChange={onChange}
       />
       <button
         type='button'

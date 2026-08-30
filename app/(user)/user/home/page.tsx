@@ -13,6 +13,9 @@ import {
 import { EmergencyHotlinesContainer } from "@/src/features/emergency/components/EmergencyHotlinesContainer";
 import { ScanRecommendationsSection } from "@/src/features/scan/components/ScanRecommendationsSection";
 
+// Halaman memakai fetchApi server-side (cookies) — wajib dynamic.
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [profile, histories] = await Promise.all([getCurrentUserProfile(), getUserPredictionHistories()]);
   const latestPrediction = histories[0] ?? null;
