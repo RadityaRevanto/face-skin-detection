@@ -1,8 +1,9 @@
 "use client";
 
 import { RefObject } from "react";
-import { Check, CheckCheck, Clock } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 import { Message } from "@/lib/api/consultations-query";
+import { ChatMessageContent } from "@/src/features/consultation/components/ChatMessageContent";
 
 const formatTime = (isoString: string) => {
   if (!isoString) return "";
@@ -56,38 +57,19 @@ export function MessageList({
                 </div>
               )}
 
-              {message.type === "scan_result" && (
-                <div className="mb-2 w-full max-w-xs sm:max-w-sm rounded-xl overflow-hidden border border-zinc-200 bg-zinc-50 shadow-sm mt-1">
-                  <div className="bg-chat-accent text-white px-3 py-1.5 flex items-center gap-2">
-                    <CheckCheck size={16} />
-                    <span className="font-semibold text-xs tracking-wide">
-                      LAPORAN SCAN KULIT PASIEN
-                    </span>
-                  </div>
-                  <div className="p-3 pb-1 text-sm text-zinc-700 leading-relaxed border-b border-zinc-100">
-                    {message.content}
-                  </div>
-                </div>
+              {message.content && (
+                <ChatMessageContent content={message.content} type={message.type} />
               )}
 
-              <div className="flex flex-wrap items-end gap-x-2 gap-y-0.5">
-                {message.content && (
-                  <p className="text-[14.5px] leading-snug wrap-break-word">
-                    {message.content}
-                    <span className="inline-block w-15" aria-hidden="true"></span>
-                  </p>
-                )}
-
-                <div className="flex items-center gap-1 shrink-0 ml-auto absolute bottom-1.5 right-2">
-                  <span className="text-[10px] text-zinc-500 leading-none">
-                    {formatTime(message.created_at)}
+              <div className="flex items-center gap-1 shrink-0 ml-auto mt-1">
+                <span className="text-[10px] text-zinc-500 leading-none">
+                  {formatTime(message.created_at)}
+                </span>
+                {isDoctor && (
+                  <span className="text-zinc-400">
+                    <Check size={14} strokeWidth={2.5} />
                   </span>
-                  {isDoctor && (
-                    <span className="text-zinc-400">
-                      <Check size={14} strokeWidth={2.5} />
-                    </span>
-                  )}
-                </div>
+                )}
               </div>
             </div>
           </div>

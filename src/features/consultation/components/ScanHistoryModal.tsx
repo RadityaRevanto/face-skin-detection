@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { X, Search, Check, AlertCircle } from "lucide-react";
 import { ScanHistory, getScans } from "@/lib/api/scans-query";
+import { getConcernDisplayName } from "@/lib/utils/skin-labels";
 
 interface ScanHistoryModalProps {
   isOpen: boolean;
@@ -128,7 +129,7 @@ export function ScanHistoryModal({ isOpen, onClose, onSelectScan }: ScanHistoryM
                   )}
                   <div className="flex-1 min-w-0 py-1">
                     <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-bold text-zinc-800 capitalize truncate">{scan.predicted_class}</h4>
+                      <h4 className="font-bold text-zinc-800 capitalize truncate">{getConcernDisplayName(scan.skin_concern?.name, scan.predicted_class)}</h4>
                       <span className="text-[11px] text-zinc-500 shrink-0 bg-zinc-100 px-2 py-0.5 rounded-full">
                         {new Date(scan.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </span>
