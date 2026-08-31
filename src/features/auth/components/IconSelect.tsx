@@ -53,8 +53,7 @@ export function IconSelect({
         name={name}
         className={className}
         required={required}
-        defaultValue={defaultValue}
-        value={value}
+        {...(value !== undefined ? { value } : { defaultValue })}
         onChange={onChange}
         disabled={disabled}
       >

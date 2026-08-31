@@ -136,7 +136,7 @@ export function DoctorRegisterForm() {
       fd.set("email", email.trim());
       fd.set("password", password);
       fd.set("specialization", specialization);
-      fd.set("privacy_consent", "accepted");
+      fd.set("privacy_consent", "true");
 
       if (subSpecialization.trim()) fd.set("sub_specialization", subSpecialization.trim());
       if (title.trim()) fd.set("title", title.trim());

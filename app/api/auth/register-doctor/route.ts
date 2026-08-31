@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Ensure privacy_consent is accepted
-    formData.set("privacy_consent", "accepted");
+    formData.set("privacy_consent", "true");
 
     // Forward to Laravel backend
     const response = await fetchApi<{

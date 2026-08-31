@@ -46,12 +46,17 @@ export function MultiFileUpload({
 
   const handleAdd = (newFiles: FileList | null) => {
     if (!newFiles) return;
-    const additions = Array.from(newFiles).filter((f) => {
-      if (files.length + additions.length >= maxFiles) return false;
-      if (files.some((existing) => existing.name === f.name && existing.size === f.size)) return false;
-      return true;
+    
+    const uniqueNewFiles = Array.from(newFiles).filter((f) => {
+      return !files.some((existing) => existing.name === f.name && existing.size === f.size);
     });
-    onFilesChange([...files, ...additions]);
+
+    const availableSlots = maxFiles - files.length;
+    if (availableSlots > 0) {
+      const additions = uniqueNewFiles.slice(0, availableSlots);
+      onFilesChange([...files, ...additions]);
+    }
+
     if (inputRef.current) inputRef.current.value = "";
   };
 
