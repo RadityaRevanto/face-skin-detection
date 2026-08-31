@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 
-import { RecommendationContent } from "./components/recommendation-content";
-import { getRecommendationsPageData } from "./lib/recommendations-query";
+import { RecommendationContent } from "@/src/features/doctor/recommendations/components/RecommendationContent";
+import { getRecommendationsPageData } from "@/src/features/doctor/recommendations/lib/recommendationsQuery";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Kelola Rekomendasi | Face Skin Detection",
+  title: "Kelola Rekomendasi",
   description: "Kelola rekomendasi skincare - Dashboard Dokter",
 };
 

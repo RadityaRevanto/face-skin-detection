@@ -1,328 +1,63 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ApiError } from "@/lib/api/errors";
+import { fetchApi } from "@/lib/api/server-client";
 
-import { createClient } from "@/lib/supabase/server";
-
-type RecommendationBody = {
-  concernId?: string;
-  productId?: string | null;
-  title?: string;
-  recommendationText?: string;
-  priorityLevel?: "low" | "medium" | "high";
-  isActive?: boolean;
-  genderSuitability?: string;
-};
-
+// PATCH  /api/doctor/recommendations/[id] → PATCH  /v1/skin-recommendations/{uuid}
+// DELETE /api/doctor/recommendations/[id] → DELETE /v1/skin-recommendations/{uuid}
 type RouteContext = {
-  params: Promise<{
-    id: string;
-  }>;
+  params: Promise<{ id: string }>;
 };
 
-async function getDoctorProfile() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    return {
-      supabase,
-      doctor: null,
-      response: NextResponse.json(
-        {
-          success: false,
-          message: "Kamu belum login.",
-        },
-        { status: 401 },
-      ),
-    };
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, full_name, email, role, is_active")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (profileError || !profile) {
-    return {
-      supabase,
-      doctor: null,
-      response: NextResponse.json(
-        {
-          success: false,
-          message: "Profil tidak ditemukan.",
-        },
-        { status: 404 },
-      ),
-    };
-  }
-
-  if (profile.role !== "doctor") {
-    return {
-      supabase,
-      doctor: null,
-      response: NextResponse.json(
-        {
-          success: false,
-          message: "Akses hanya untuk dokter.",
-        },
-        { status: 403 },
-      ),
-    };
-  }
-
-  if (profile.is_active === false) {
-    return {
-      supabase,
-      doctor: null,
-      response: NextResponse.json(
-        {
-          success: false,
-          message: "Akun dokter belum aktif.",
-        },
-        { status: 403 },
-      ),
-    };
-  }
-
-  return {
-    supabase,
-    doctor: profile,
-    response: null,
-  };
+function handleError(error: unknown) {
+  const status = error instanceof ApiError ? error.status : 500;
+  const message =
+    error instanceof ApiError ? error.message : "Terjadi kesalahan server.";
+  return NextResponse.json({ success: false, message }, { status });
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
+
   try {
-    const { id } = await context.params;
-    const { supabase, doctor, response } = await getDoctorProfile();
+    const body = (await request.json()) as Record<string, unknown>;
 
-    if (response || !doctor) {
-      return response;
+    const laravelBody: Record<string, unknown> = {
+      concern_id: body.concernId ?? body.concern_id,
+      product_id: body.productId ?? body.product_id,
+      title: body.title,
+      recommendation_text: body.recommendationText ?? body.recommendation_text,
+      priority_level: body.priorityLevel ?? body.priority_level,
+    };
+    if (typeof body.isActive === "boolean") {
+      laravelBody.is_active = body.isActive;
     }
 
-    const body = (await request.json()) as RecommendationBody;
-
-    const concernId = body.concernId?.trim();
-    const productId = body.productId?.trim() || null;
-    const title = body.title?.trim();
-    const recommendationText = body.recommendationText?.trim();
-    const priorityLevel = body.priorityLevel ?? "medium";
-    const isActive = body.isActive ?? true;
-    const genderSuitability = body.genderSuitability?.trim() || "unisex";
-
-    if (!concernId) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Skin concern wajib dipilih.",
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!title) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Judul rekomendasi wajib diisi.",
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!recommendationText) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Catatan rekomendasi wajib diisi.",
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!["low", "medium", "high"].includes(priorityLevel)) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Priority level tidak valid.",
-        },
-        { status: 400 },
-      );
-    }
-
-    const { data: existingRecommendation, error: existingError } =
-      await supabase
-        .from("skin_recommendations")
-        .select("id")
-        .eq("id", id)
-        .eq("doctor_id", doctor.id)
-        .maybeSingle();
-
-    if (existingError || !existingRecommendation) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Data rekomendasi tidak ditemukan.",
-        },
-        { status: 404 },
-      );
-    }
-
-    const { data: concern, error: concernError } = await supabase
-      .from("skin_concerns")
-      .select("id")
-      .eq("id", concernId)
-      .maybeSingle();
-
-    if (concernError || !concern) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Skin concern tidak ditemukan.",
-        },
-        { status: 404 },
-      );
-    }
-
-    if (productId) {
-      const { data: product, error: productError } = await supabase
-        .from("skincare_products")
-        .select("id")
-        .eq("id", productId)
-        .eq("doctor_id", doctor.id)
-        .maybeSingle();
-
-      if (productError || !product) {
-        return NextResponse.json(
-          {
-            success: false,
-            message:
-              "Produk skincare tidak ditemukan atau bukan milik dokter ini.",
-          },
-          { status: 404 },
-        );
-      }
-    }
-
-    const { data: recommendation, error: updateError } = await supabase
-      .from("skin_recommendations")
-      .update({
-        concern_id: concernId,
-        product_id: productId,
-        title,
-        recommendation_text: recommendationText,
-        priority_level: priorityLevel,
-        is_active: isActive,
-        gender_suitability: genderSuitability,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .eq("doctor_id", doctor.id)
-      .select("id")
-      .single();
-
-    if (updateError) {
-      console.error("Failed to update recommendation:", {
-        message: updateError.message,
-        details: updateError.details,
-        hint: updateError.hint,
-        code: updateError.code,
-      });
-
-      return NextResponse.json(
-        {
-          success: false,
-          message: updateError.message || "Gagal mengubah rekomendasi.",
-        },
-        { status: 500 },
-      );
-    }
+    const response = await fetchApi(`skin-recommendations/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(laravelBody),
+    });
 
     return NextResponse.json({
       success: true,
       message: "Rekomendasi berhasil diperbarui.",
-      data: recommendation,
+      data: response.data,
     });
   } catch (error) {
-    console.error("Update recommendation API error:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Terjadi kesalahan server.",
-      },
-      { status: 500 },
-    );
+    return handleError(error);
   }
 }
 
 export async function DELETE(_request: NextRequest, context: RouteContext) {
+  const { id } = await context.params;
+
   try {
-    const { id } = await context.params;
-    const { supabase, doctor, response } = await getDoctorProfile();
-
-    if (response || !doctor) {
-      return response;
-    }
-
-    const { data: existingRecommendation, error: existingError } =
-      await supabase
-        .from("skin_recommendations")
-        .select("id")
-        .eq("id", id)
-        .eq("doctor_id", doctor.id)
-        .maybeSingle();
-
-    if (existingError || !existingRecommendation) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Data rekomendasi tidak ditemukan.",
-        },
-        { status: 404 },
-      );
-    }
-
-    const { error: deleteError } = await supabase
-      .from("skin_recommendations")
-      .delete()
-      .eq("id", id)
-      .eq("doctor_id", doctor.id);
-
-    if (deleteError) {
-      console.error("Failed to delete recommendation:", {
-        message: deleteError.message,
-        details: deleteError.details,
-        hint: deleteError.hint,
-        code: deleteError.code,
-      });
-
-      return NextResponse.json(
-        {
-          success: false,
-          message: deleteError.message || "Gagal menghapus rekomendasi.",
-        },
-        { status: 500 },
-      );
-    }
+    await fetchApi(`skin-recommendations/${id}`, { method: "DELETE" });
 
     return NextResponse.json({
       success: true,
       message: "Rekomendasi berhasil dihapus.",
     });
   } catch (error) {
-    console.error("Delete recommendation API error:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Terjadi kesalahan server.",
-      },
-      { status: 500 },
-    );
+    return handleError(error);
   }
 }

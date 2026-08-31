@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 
-import { VerificationDetailContent } from "./components/verification-detail-content";
-import { getDoctorVerificationDetail } from "./lib/verification-detail-query";
+import { VerificationDetailContent } from "@/src/features/admin/verifications/[id]/components/VerificationDetailContent";
+import { getDoctorVerificationDetail } from "@/src/features/admin/verifications/[id]/lib/verificationDetailQuery";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Detail Verifikasi Dokter | Face Skin Detection",
+  title: "Detail Verifikasi Dokter",
   description: "Detail review dokumen verifikasi dokter",
 };
 

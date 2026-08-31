@@ -3,11 +3,46 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* Surface tokens — dipakai border/background netral (slate-200/900 dari palet existing) */
+  --border: #e2e8f0;
+  --muted-foreground: #64748b;
+  /* Brand tokens — satu sumber kebenaran untuk warna brand di seluruh shell */
+  --brand-primary: #10b981;
+  --brand-primary-strong: #047857;
+  /* Shell backgrounds */
+  --shell-background: #f7fbf8;
+  --shell-background-alt: #f6fbf8;
+  /* Chat surface tokens (gaya chat konsultasi) */
+  --chat-surface: #efeae2;
+  --chat-notice: #ffeecd;
+  --chat-bubble-own: #d9fdd3;
+  --chat-bubble-text: #111b21;
+  --chat-accent: #00a884;
+  --chat-accent-hover: #008f6f;
+  --chat-input-surface: #f0f2f5;
+  /* Illustration accents */
+  --illustration-skin: #f2c7a7;
+  --illustration-skin-alt: #efc09d;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-strong: var(--brand-primary-strong);
+  --color-shell: var(--shell-background);
+  --color-shell-alt: var(--shell-background-alt);
+  --color-chat-surface: var(--chat-surface);
+  --color-chat-notice: var(--chat-notice);
+  --color-chat-bubble-own: var(--chat-bubble-own);
+  --color-chat-bubble-text: var(--chat-bubble-text);
+  --color-chat-accent: var(--chat-accent);
+  --color-chat-accent-hover: var(--chat-accent-hover);
+  --color-chat-input: var(--chat-input-surface);
+  --color-illustration-skin: var(--illustration-skin);
+  --color-illustration-skin-alt: var(--illustration-skin-alt);
   --font-sans: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
 }
@@ -15,5 +50,22 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
+}
+
+/* ─── Sonner / Custom Toast ─────────────────────────────────────────── */
+
+/* Progress bar countdown — berkurang ke kiri, pause saat hover */
+@keyframes shrinkProgress {
+  0% { width: 100%; }
+  100% { width: 0%; }
+}
+
+.group:hover .toast-progress {
+  animation-play-state: paused;
+}
+
+/* Base toast font */
+.cn-toast {
   font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
 }

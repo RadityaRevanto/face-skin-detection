@@ -1,5 +1,5 @@
 // =============================================================
-// Constants - Face Skin Detection System
+// Constants - Face Skincek System
 // =============================================================
 
 export const SKIN_CLASSES = [
@@ -68,6 +68,7 @@ export const ROUTES = {
     SKIN_CONCERNS: "/doctor/skin-concerns",
     SKIN_CONCERNS_CREATE: "/doctor/skin-concerns/create",
     SKIN_CONCERNS_EDIT: (id: string) => `/doctor/skin-concerns/${id}/edit`,
+    SKIN_TYPES: "/doctor/skin-types",
     VERIFICATION_STATUS: "/doctor/verification-status",
   },
   ADMIN: {
@@ -75,10 +76,11 @@ export const ROUTES = {
     USERS: "/admin/users",
     DOCTORS: "/admin/doctors",
     DOCTOR_VERIFICATIONS: "/admin/doctor-verifications",
+    ACTIVITY_LOG: "/admin/activity-log",
   },
 } as const;
 
-// Supabase Storage Buckets
+// Storage Buckets
 export const STORAGE_BUCKETS = {
   SKIN_IMAGES: "skin-images",
   DOCTOR_DOCUMENTS: "doctor-documents",
@@ -93,9 +95,7 @@ export const YOLO_CONFIG = {
 export const DISCLAIMER =
   "Hasil deteksi aplikasi ini merupakan prediksi awal berbasis gambar dan tidak menggantikan diagnosis medis. Untuk kondisi kulit berat, nyeri, meradang, atau tidak membaik, konsultasikan langsung dengan dokter.";
 
-// Auth session
-// Durasi cookie sesi login Supabase: 3 hari (dalam detik).
-// Karena cookie ditulis ulang setiap kali sesi di-refresh, durasi ini bersifat
+// Auth session — durasi cookie sesi login (Sanctum token via HttpOnly cookie).
 // "sliding window" — selama pengguna aktif dalam 3 hari, sesi tetap berlanjut.
 // Setelah 3 hari tanpa aktivitas, cookie kedaluwarsa dan pengguna harus login kembali.
 export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 3; // 259200

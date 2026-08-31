@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 
-import { AdminDashboardContent } from "./components/admin-dashboard-content";
-import { getAdminDashboardData } from "./lib/admin-dashboard-query";
+import { AdminDashboardContent } from "@/src/features/admin/dashboard/components/AdminDashboardContent";
+import { getAdminDashboardData } from "@/src/features/admin/dashboard/lib/adminDashboardQuery";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Dashboard Admin | Face Skin Detection",
+  title: "Dashboard Admin",
   description: "Dashboard administrasi sistem",
 };
 

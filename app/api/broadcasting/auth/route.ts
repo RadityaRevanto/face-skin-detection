@@ -1,34 +1,64 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchApi } from "@/lib/api/server-client";
 
-export async function POST(request: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const contentType = request.headers.get("content-type") || "";
-    let body: BodyInit;
-    let headers: Record<string, string> = {};
+    const contentType = req.headers.get("content-type") || "";
+    let channel_name: string | undefined;
+    let socket_id: string | undefined;
 
     if (contentType.includes("application/x-www-form-urlencoded")) {
-      const formData = await request.formData();
-      body = new URLSearchParams(formData as any).toString();
-      headers["Content-Type"] = "application/x-www-form-urlencoded";
+      const text = await req.text();
+      const params = new URLSearchParams(text);
+      channel_name = params.get("channel_name") ?? undefined;
+      socket_id = params.get("socket_id") ?? undefined;
     } else {
-      const jsonData = await request.json();
-      body = JSON.stringify(jsonData);
-      headers["Content-Type"] = "application/json";
+      const body = await req.json();
+      channel_name = body.channel_name;
+      socket_id = body.socket_id;
     }
 
-    const result = await fetchApi("/broadcasting/auth", {
+    console.log("[broadcasting/auth] received:", { channel_name, socket_id });
+
+    const token = req.cookies.get("auth_token")?.value;
+
+    if (!token) {
+      console.log("[broadcasting/auth] no token in cookie");
+      return NextResponse.json(
+        { message: "No auth token" },
+        { status: 401 }
+      );
+    }
+
+    const backendUrl = process.env.BACKEND_URL ?? "http://be-skincek.test";
+    const url = `${backendUrl}/api/v1/broadcasting/auth/`;
+
+    console.log("[broadcasting/auth] forwarding to:", url);
+
+    const response = await fetch(url, {
       method: "POST",
-      headers,
-      body,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ channel_name, socket_id }),
     });
 
-    return NextResponse.json(result);
+    const responseText = await response.text();
+    console.log("[broadcasting/auth] backend response:", response.status, responseText.slice(0, 300));
+
+    let data: any;
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      data = { raw: responseText };
+    }
+
+    return NextResponse.json(data, { status: response.status });
   } catch (error: any) {
-    console.error("Broadcasting auth error:", error);
+    console.error("[broadcasting/auth] CATCH:", error?.name, error?.message, error?.cause);
     return NextResponse.json(
-      { success: false, message: error.message || "Gagal autentikasi channel" },
-      { status: error.status || 403 }
+      { message: error?.message || "Broadcasting auth failed" },
+      { status: 500 }
     );
   }
 }

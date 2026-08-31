@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 
-import { DoctorsContent } from "./components/doctors-content";
-import { getDoctorsPageData } from "./lib/doctors-query";
+import { DoctorsContent } from "@/src/features/admin/doctors/components/DoctorsContent";
+import { getDoctorsPageData } from "@/src/features/admin/doctors/lib/doctorsQuery";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Manajemen Dokter | Face Skin Detection",
+  title: "Manajemen Dokter",
   description: "Kelola daftar dokter terdaftar",
 };
 

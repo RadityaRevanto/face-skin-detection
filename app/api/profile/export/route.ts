@@ -10,11 +10,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("Profile export error:", error);
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
-        message: error.message || "Gagal mengeskpor data" 
+      {
+        success: false,
+        message: error.message || "Gagal mengeskpor data",
       },
       { status: error.status || 500 }
     );

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 
-import { SkincareContent } from "./components/skincare-content";
-import { getSkincarePageData } from "./lib/skincare-query";
+import { SkincareContent } from "@/src/features/doctor/skincare/components/SkincareContent";
+import { getSkincarePageData } from "@/src/features/doctor/skincare/lib/skincareQuery";
 
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Kelola Skincare | Face Skin Detection",
+  title: "Kelola Skincare",
   description: "Kelola produk skincare - Dashboard Dokter",
 };
 

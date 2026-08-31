@@ -1,238 +1,55 @@
 import { NextRequest, NextResponse } from "next/server";
+import { ApiError } from "@/lib/api/errors";
+import { fetchApi } from "@/lib/api/server-client";
 
-import { createClient } from "@/lib/supabase/server";
+// Proxy rekomendasi dokter → Laravel.
+// GET  /api/doctor/recommendations          → GET  /v1/doctor/recommendations
+// POST /api/doctor/recommendations          → POST /v1/skin-recommendations
+function handleError(error: unknown) {
+  const status = error instanceof ApiError ? error.status : 500;
+  const message =
+    error instanceof ApiError ? error.message : "Terjadi kesalahan server.";
+  return NextResponse.json({ success: false, message }, { status });
+}
 
-type CreateRecommendationBody = {
-  concernId?: string;
-  productId?: string | null;
-  title?: string;
-  recommendationText?: string;
-  priorityLevel?: "low" | "medium" | "high";
-  isActive?: boolean;
-  genderSuitability?: string;
-};
-
-async function getDoctorProfile() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    return {
-      supabase,
-      doctor: null,
-      response: NextResponse.json(
-        {
-          success: false,
-          message: "Kamu belum login.",
-        },
-        { status: 401 },
-      ),
-    };
+export async function GET() {
+  try {
+    const response = await fetchApi("doctor/recommendations");
+    return NextResponse.json({
+      success: true,
+      message: "Daftar rekomendasi dimuat.",
+      data: response.data,
+    });
+  } catch (error) {
+    return handleError(error);
   }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("id, full_name, email, role, is_active")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (profileError || !profile) {
-    return {
-      supabase,
-      doctor: null,
-      response: NextResponse.json(
-        {
-          success: false,
-          message: "Profil tidak ditemukan.",
-        },
-        { status: 404 },
-      ),
-    };
-  }
-
-  if (profile.role !== "doctor") {
-    return {
-      supabase,
-      doctor: null,
-      response: NextResponse.json(
-        {
-          success: false,
-          message: "Akses hanya untuk dokter.",
-        },
-        { status: 403 },
-      ),
-    };
-  }
-
-  if (profile.is_active === false) {
-    return {
-      supabase,
-      doctor: null,
-      response: NextResponse.json(
-        {
-          success: false,
-          message: "Akun dokter belum aktif.",
-        },
-        { status: 403 },
-      ),
-    };
-  }
-
-  return {
-    supabase,
-    doctor: profile,
-    response: null,
-  };
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { supabase, doctor, response } = await getDoctorProfile();
+    const body = (await request.json()) as Record<string, unknown>;
 
-    if (response || !doctor) {
-      return response;
-    }
+    const laravelBody = {
+      concern_id: body.concernId ?? body.concern_id,
+      product_id: body.productId ?? body.product_id,
+      title: body.title,
+      recommendation_text:
+        body.recommendationText ?? body.recommendation_text,
+      priority_level: body.priorityLevel ?? body.priority_level ?? "medium",
+      is_active: body.isActive ?? true,
+    };
 
-    const body = (await request.json()) as CreateRecommendationBody;
-
-    const concernId = body.concernId?.trim();
-    const productId = body.productId?.trim() || null;
-    const title = body.title?.trim();
-    const recommendationText = body.recommendationText?.trim();
-    const priorityLevel = body.priorityLevel ?? "medium";
-    const isActive = body.isActive ?? true;
-    const genderSuitability = body.genderSuitability?.trim() || "unisex";
-
-    if (!concernId) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Skin concern wajib dipilih.",
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!title) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Judul rekomendasi wajib diisi.",
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!recommendationText) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Catatan rekomendasi wajib diisi.",
-        },
-        { status: 400 },
-      );
-    }
-
-    if (!["low", "medium", "high"].includes(priorityLevel)) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Priority level tidak valid.",
-        },
-        { status: 400 },
-      );
-    }
-
-    const { data: concern, error: concernError } = await supabase
-      .from("skin_concerns")
-      .select("id")
-      .eq("id", concernId)
-      .maybeSingle();
-
-    if (concernError || !concern) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Skin concern tidak ditemukan.",
-        },
-        { status: 404 },
-      );
-    }
-
-    if (productId) {
-      const { data: product, error: productError } = await supabase
-        .from("skincare_products")
-        .select("id")
-        .eq("id", productId)
-        .eq("doctor_id", doctor.id)
-        .maybeSingle();
-
-      if (productError || !product) {
-        return NextResponse.json(
-          {
-            success: false,
-            message:
-              "Produk skincare tidak ditemukan atau bukan milik dokter ini.",
-          },
-          { status: 404 },
-        );
-      }
-    }
-
-    const now = new Date().toISOString();
-
-    const { data: recommendation, error: recommendationError } = await supabase
-      .from("skin_recommendations")
-      .insert({
-        concern_id: concernId,
-        product_id: productId,
-        doctor_id: doctor.id,
-        title,
-        recommendation_text: recommendationText,
-        priority_level: priorityLevel,
-        is_active: isActive,
-        gender_suitability: genderSuitability,
-        created_at: now,
-        updated_at: now,
-      })
-      .select("id")
-      .single();
-
-    if (recommendationError) {
-      console.error("Failed to create recommendation:", {
-        message: recommendationError.message,
-        details: recommendationError.details,
-        hint: recommendationError.hint,
-        code: recommendationError.code,
-      });
-
-      return NextResponse.json(
-        {
-          success: false,
-          message: recommendationError.message || "Gagal membuat rekomendasi.",
-        },
-        { status: 500 },
-      );
-    }
+    const response = await fetchApi("skin-recommendations", {
+      method: "POST",
+      body: JSON.stringify(laravelBody),
+    });
 
     return NextResponse.json({
       success: true,
       message: "Rekomendasi berhasil dibuat.",
-      data: recommendation,
+      data: response.data,
     });
   } catch (error) {
-    console.error("Create recommendation API error:", error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Terjadi kesalahan server.",
-      },
-      { status: 500 },
-    );
+    return handleError(error);
   }
 }
