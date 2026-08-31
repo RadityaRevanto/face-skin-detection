@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
-import { VerifyEmailView } from "@/components/auth/verify-email-view";
+import { VerifyEmailView } from "@/src/features/auth/components/VerifyEmailView";
 import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
 
 export const metadata: Metadata = {
-  title: "Verifikasi Email | Face Skin Detection",
+  title: "Verifikasi Email",
   description: "Verifikasi email Anda dengan kode OTP",
 };
 

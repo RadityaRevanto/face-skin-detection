@@ -14,6 +14,27 @@ export type OtherConcern = {
   confidence: number;
 };
 
+/** TIPS perawatan (tabel skin_recommendations) — urut high→medium→low. */
+export type TreatmentRecommendation = {
+  uuid: string;
+  title: string;
+  recommendation_text: string;
+  priority_level: "low" | "medium" | "high";
+};
+
+/** PRODUK skincare (tabel skincare_products) — embedded di response scan. */
+export type SkincareRecommendation = {
+  uuid: string;
+  name: string;
+  category: string | null;
+  gender: string | null;
+  key_ingredients: string | null;
+  usage_instruction: string | null;
+  warning: string | null;
+  skin_type: string | null;
+  doctor: string | null;
+};
+
 export type PredictionResult = {
   uuid: string;
   scan_mode: ScanMode;
@@ -27,6 +48,8 @@ export type PredictionResult = {
   disclaimer: string;
   skin_concern: SkinConcernInfo | null;
   other_concerns: OtherConcern[];
+  treatment_recommendations: TreatmentRecommendation[];
+  skincare_recommendations: SkincareRecommendation[];
   notice: string | null;
   created_at: string;
 };

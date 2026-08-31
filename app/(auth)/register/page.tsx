@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
-import { RegisterView } from "@/components/auth/register-view";
+import { RegisterView } from "@/src/features/auth/components/RegisterView";
 import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
 
 export const metadata: Metadata = {
-  title: "Register | Face Skin Detection",
+  title: "Register",
   description: "Daftar akun baru",
 };
 

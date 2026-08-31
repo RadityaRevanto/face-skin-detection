@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 
-import { CreateRecommendationContent } from "./components/create-recommendation-content";
-import { getCreateRecommendationPageData } from "./lib/create-recommendation-query";
+import { CreateRecommendationContent } from "@/src/features/doctor/recommendations/create/components/CreateRecommendationContent";
+import { getCreateRecommendationPageData } from "@/src/features/doctor/recommendations/create/lib/createRecommendationQuery";
 
 
 export const metadata: Metadata = {
-  title: "Tambah Rekomendasi | Face Skin Detection",
+  title: "Tambah Rekomendasi",
   description: "Tambah rule rekomendasi skincare - Dashboard Dokter",
 };
 

@@ -1,19 +1,19 @@
 import type { Metadata } from "next";
 
-import { DisclaimerCard } from "./components/disclaimer-card";
-import { HeroSection } from "./components/hero-section";
-import { PersonalizedTipsCard } from "./components/personalized-tips-card";
-import { TipsGrid } from "./components/tips-grid";
+import { DisclaimerCard } from "@/src/features/tips/components/DisclaimerCard";
+import { HeroSection } from "@/src/features/tips/components/HeroSection";
+import { PersonalizedTipsCard } from "@/src/features/tips/components/PersonalizedTipsCard";
+import { TipsGrid } from "@/src/features/tips/components/TipsGrid";
 import {
   getAllTipsGroups,
   getLatestPrediction,
   getPersonalizedTips,
-} from "./lib/tips-query";
+} from "@/src/features/tips/lib/tipsQuery";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Tips | Face Skin Detection",
+  title: "Tips",
   description: "Tips perawatan kulit wajah berdasarkan kondisi kulit Anda",
 };
 

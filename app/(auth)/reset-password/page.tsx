@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
-import { ResetPasswordView } from "@/components/auth/reset-password-view";
+import { ResetPasswordView } from "@/src/features/auth/components/ResetPasswordView";
 import { redirectIfAuthenticated } from "@/lib/auth/session-redirect";
 
 export const metadata: Metadata = {
-  title: "Reset Password | Face Skin Detection",
+  title: "Reset Password",
   description: "Reset password akun Anda dengan OTP",
 };
 

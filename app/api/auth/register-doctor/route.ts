@@ -5,52 +5,50 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
 
-    // Pastikan privacy_consent diisi agar diterima backend Laravel
-    formData.set("privacy_consent", "on");
-
-    // Mapping field jika perlu (misal frontend mengirim fullName, backend butuh full_name)
-    const fullName = formData.get("fullName");
+    // --- Field mapping: frontend camelCase → backend snake_case ---
+    const fullName = formData.get("full_name");
     if (fullName) {
-      formData.set("full_name", fullName);
-      formData.delete("fullName");
+      formData.set("full_name", String(fullName));
     }
 
-    const strNumber = formData.get("strNumber");
-    if (strNumber) {
-      formData.set("str_number", strNumber);
-      formData.delete("strNumber");
-    }
+    // Ensure privacy_consent is accepted
+    formData.set("privacy_consent", "accepted");
 
-    const verificationDocument = formData.get("verificationDocument");
-    if (verificationDocument) {
-      formData.set("documents[]", verificationDocument);
-      formData.delete("verificationDocument");
-    }
-
-    // Forward ke Laravel backend
-    const response = await fetchApi<{ message: string; data?: any }>("register-doctor", {
+    // Forward to Laravel backend
+    const response = await fetchApi<{
+      data?: { user?: Record<string, unknown>; token?: string };
+      meta?: { message?: string };
+    }>("register-doctor", {
       method: "POST",
       body: formData,
     });
 
     return NextResponse.json({
       success: true,
-      message: "Registrasi dokter berhasil. Silakan login untuk melihat status verifikasi.",
+      message:
+        response.meta?.message ||
+        "Registrasi dokter berhasil. Silakan cek email untuk verifikasi OTP.",
       data: response.data,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Register doctor API error:", error);
 
-    const isConflict = error.status === 409 || error.status === 422;
+    const status = (error as { status?: number }).status ?? 500;
+    const errData = (error as { data?: { message?: string; errors?: Record<string, string[]> } }).data;
     const message =
-      error.data?.message || error.message || "Gagal membuat akun dokter.";
+      errData?.message ||
+      (error instanceof Error ? error.message : "Gagal membuat akun dokter.");
+
+    // Pass through validation errors from Laravel
+    const errors = errData?.errors ?? null;
 
     return NextResponse.json(
       {
         success: false,
-        message: message,
+        message,
+        errors,
       },
-      { status: isConflict ? 409 : 500 },
+      { status: status >= 400 && status < 600 ? status : 500 },
     );
   }
 }

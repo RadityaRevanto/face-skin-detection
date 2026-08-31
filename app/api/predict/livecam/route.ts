@@ -26,6 +26,12 @@ export async function POST(request: NextRequest) {
       body: laravelFormData,
     });
 
+    // Debug: pastikan backend mengembalikan rekomendasi
+    const data = response.data as any;
+    console.log("[livecam] response keys:", Object.keys(data));
+    console.log("[livecam] treatment_recommendations:", JSON.stringify(data.treatment_recommendations ?? "MISSING"));
+    console.log("[livecam] skincare_recommendations:", JSON.stringify(data.skincare_recommendations ?? "MISSING"));
+
     return NextResponse.json(
       { success: true, data: response.data },
       { status: 201 }

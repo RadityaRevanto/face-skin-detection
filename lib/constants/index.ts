@@ -1,5 +1,5 @@
 // =============================================================
-// Constants - Face Skin Detection System
+// Constants - Face Skincek System
 // =============================================================
 
 export const SKIN_CLASSES = [
@@ -68,6 +68,7 @@ export const ROUTES = {
     SKIN_CONCERNS: "/doctor/skin-concerns",
     SKIN_CONCERNS_CREATE: "/doctor/skin-concerns/create",
     SKIN_CONCERNS_EDIT: (id: string) => `/doctor/skin-concerns/${id}/edit`,
+    SKIN_TYPES: "/doctor/skin-types",
     VERIFICATION_STATUS: "/doctor/verification-status",
   },
   ADMIN: {
@@ -75,6 +76,7 @@ export const ROUTES = {
     USERS: "/admin/users",
     DOCTORS: "/admin/doctors",
     DOCTOR_VERIFICATIONS: "/admin/doctor-verifications",
+    ACTIVITY_LOG: "/admin/activity-log",
   },
 } as const;
 

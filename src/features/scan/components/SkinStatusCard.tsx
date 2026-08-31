@@ -1,0 +1,113 @@
+import type { PredictionHistory, ToneConfig } from "../types";
+import { getConcernDisplayName } from "@/lib/utils/skin-labels";
+import { ShieldIcon } from "./Icons";
+
+type SkinStatusCardProps = {
+  latestPrediction: PredictionHistory | null;
+  confidencePercent: number;
+  tone: ToneConfig;
+  isLiveResult?: boolean;
+};
+
+export function SkinStatusCard({
+  latestPrediction,
+  confidencePercent,
+  tone,
+  isLiveResult = false,
+}: SkinStatusCardProps) {
+  const angle = confidencePercent * 3.6;
+  const hasData = Boolean(latestPrediction);
+  const topPrediction = latestPrediction?.probabilities
+    ? Object.entries(latestPrediction.probabilities).sort(([, a], [, b]) => b - a)[0]
+    : null;
+  // Tampilkan nama berbahasa Indonesia: utamakan skin_concern.name dari backend,
+  // fallback ke penerjemahan label mentah model (mis. "Redness" → "Kemerahan").
+  const topPredictionLabel = latestPrediction
+    ? getConcernDisplayName(
+        latestPrediction.skin_concern?.name,
+        topPrediction?.[0] ?? latestPrediction.predicted_class,
+      )
+    : "Belum Ada Data";
+  const topPredictionPercent = topPrediction
+    ? Math.round(
+        Number(topPrediction[1]) <= 1
+          ? Number(topPrediction[1]) * 100
+          : Number(topPrediction[1]),
+      )
+    : confidencePercent;
+
+  return (
+    <section className='rounded-3xl bg-white p-7 shadow-sm ring-1 ring-slate-100'>
+      <div className='mb-7 flex items-center justify-between gap-4'>
+        <h2 className='text-lg font-bold text-slate-900 whitespace-nowrap'>Status Kulit</h2>
+        <span className='flex items-center gap-2 text-sm font-semibold text-slate-500 whitespace-nowrap text-right'>
+          <span
+            className={`h-2.5 w-2.5 shrink-0 rounded-full ${isLiveResult ? "bg-amber-500" : "bg-emerald-500"}`}
+          />
+          {isLiveResult ? "Hasil Scan" : "Data Terbaru"}
+        </span>
+      </div>
+
+      {hasData ? (
+        <>
+          <div className='mt-6 flex flex-wrap items-center justify-center gap-6 text-center sm:justify-start sm:gap-7 sm:text-left'>
+            <div
+              className='grid h-28 w-28 shrink-0 place-items-center rounded-full'
+              style={{
+                background: `conic-gradient(#10b981 0 ${angle}deg,#facc15 ${angle}deg 340deg,#e2e8f0 340deg)`,
+              }}
+            >
+              <div className='grid h-20 w-20 place-items-center rounded-full bg-white'>
+                <span className='text-2xl font-black text-slate-900'>
+                  {confidencePercent}%
+                </span>
+              </div>
+            </div>
+
+            <div className='flex-1 min-w-[240px]'>
+              <h3 className={`text-xl font-black ${tone.titleClassName}`}>
+                {topPredictionLabel}
+              </h3>
+              <p className='mt-2 text-sm leading-6 text-slate-500'>
+                Hasil prediksi terbesar dari analisis AI adalah{" "}
+                <span className='font-bold text-slate-700'>
+                  {topPredictionLabel}
+                </span>{" "}
+                dengan confidence {topPredictionPercent}%.
+              </p>
+              <span
+                className={`mt-4 inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold ${tone.badgeClassName}`}
+              >
+                <ShieldIcon />
+                {tone.label}
+              </span>
+
+              {latestPrediction?.skin_concern?.description && (
+                <div className='mt-4 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100 text-left'>
+                  <p className='text-xs font-bold uppercase tracking-wider text-slate-400'>
+                    Tentang Kondisi Ini
+                  </p>
+                  <p className='mt-2 text-sm leading-6 text-slate-600'>
+                    {latestPrediction.skin_concern.description}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className='mt-6 flex flex-wrap items-center justify-center gap-6 text-center sm:justify-start sm:gap-7 sm:text-left'>
+          <div className='grid h-32 w-32 shrink-0 place-items-center rounded-full bg-slate-100'>
+            <span className='text-3xl font-black text-slate-300'>—</span>
+          </div>
+          <div className='flex-1 min-w-[240px]'>
+            <h3 className='text-2xl font-black text-slate-400'>Belum Ada Data</h3>
+            <p className='mt-2 text-sm leading-6 text-slate-500'>
+              Belum ada hasil pemeriksaan. Ambil foto untuk memulai analisis.
+            </p>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}

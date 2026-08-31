@@ -1,0 +1,12 @@
+export { HistoryList } from "./components/HistoryList";
+export { HistoryDetail } from "./components/HistoryDetail";
+export { ScanImageCard } from "./components/ScanImageCard";
+export { SeverityScoreCard } from "./components/SeverityScoreCard";
+export { ProbabilityChart } from "./components/ProbabilityChart";
+export { DisclaimerNotice } from "./components/DisclaimerNotice";
+export { AnalysisPhotoCard } from "./components/AnalysisPhotoCard";
+export { ConditionSummaryCard } from "./components/ConditionSummaryCard";
+export { ExaminationInfoCard } from "./components/ExaminationInfoCard";
+export { HistoryResultHeader } from "./components/HistoryResultHeader";
+export { NoteCard } from "./components/NoteCard";
+export { ProblemDetailsCard } from "./components/ProblemDetailsCard";

@@ -23,6 +23,12 @@ export async function POST(request: NextRequest) {
       body: formData,
     });
 
+    // Debug: pastikan backend mengembalikan rekomendasi
+    const data = response.data as any;
+    console.log("[upload] response keys:", Object.keys(data));
+    console.log("[upload] treatment_recommendations:", JSON.stringify(data.treatment_recommendations ?? "MISSING"));
+    console.log("[upload] skincare_recommendations:", JSON.stringify(data.skincare_recommendations ?? "MISSING"));
+
     return NextResponse.json(
       { success: true, data: response.data },
       { status: 201 }
