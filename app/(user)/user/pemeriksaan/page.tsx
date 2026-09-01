@@ -1,27 +1,6 @@
-import { fetchApi } from "@/lib/api/server-client";
-import { PemeriksaanContent } from "@/src/features/scan/components/ScanContent";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
-type ProfileSummary = {
-  uuid?: string;
-  full_name?: string | null;
-  gender?: string | null;
-  date_of_birth?: string | null;
-};
-
-export default async function PemeriksaanPage() {
-  let profile: ProfileSummary | null = null;
-  try {
-    const response = await fetchApi<ProfileSummary>("profile");
-    profile = response.data ?? null;
-  } catch (error) {
-    console.error("Gagal mengambil profile:", error);
-  }
-
-  return (
-    <main className='w-full px-4 py-6 sm:px-10 sm:py-8 lg:px-12'>
-      <PemeriksaanContent initialProfile={profile} />
-    </main>
-  );
+// Redirect stub — halaman scan final berada di /user/scan.
+export default function PemeriksaanPage() {
+  redirect("/user/scan");
 }

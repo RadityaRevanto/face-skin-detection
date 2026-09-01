@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 
 import { Sidebar } from "@/components/sidebar/Sidebar";
-import { NotificationBell } from "@/src/features/notification/components/NotificationBell";
-import { logoutAction } from "@/lib/auth/actions";
+import { NotificationBell } from "@/features/notification/components/NotificationBell";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { getUserNavItems } from "./sidebar/UserNavItems";
 import { getAdminNavItems } from "./sidebar/AdminNavItems";
 import { getDoctorNavItems } from "./sidebar/DoctorNavItems";
@@ -54,16 +54,14 @@ function MobileProfileFooter({
 }: {
   displayName: string; avatarUrl?: string | null; role: DashboardRole;
 }) {
-  const router = useRouter();
+  const { logout } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const profileHref = role === "admin" ? "/admin/profile" : role === "doctor" ? "/doctor/profile" : "/user/profile";
   const initials = displayName.split(" ").filter(Boolean).slice(0, 2).map((p) => p[0]?.toUpperCase() ?? "").join("");
 
   async function handleLogout() {
     setIsLoggingOut(true);
-    await logoutAction();
-    router.replace("/login");
-    router.refresh();
+    await logout();
   }
 
   return (
@@ -91,9 +89,14 @@ function MobileProfileFooter({
 
 export function DashboardLayout({ role, children, profile, headerExtra }: DashboardLayoutProps) {
   const pathname = usePathname();
-  const displayName = profile?.full_name || (role === "admin" ? "Admin" : role === "doctor" ? "Dokter" : "Pengguna");
-  const avatarUrl = profile?.avatar_url || profile?.google_avatar_url || null;
-  const userUuid = profile?.uuid || null;
+  const { currentUser, logout } = useAuth();
+
+  const displayName =
+    profile?.full_name ||
+    currentUser?.full_name ||
+    (role === "admin" ? "Admin" : role === "doctor" ? "Dokter" : "Pengguna");
+  const avatarUrl = profile?.avatar_url || currentUser?.avatar_url || currentUser?.google_avatar_url || null;
+  const userUuid = profile?.uuid || currentUser?.uuid || null;
   const pendingCount = (headerExtra?.pendingCount as number) || 0;
 
   // Chat butuh viewport penuh tanpa padding shell; daftar dokter & profil

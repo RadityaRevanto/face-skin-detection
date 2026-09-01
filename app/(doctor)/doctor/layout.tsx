@@ -1,26 +1,15 @@
 import type { ReactNode } from "react";
 
 import { DashboardLayout } from "@/components/AppShell";
-import { requireDoctorProfile } from "@/lib/doctor-auth";
+import { ProtectedRoute } from "@/features/auth/components/ProtectedRoute";
+import { DoctorGate } from "@/features/auth/components/DoctorGate";
 
-type DoctorLayoutProps = {
-  children: ReactNode;
-};
-
-export default async function DoctorLayout({ children }: DoctorLayoutProps) {
-  const profile = await requireDoctorProfile();
-
+export default function DoctorLayout({ children }: { children: ReactNode }) {
   return (
-    <DashboardLayout
-      role="doctor"
-      profile={{
-        full_name: profile.full_name || "Dokter",
-        avatar_url: profile.avatar_url || profile.google_avatar_url || null,
-        uuid: profile.uuid,
-        id: profile.id,
-      }}
-    >
-      {children}
-    </DashboardLayout>
+    <ProtectedRoute allowedRoles={["doctor"]}>
+      <DoctorGate>
+        <DashboardLayout role="doctor">{children}</DashboardLayout>
+      </DoctorGate>
+    </ProtectedRoute>
   );
 }

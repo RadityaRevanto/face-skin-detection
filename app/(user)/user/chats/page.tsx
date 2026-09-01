@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { ConsultationContainer } from "@/src/features/consultation/components/ConsultationContainer";
+import { ConsultationContainer } from "@/features/consultation/components/ConsultationContainer";
 
 export const metadata: Metadata = {
   title: "Riwayat Chat",

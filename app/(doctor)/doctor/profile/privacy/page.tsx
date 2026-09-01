@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { PrivacyContainer } from "@/src/features/user/components/PrivacyContainer";
+import { PrivacyContainer } from "@/features/user/components/PrivacyContainer";
 
 export const metadata: Metadata = {
   title: "Privasi & Data",

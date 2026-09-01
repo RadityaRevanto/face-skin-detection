@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 
-import { CreateRecommendationContent } from "@/src/features/doctor/recommendations/create/components/CreateRecommendationContent";
-import { getCreateRecommendationPageData } from "@/src/features/doctor/recommendations/create/lib/createRecommendationQuery";
-
+import { RecommendationCreateClientPage } from "@/features/doctor/recommendations/components/RecommendationFormClientPage";
 
 export const metadata: Metadata = {
   title: "Tambah Rekomendasi",
-  description: "Tambah rule rekomendasi skincare - Dashboard Dokter",
+  description: "Tambah rule rekomendasi skincare baru - Dashboard Dokter",
 };
 
-export default async function CreateRecommendationPage() {
-  const pageData = await getCreateRecommendationPageData();
-
-  return <CreateRecommendationContent {...pageData} />;
+export default function CreateRecommendationPage() {
+  return <RecommendationCreateClientPage />;
 }
