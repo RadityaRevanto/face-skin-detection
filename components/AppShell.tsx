@@ -124,7 +124,7 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
               <ProfileDropdown displayName={displayName} avatarUrl={avatarUrl} role={role} />
             </div>
           </header>
-          <div className={`${isConsultationPage ? "h-screen" : "px-4 py-6 sm:px-6 sm:py-8 lg:px-8"}`}>{children}</div>
+          <div className={`${isConsultationPage ? "flex flex-col h-[calc(100dvh-48px)] lg:h-[calc(100dvh-56px)]" : "px-4 py-6 sm:px-6 sm:py-8 lg:px-8"}`}>{children}</div>
         </div>
       </div>
     </div>

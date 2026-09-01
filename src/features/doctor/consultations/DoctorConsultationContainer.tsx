@@ -53,18 +53,25 @@ export function DoctorConsultationContainer() {
   }, []);
 
   const fetchMessages = useCallback(async (conversationId: string) => {
+    setIsLoadingMessages(true);
     try {
       const res = await getMessages(conversationId, 1);
       const sortedMessages = [...(res.data || [])].reverse();
       setMessages(sortedMessages);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoadingMessages(false);
     }
   }, []);
 
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
+
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, selectedImagePreview]);
+    if (!isLoadingMessages) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+    }
+  }, [messages, selectedImagePreview, isLoadingMessages]);
 
   useEffect(() => {
     fetchConversations();
@@ -162,7 +169,7 @@ export function DoctorConsultationContainer() {
   };
 
   return (
-    <div className="h-[calc(100vh-120px)] overflow-hidden relative">
+    <div className="h-full overflow-hidden">
       {errorMsg && (
         <ErrorModal
           errorMsg={errorMsg}
@@ -170,7 +177,7 @@ export function DoctorConsultationContainer() {
         />
       )}
 
-      <div className="flex h-full bg-white rounded-2xl overflow-hidden shadow-sm border border-zinc-200/60">
+      <div className="flex h-full bg-white sm:rounded-2xl overflow-hidden sm:shadow-sm sm:border sm:border-zinc-200/60">
         <ConversationSidebar
           conversations={conversations}
           activeConversation={activeConversation}

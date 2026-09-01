@@ -40,11 +40,11 @@ export function ConversationSidebar({
     <div
       className={`${
         showSidebar ? "flex" : "hidden"
-      } lg:flex w-full lg:w-80 lg:w-96 border-r border-zinc-100 flex-col`}
+      } lg:flex w-full lg:w-80 xl:w-96 border-r border-zinc-100 flex-col shrink-0`}
     >
-      <div className="p-5 border-b border-zinc-100">
+      <div className="p-4 sm:p-5 border-b border-zinc-100">
         <h2 className="font-semibold text-zinc-800 text-lg">Pesan Masuk</h2>
-        <div className="mt-4 relative">
+        <div className="mt-3 sm:mt-4 relative">
           <input
             type="text"
             placeholder="Cari pasien..."
@@ -55,7 +55,7 @@ export function ConversationSidebar({
           <Search className="w-4 h-4 absolute left-3.5 top-3 text-zinc-400" />
         </div>
 
-        <div className="flex gap-2 mt-4">
+        <div className="flex gap-2 mt-3 sm:mt-4">
           <button className="px-3 py-1.5 bg-zinc-900 text-white text-xs font-medium rounded-lg">
             Semua
           </button>

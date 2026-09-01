@@ -29,6 +29,7 @@ export function ConsultationContainer() {
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const [isStartingAi, setIsStartingAi] = useState(false);
+  const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const [errorState, setErrorState] = useState<{ message: string; cta?: ErrorCta } | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
@@ -36,7 +37,11 @@ export function ConsultationContainer() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, selectedImagePreview]);
+  useEffect(() => {
+    if (!isLoadingMessages) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+    }
+  }, [messages, selectedImagePreview, isLoadingMessages]);
 
   const fetchConversations = useCallback(async () => {
     try { const res = await getConversations(1); setConversations(res.data || []); }
@@ -45,8 +50,10 @@ export function ConsultationContainer() {
   }, []);
 
   const fetchMessages = useCallback(async (conversationId: string) => {
+    setIsLoadingMessages(true);
     try { const res = await getMessages(conversationId, 1); setMessages([...(res.data || [])].reverse()); }
     catch (error) { console.error(error); }
+    finally { setIsLoadingMessages(false); }
   }, []);
 
   useEffect(() => { fetchConversations(); }, [fetchConversations]);
@@ -144,7 +151,7 @@ export function ConsultationContainer() {
   };
 
   return (
-    <main className="bg-shell flex flex-col h-screen overflow-hidden">
+    <main className="bg-shell flex flex-col h-full overflow-hidden">
       <ErrorPopup errorState={errorState} setErrorState={setErrorState} successMsg={successMsg} setSuccessMsg={setSuccessMsg} />
       <ScanHistoryModal isOpen={isScanModalOpen} onClose={() => setIsScanModalOpen(false)} onSelectScan={handleSendScanHistory} />
       {activeConversation && (

@@ -70,14 +70,14 @@ export function ChatPanel({
     <div
       className={`${
         !showSidebar ? "flex" : "hidden"
-      } lg:flex flex-1 flex-col bg-zinc-50/30`}
+      } lg:flex flex-1 flex-col min-w-0 bg-zinc-50/30`}
     >
       {/* Chat Header */}
-      <div className="h-18 border-b border-zinc-100 bg-white/80 backdrop-blur-md px-4 sm:px-6 flex justify-between items-center shrink-0">
-        <div className="flex items-center gap-2 sm:gap-4">
+      <div className="h-14 sm:h-16 border-b border-zinc-100 bg-white/80 backdrop-blur-md px-3 sm:px-6 flex justify-between items-center shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <button
             onClick={onShowSidebar}
-            className="lg:hidden p-2 -ml-2 text-zinc-500 hover:text-emerald-600 transition-colors"
+            className="lg:hidden p-2 -ml-1 text-zinc-500 hover:text-emerald-600 transition-colors shrink-0"
           >
             <ChevronLeft size={24} />
           </button>
@@ -89,10 +89,10 @@ export function ChatPanel({
                 "&background=10b981&color=fff"
             }
             alt={activeConversation.user?.full_name || "Akun Dihapus"}
-            className="w-11 h-11 rounded-full object-cover"
+            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full object-cover shrink-0"
           />
-          <div>
-            <h2 className="font-semibold text-zinc-900 text-sm">
+          <div className="min-w-0">
+            <h2 className="font-semibold text-zinc-900 text-sm truncate">
               {activeConversation.user?.full_name || "Akun Dihapus"}
             </h2>
             <p className="text-xs text-zinc-500 flex items-center gap-1.5 mt-0.5">
@@ -107,7 +107,7 @@ export function ChatPanel({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3 text-zinc-400">
+        <div className="flex items-center gap-2 sm:gap-3 text-zinc-400 shrink-0">
           <button className="p-2 hover:bg-zinc-100 rounded-full hover:text-zinc-600 transition-colors">
             <Info size={20} />
           </button>
