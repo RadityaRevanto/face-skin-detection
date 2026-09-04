@@ -5,9 +5,17 @@ import { useRouter } from "next/navigation";
 
 import { customToast } from "@/lib/custom-toast";
 import { consultationService } from "@/features/consultation/services/consultationService";
+import { ConsultationApiError } from "@/lib/api/consultations-query";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
 
 import type { DoctorProfile } from "../types";
+
+/** Ambil pesan error yang sesungguhnya — jangan telan jadi generik. */
+function describeError(error: unknown, fallback: string): string {
+  if (error instanceof ConsultationApiError) return error.message;
+  if (error instanceof Error && error.message) return error.message;
+  return getUserFriendlyErrorMessage(error) || fallback;
+}
 
 /**
  * Button "Konsultasi Sekarang" (dokter manusia) — dialog konfirmasi
@@ -30,10 +38,7 @@ export function StartConsultationButton({ doctor }: { doctor: DoctorProfile }) {
       router.push(`/user/chats?c=${conversationUuid}`);
     } catch (error: unknown) {
       customToast.error("Gagal", {
-        description:
-          (error instanceof Error && error.message
-            ? getUserFriendlyErrorMessage(error)
-            : "Gagal memulai konsultasi"),
+        description: describeError(error, "Gagal memulai konsultasi"),
       });
     } finally {
       setIsCreating(false);

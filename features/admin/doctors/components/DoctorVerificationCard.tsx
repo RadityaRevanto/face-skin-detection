@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card";
 
 import type { DoctorDetail } from "@/features/admin/doctors/lib/doctorDetailTypes";
 import { InfoBox } from "./InfoBox";
-import { StatusBadge } from "./StatusBadge";
+import { StatusBadge } from "@/features/admin/components/StatusBadge";
 
 type DoctorVerificationCardProps = {
   doctor: DoctorDetail;
@@ -14,12 +14,12 @@ export function DoctorVerificationCard({
   const verification = doctor.latestVerification;
 
   return (
-    <Card className='overflow-hidden rounded-3xl border border-gray-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-gray-100! dark:bg-white! dark:text-slate-950!'>
-      <div className='border-b border-gray-100 px-6 py-4'>
-        <h3 className='text-base font-semibold text-gray-900'>
+    <Card className='overflow-hidden rounded-3xl border border-slate-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+      <div className='border-b border-slate-100 px-6 py-4'>
+        <h3 className='text-base font-semibold text-slate-900'>
           Data Verifikasi Terakhir
         </h3>
-        <p className='mt-0.5 text-sm text-gray-400'>
+        <p className='mt-0.5 text-sm text-slate-400'>
           Informasi pengajuan verifikasi terakhir dari doctor.
         </p>
       </div>
@@ -39,13 +39,13 @@ export function DoctorVerificationCard({
             <InfoBox label='Tanggal Review' value={verification.reviewedAt} />
           </div>
 
-          <div className='rounded-xl bg-gray-50/80 p-3.5'>
-            <p className='mb-2 text-xs text-gray-400'>Status Verifikasi</p>
+          <div className='rounded-xl bg-slate-50/80 p-3.5'>
+            <p className='mb-2 text-xs text-slate-400'>Status Verifikasi</p>
             <StatusBadge status={verification.status} />
           </div>
 
-          <div className='rounded-xl bg-gray-50/80 p-3.5'>
-            <p className='mb-1 text-xs text-gray-400'>Dokumen Verifikasi</p>
+          <div className='rounded-xl bg-slate-50/80 p-3.5'>
+            <p className='mb-1 text-xs text-slate-400'>Dokumen Verifikasi</p>
             {verification.documents.length > 0 ? (
               <div className='space-y-1'>
                 {verification.documents.map((doc) => (
@@ -61,7 +61,7 @@ export function DoctorVerificationCard({
                 ))}
               </div>
             ) : (
-              <p className='text-sm font-semibold text-gray-900'>
+              <p className='text-sm font-semibold text-slate-900'>
                 No Document
               </p>
             )}
@@ -80,7 +80,7 @@ export function DoctorVerificationCard({
         </div>
       ) : (
         <div className='p-6'>
-          <div className='rounded-xl bg-gray-50/80 p-3.5 text-sm font-semibold text-gray-500'>
+          <div className='rounded-xl bg-slate-50/80 p-3.5 text-sm font-semibold text-slate-500'>
             Doctor ini belum mengajukan verifikasi.
           </div>
         </div>

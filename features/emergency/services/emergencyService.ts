@@ -1,11 +1,9 @@
-import { api } from "@/lib/api";
+import { fetchEnvelope } from "@/lib/api/handlers";
 
 import type { EmergencyHotline } from "../types";
 
 export const emergencyService = {
-  hotlines: async (): Promise<EmergencyHotline[]> => {
-    const response = await api.get("/emergency");
-    return response.data.data;
-  },
+  /** GET /emergency — {data: hotlines[]} tanpa meta. */
+  hotlines: (): Promise<EmergencyHotline[]> =>
+    fetchEnvelope<EmergencyHotline[]>("/emergency").then((r) => r.data),
 };
-

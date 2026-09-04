@@ -37,7 +37,7 @@ export function HistoryList({ histories, pagination, filters }: HistoryListProps
   return (
     <div className="space-y-5">
       {histories.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           {histories.map((item) => {
             const confidencePercent = getConfidencePercent(item.confidence);
             const imageUrl = getHistoryImageUrl(item);

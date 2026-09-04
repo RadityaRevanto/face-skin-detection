@@ -12,6 +12,9 @@ export type AuthUser = {
   google_avatar_url?: string | null;
   is_active?: boolean;
   verification_status?: string;
+  email_verified_at?: string | null;
+  date_of_birth?: string | null;
+  gender?: string | null;
 };
 
 export const tokenStorage = {
@@ -60,7 +63,6 @@ export const api = axios.create({
   timeout: 15000,
   headers: {
     Accept: "application/json",
-    "Content-Type": "application/json",
   },
 });
 

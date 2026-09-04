@@ -1,4 +1,6 @@
-import { api, tokenStorage, type AuthUser } from "@/lib/api";
+import { tokenStorage, type AuthUser } from "@/lib/api";
+import { fetchEnvelope, mutate } from "@/lib/api/handlers";
+import type { ApiEnvelope } from "@/lib/api/envelope";
 
 export type LoginPayload = {
   email: string;
@@ -12,18 +14,30 @@ export type RegisterPayload = {
   privacy_consent: boolean;
 };
 
-export type AuthResponse = {
-  data: {
-    user: AuthUser;
-    token: string;
-  };
-  meta?: Record<string, unknown> | null;
+export type AuthData = {
+  user: AuthUser;
+  token: string;
 };
 
-export type ProfileResponse = {
-  data: AuthUser;
-  meta?: Record<string, unknown> | null;
+/** Response auth: `{ data: { user, token }, meta }`. */
+export type AuthResponse = ApiEnvelope<AuthData>;
+
+/** Bentuk GET /profile (ProfileController::show) — lebih kaya dari login user. */
+export type Profile = AuthUser & {
+  role: "user" | "doctor" | "admin";
+  profile_completed?: boolean;
+  email_verified?: boolean;
+  verification_status?: string;
+  subscription_status?: "Pro" | "Free";
+  scan_count?: number;
+  user_messages_count?: number;
+  remaining_free_messages?: number;
+  product_count?: number;
+  recommendation_count?: number;
+  pending_doctor_verifications?: number;
 };
+
+export type ProfileResponse = ApiEnvelope<Profile>;
 
 export type ForgotPasswordPayload = { email: string };
 
@@ -34,61 +48,45 @@ export type ResetPasswordPayload = {
   password_confirmation: string;
 };
 
+/** Simpan token + user ke localStorage (dipakai semua endpoint auth). */
+function persistSession(envelope: AuthResponse) {
+  if (envelope.data?.token) {
+    tokenStorage.set(envelope.data.token, envelope.data.user);
+  }
+  return envelope;
+}
+
 export const authService = {
-  login: async (payload: LoginPayload): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>("/login", payload);
+  login: async (payload: LoginPayload): Promise<AuthResponse> =>
+    persistSession(await mutate("post", "/login", payload)),
 
-    if (response.data?.data?.token) {
-      tokenStorage.set(response.data.data.token, response.data.data.user);
-    }
+  register: async (payload: RegisterPayload): Promise<AuthResponse> =>
+    persistSession(await mutate("post", "/register", payload)),
 
-    return response.data;
-  },
+  /** Multipart/form-data — FormData dibiarkan apa adanya (axios set boundary otomatis). */
+  registerDoctor: async (formData: FormData): Promise<AuthResponse> =>
+    persistSession(await mutate("post", "/register-doctor", formData)),
 
-  register: async (payload: RegisterPayload): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>("/register", payload);
+  google: async (idToken: string, privacyConsent = true): Promise<AuthResponse> =>
+    persistSession(
+      await mutate("post", "/auth/google", {
+        id_token: idToken,
+        privacy_consent: privacyConsent,
+      }),
+    ),
 
-    if (response.data?.data?.token) {
-      tokenStorage.set(response.data.data.token, response.data.data.user);
-    }
-
-    return response.data;
-  },
-
-  registerDoctor: async (formData: FormData): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>(
-      "/register-doctor",
-      formData,
-    );
-
-    if (response.data?.data?.token) {
-      tokenStorage.set(response.data.data.token, response.data.data.user);
-    }
-
-    return response.data;
-  },
-
-  google: async (idToken: string, privacyConsent = true): Promise<AuthResponse> => {
-    const response = await api.post<AuthResponse>("/auth/google", {
-      id_token: idToken,
-      privacy_consent: privacyConsent,
-    });
-
-    if (response.data?.data?.token) {
-      tokenStorage.set(response.data.data.token, response.data.data.user);
-    }
-
-    return response.data;
-  },
-
+  /** GET /profile — refresh cache localStorage dengan data lengkap (role, dll). */
   me: async (): Promise<ProfileResponse> => {
-    const response = await api.get<ProfileResponse>("/profile");
-    return response.data;
+    const envelope = await fetchEnvelope<Profile>("/profile");
+    if (envelope.data) {
+      tokenStorage.set(tokenStorage.get() ?? "", envelope.data);
+    }
+    return envelope;
   },
 
   logout: async (): Promise<void> => {
     try {
-      await api.post("/logout");
+      await mutate("post", "/logout");
     } catch {
       // Token lokal tetap dibersihkan meskipun request gagal.
     } finally {
@@ -98,7 +96,7 @@ export const authService = {
 
   logoutAll: async (): Promise<void> => {
     try {
-      await api.post("/logout-all");
+      await mutate("post", "/logout-all");
     } catch {
       // Token lokal tetap dibersihkan meskipun request gagal.
     } finally {
@@ -106,23 +104,15 @@ export const authService = {
     }
   },
 
-  forgotPassword: async (payload: ForgotPasswordPayload) => {
-    const response = await api.post("/forgot-password", payload);
-    return response.data;
-  },
+  forgotPassword: async (payload: ForgotPasswordPayload): Promise<ApiEnvelope<null>> =>
+    mutate("post", "/forgot-password", payload),
 
-  resetPassword: async (payload: ResetPasswordPayload) => {
-    const response = await api.post("/reset-password", payload);
-    return response.data;
-  },
+  resetPassword: async (payload: ResetPasswordPayload): Promise<ApiEnvelope<null>> =>
+    mutate("post", "/reset-password", payload),
 
-  sendEmailVerification: async () => {
-    const response = await api.post("/email/verify/send");
-    return response.data;
-  },
+  sendEmailVerification: async (): Promise<ApiEnvelope<null>> =>
+    mutate("post", "/email/verify/send"),
 
-  verifyEmail: async (payload: { otp: string }) => {
-    const response = await api.post("/email/verify", payload);
-    return response.data;
-  },
+  verifyEmail: async (payload: { otp: string }): Promise<ApiEnvelope<null>> =>
+    mutate("post", "/email/verify", payload),
 };

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function ChatsPage() {
   return (
     <Suspense fallback={null}>
-      <ConsultationContainer />
+      <ConsultationContainer role="user" />
     </Suspense>
   );
 }

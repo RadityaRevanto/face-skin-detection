@@ -12,12 +12,12 @@ export function VerificationIdentityCard({
   doctor,
 }: VerificationIdentityCardProps) {
   return (
-    <Card className='overflow-hidden rounded-3xl border border-gray-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-gray-100! dark:bg-white! dark:text-slate-950!'>
-      <div className='border-b border-gray-100 px-6 py-4'>
-        <h3 className='text-base font-semibold text-gray-900'>
+    <Card className='overflow-hidden rounded-3xl border border-slate-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+      <div className='border-b border-slate-100 px-6 py-4'>
+        <h3 className='text-base font-semibold text-slate-900'>
           Identitas Dokter
         </h3>
-        <p className='mt-0.5 text-sm text-gray-400'>
+        <p className='mt-0.5 text-sm text-slate-400'>
           Nama, email, STR, dan informasi umum dokter.
         </p>
       </div>
@@ -29,8 +29,8 @@ export function VerificationIdentityCard({
           </div>
 
           <div>
-            <h4 className='text-lg font-bold text-gray-900'>{doctor.name}</h4>
-            <p className='text-sm text-gray-500'>{doctor.email}</p>
+            <h4 className='text-lg font-bold text-slate-900'>{doctor.name}</h4>
+            <p className='text-sm text-slate-500'>{doctor.email}</p>
           </div>
         </div>
 

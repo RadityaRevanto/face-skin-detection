@@ -1,10 +1,11 @@
-import { api } from "@/lib/api";
+import { fetchEnvelope, mutate } from "@/lib/api/handlers";
+import type { ApiEnvelope } from "@/lib/api/envelope";
 
 export type AiConsent = {
   accepted: boolean;
-  version?: string;
-  text?: string;
-  [key: string]: unknown;
+  version: string;
+  text: string;
+  accepted_at: string | null;
 };
 
 export type AiConversation = {
@@ -16,22 +17,18 @@ export type AiConversation = {
 
 export const aiChatService = {
   getConsent: async (): Promise<AiConsent> => {
-    const response = await api.get("/ai-chat/consent");
-    return response.data.data;
+    const envelope = await fetchEnvelope<AiConsent>("/ai-chat/consent");
+    return envelope.data;
   },
 
-  updateConsent: async (accepted: boolean) => {
-    const response = await api.post("/ai-chat/consent", { accepted });
-    return response.data;
-  },
+  /** Response: `{ data: {accepted}, meta: {message} }`. */
+  updateConsent: (accepted: boolean): Promise<ApiEnvelope<{ accepted: boolean }>> =>
+    mutate("post", "/ai-chat/consent", { accepted }),
 
-  startConversation: async () => {
-    const response = await api.post("/ai-chat/conversations");
-    return response.data;
-  },
+  /** 403 jika belum consent — FE handle via error handler. */
+  startConversation: (): Promise<ApiEnvelope<AiConversation>> =>
+    mutate("post", "/ai-chat/conversations"),
 
-  destroyConversation: async (conversationId: string) => {
-    const response = await api.delete(`/ai-chat/conversations/${conversationId}`);
-    return response.data;
-  },
+  destroyConversation: (conversationId: string): Promise<ApiEnvelope<null>> =>
+    mutate("delete", `/ai-chat/conversations/${conversationId}`),
 };

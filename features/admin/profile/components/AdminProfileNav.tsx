@@ -4,9 +4,11 @@ import Link from "next/link";
 import { KeyRound, Shield, User as UserIcon } from "lucide-react";
 
 /**
- * Sidebar 3-section pengaturan akun admin — konsisten dengan
- * ProfileSidebar user/doctor (struktur sama semua role).
+ * Sidebar 3-section pengaturan akun admin (§5.10):
+ * - Mobile: horizontal segmented tabs (scroll-x jika sempit).
+ * - Desktop (lg+): nav vertikal kiri w-64 — struktur existing dipertahankan.
  */
+
 export function AdminProfileNav({
   activePage,
 }: {
@@ -20,20 +22,23 @@ export function AdminProfileNav({
   ] as const;
 
   return (
-    <div className="flex w-full flex-col gap-2 lg:w-64 lg:shrink-0">
+    <nav
+      aria-label="Pengaturan akun admin"
+      className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 lg:mx-0 lg:w-64 lg:shrink-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0"
+    >
       {navItems.map((item) => (
         <Link
           key={item.key}
           href={item.href}
-          className={`flex items-center gap-3 rounded-xl px-4 py-3 font-medium transition-colors ${
+          className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors lg:gap-3 lg:py-3 ${
             activePage === item.key
               ? "border border-emerald-200/50 bg-emerald-50 text-emerald-700"
-              : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+              : "border border-transparent text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
           }`}
         >
           {item.icon} {item.label}
         </Link>
       ))}
-    </div>
+    </nav>
   );
 }

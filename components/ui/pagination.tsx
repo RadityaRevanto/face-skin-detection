@@ -154,15 +154,32 @@ export function Pagination({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 border-t border-gray-100 bg-white px-6 py-4 dark:bg-white sm:flex-row sm:items-center sm:justify-between sm:px-8",
+        "flex flex-col gap-3 border-t border-gray-100 bg-white px-4 py-4 dark:bg-white sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-8",
         className
       )}
     >
-      <p className="text-sm text-gray-500">
-        Menampilkan{" "}
-        <span className="font-medium text-gray-700">{firstItem}</span>–
-        <span className="font-medium text-gray-700">{lastItem}</span> dari{" "}
-        <span className="font-medium text-gray-700">{totalItems}</span> {itemLabel}
+      {/* Mobile: ringkas "1/5" (§4.2) — info lengkap tampil sm+ */}
+      <p className="text-xs text-gray-500 sm:text-sm">
+        <span className="sm:hidden">
+          Halaman{" "}
+          <span className="font-semibold text-gray-700">{currentPage}</span>
+          {" "}dari{" "}
+          <span className="font-semibold text-gray-700">{totalPages}</span>
+          {totalItems > 0 ? (
+            <>
+              {" "}·{" "}
+              <span className="font-medium text-gray-700">{totalItems}</span>{" "}
+              {itemLabel}
+            </>
+          ) : null}
+        </span>
+        <span className="hidden sm:inline">
+          Menampilkan{" "}
+          <span className="font-medium text-gray-700">{firstItem}</span>–
+          <span className="font-medium text-gray-700">{lastItem}</span> dari{" "}
+          <span className="font-medium text-gray-700">{totalItems}</span>{" "}
+          {itemLabel}
+        </span>
       </p>
 
       <nav aria-label="Pagination" className="flex items-center gap-2">
@@ -178,29 +195,36 @@ export function Pagination({
           <ChevronIcon direction="left" />
         </PageButton>
 
-        {visiblePages.map((page, index) => {
-          const previousPage = visiblePages[index - 1];
-          const showEllipsis = previousPage && page - previousPage > 1;
+        {/* Mobile: hanya angka halaman aktif — daftar lengkap sm+ */}
+        <span className="flex h-9 min-w-9 items-center justify-center rounded-lg bg-emerald-600 px-2 text-sm font-semibold text-white sm:hidden">
+          {currentPage}
+        </span>
 
-          return (
-            <React.Fragment key={page}>
-              {showEllipsis ? (
-                <span className="flex h-9 w-9 items-center justify-center text-sm text-gray-400">
-                  ...
-                </span>
-              ) : null}
-              <PageButton
-                page={page}
-                basePath={basePath}
-                searchParams={searchParams}
-                onPageChange={onPageChange}
-                variant={page === currentPage ? "success" : "outline"}
-              >
-                {page}
-              </PageButton>
-            </React.Fragment>
-          );
-        })}
+        <div className="hidden items-center gap-2 sm:flex">
+          {visiblePages.map((page, index) => {
+            const previousPage = visiblePages[index - 1];
+            const showEllipsis = previousPage && page - previousPage > 1;
+
+            return (
+              <React.Fragment key={page}>
+                {showEllipsis ? (
+                  <span className="flex h-9 w-9 items-center justify-center text-sm text-gray-400">
+                    ...
+                  </span>
+                ) : null}
+                <PageButton
+                  page={page}
+                  basePath={basePath}
+                  searchParams={searchParams}
+                  onPageChange={onPageChange}
+                  variant={page === currentPage ? "success" : "outline"}
+                >
+                  {page}
+                </PageButton>
+              </React.Fragment>
+            );
+          })}
+        </div>
 
         <PageButton
           page={currentPage + 1}

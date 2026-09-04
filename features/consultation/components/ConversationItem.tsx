@@ -7,11 +7,13 @@ import { isAiBotConversation, formatTime } from "../utils/consultationHelpers";
 interface ConversationItemProps {
   conversation: Conversation;
   isActive: boolean;
+  role: "user" | "doctor";
   onSelect: (conv: Conversation) => void;
 }
 
-export function ConversationItem({ conversation, isActive, onSelect }: ConversationItemProps) {
-  const isBot = isAiBotConversation(conversation);
+export function ConversationItem({ conversation, isActive, role, onSelect }: ConversationItemProps) {
+  const isBot = role === "user" && isAiBotConversation(conversation);
+  const contact = role === "doctor" ? conversation.user : conversation.doctor;
 
   return (
     <div
@@ -29,8 +31,8 @@ export function ConversationItem({ conversation, isActive, onSelect }: Conversat
           </span>
         ) : (
           <img
-            src={conversation.doctor?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(conversation.doctor?.full_name || "D") + "&background=10b981&color=fff"}
-            alt={conversation.doctor?.full_name || "Akun Dihapus"}
+            src={contact?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(contact?.full_name || (role === "doctor" ? "D" : "U")) + "&background=10b981&color=fff"}
+            alt={contact?.full_name || "Akun Dihapus"}
             className="w-12 h-12 rounded-full object-cover"
           />
         )}
@@ -38,7 +40,7 @@ export function ConversationItem({ conversation, isActive, onSelect }: Conversat
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-baseline mb-1">
             <h3 className={`font-semibold text-zinc-900 truncate text-sm ${isBot ? "text-violet-700" : ""}`}>
-              {isBot ? "Aura Skin" : conversation.doctor?.full_name || "Akun Dihapus"}
+              {isBot ? "Aura Skin" : contact?.full_name || "Akun Dihapus"}
             </h3>
             {conversation.last_message && (
               <span className="text-[10px] text-zinc-400 shrink-0">

@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 
 import { Sidebar } from "@/components/sidebar/Sidebar";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { getBreadcrumbs } from "@/components/breadcrumb-utils";
 import { NotificationBell } from "@/features/notification/components/NotificationBell";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { getUserNavItems } from "./sidebar/UserNavItems";
@@ -105,7 +107,16 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
 
   const navItems = role === "admin" ? getAdminNavItems(pendingCount) : role === "doctor" ? getDoctorNavItems() : getUserNavItems();
   const brand = getBrandConfig(role);
-  const activeLabel = navItems.find((item) => pathname === item.href || pathname.startsWith(`${item.href}/`))?.label ?? "Dashboard";
+  const breadcrumbs = getBreadcrumbs(pathname);
+
+  const shellActions = (
+    <div className="flex items-center gap-1.5">
+      {userUuid && (
+        <NotificationBell userId={profile?.id} userUuid={userUuid} />
+      )}
+      <ProfileDropdown displayName={displayName} avatarUrl={avatarUrl} role={role} />
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-shell">
@@ -114,18 +125,12 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
           brand={brand}
           items={navItems}
           mobileFooter={<MobileProfileFooter displayName={displayName} avatarUrl={avatarUrl} role={role} />}
+          topbarActions={shellActions}
         />
         <div className="min-w-0 flex-1">
           <header className="hidden lg:flex sticky top-0 z-40 h-14 w-full items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 sm:h-16 sm:gap-6 sm:px-6">
-            <div className="min-w-0 flex-1">
-              <h1 className="truncate text-base font-bold text-slate-800 sm:text-lg">{activeLabel}</h1>
-            </div>
-            <div className="flex items-center gap-2">
-              {userUuid && (
-                <NotificationBell userId={profile?.id} userUuid={userUuid} />
-              )}
-              <ProfileDropdown displayName={displayName} avatarUrl={avatarUrl} role={role} />
-            </div>
+            <Breadcrumb items={breadcrumbs} className="flex-1" />
+            {shellActions}
           </header>
           <div className={`${isConsultationPage ? "flex flex-col h-[calc(100dvh-48px)] lg:h-[calc(100dvh-56px)]" : "px-4 py-6 sm:px-6 sm:py-8 lg:px-8"}`}>{children}</div>
         </div>

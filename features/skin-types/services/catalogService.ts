@@ -1,4 +1,6 @@
-import { api } from "@/lib/api";
+import { fetchEnvelope, fetchPaginated, mutate } from "@/lib/api/handlers";
+import type { ApiEnvelope } from "@/lib/api/envelope";
+import { paginationParams } from "@/lib/api/envelope";
 
 export type SkinType = {
   uuid: string;
@@ -38,99 +40,81 @@ export type SkincareProduct = {
 };
 
 const catalogService = {
-  skinConcerns: async (params?: { page?: number; per_page?: number }) => {
-    const response = await api.get("/skin-concerns", { params });
-    return response.data as { data: SkinConcern[]; meta?: unknown };
-  },
+  // ==== Skin concerns (public read, doctor write) ====
+  skinConcerns: (params?: { page?: number; per_page?: number }) =>
+    fetchPaginated<SkinConcern>(
+      "/skin-concerns",
+      paginationParams(params?.page ?? 1, params?.per_page),
+    ),
 
-  skinConcern: async (uuid: string): Promise<SkinConcern> => {
-    const response = await api.get(`/skin-concerns/${uuid}`);
-    return response.data.data;
-  },
+  skinConcern: (uuid: string): Promise<SkinConcern> =>
+    fetchEnvelope<SkinConcern>(`/skin-concerns/${uuid}`).then((r) => r.data),
 
-  skinTypes: async (params?: { page?: number; per_page?: number }) => {
-    const response = await api.get("/skin-types", { params });
-    return response.data as { data: SkinType[]; meta?: unknown };
-  },
+  updateSkinConcern: (uuid: string, payload: Record<string, unknown>): Promise<ApiEnvelope<SkinConcern>> =>
+    mutate("patch", `/skin-concerns/${uuid}`, payload),
 
-  skinType: async (uuid: string): Promise<SkinType> => {
-    const response = await api.get(`/skin-types/${uuid}`);
-    return response.data.data;
-  },
+  // ==== Skin types (public read, doctor write) ====
+  skinTypes: (params?: { page?: number; per_page?: number }) =>
+    fetchPaginated<SkinType>(
+      "/skin-types",
+      paginationParams(params?.page ?? 1, params?.per_page),
+    ),
 
-  createSkinType: async (payload: Record<string, unknown>) => {
-    const response = await api.post("/skin-types", payload);
-    return response.data;
-  },
+  skinType: (uuid: string): Promise<SkinType> =>
+    fetchEnvelope<SkinType>(`/skin-types/${uuid}`).then((r) => r.data),
 
-  updateSkinType: async (uuid: string, payload: Record<string, unknown>) => {
-    const response = await api.patch(`/skin-types/${uuid}`, payload);
-    return response.data;
-  },
+  createSkinType: (payload: Record<string, unknown>): Promise<ApiEnvelope<SkinType>> =>
+    mutate("post", "/skin-types", payload),
 
-  deleteSkinType: async (uuid: string) => {
-    const response = await api.delete(`/skin-types/${uuid}`);
-    return response.data;
-  },
+  updateSkinType: (uuid: string, payload: Record<string, unknown>): Promise<ApiEnvelope<SkinType>> =>
+    mutate("patch", `/skin-types/${uuid}`, payload),
 
-  updateSkinConcern: async (uuid: string, payload: Record<string, unknown>) => {
-    const response = await api.patch(`/skin-concerns/${uuid}`, payload);
-    return response.data;
-  },
+  deleteSkinType: (uuid: string): Promise<ApiEnvelope<null>> =>
+    mutate("delete", `/skin-types/${uuid}`),
 
-  recommendations: async (params?: {
+  // ==== Skin recommendations (public read, doctor write) ====
+  recommendations: (params?: {
     page?: number;
     per_page?: number;
     ml_label?: string;
   }) => {
-    const response = await api.get("/skin-recommendations", { params });
-    return response.data as { data: SkinRecommendation[]; meta?: unknown };
+    const clean = paginationParams(params?.page ?? 1, params?.per_page);
+    return fetchPaginated<SkinRecommendation>("/skin-recommendations", {
+      ...clean,
+      ...(params?.ml_label ? { ml_label: params.ml_label } : {}),
+    });
   },
 
-  recommendation: async (uuid: string): Promise<SkinRecommendation> => {
-    const response = await api.get(`/skin-recommendations/${uuid}`);
-    return response.data.data;
-  },
+  recommendation: (uuid: string): Promise<SkinRecommendation> =>
+    fetchEnvelope<SkinRecommendation>(`/skin-recommendations/${uuid}`).then((r) => r.data),
 
-  createRecommendation: async (payload: Record<string, unknown>) => {
-    const response = await api.post("/skin-recommendations", payload);
-    return response.data;
-  },
+  createRecommendation: (payload: Record<string, unknown>): Promise<ApiEnvelope<SkinRecommendation>> =>
+    mutate("post", "/skin-recommendations", payload),
 
-  updateRecommendation: async (uuid: string, payload: Record<string, unknown>) => {
-    const response = await api.patch(`/skin-recommendations/${uuid}`, payload);
-    return response.data;
-  },
+  updateRecommendation: (uuid: string, payload: Record<string, unknown>): Promise<ApiEnvelope<SkinRecommendation>> =>
+    mutate("patch", `/skin-recommendations/${uuid}`, payload),
 
-  deleteRecommendation: async (uuid: string) => {
-    const response = await api.delete(`/skin-recommendations/${uuid}`);
-    return response.data;
-  },
+  deleteRecommendation: (uuid: string): Promise<ApiEnvelope<null>> =>
+    mutate("delete", `/skin-recommendations/${uuid}`),
 
-  products: async (params?: { page?: number; per_page?: number }) => {
-    const response = await api.get("/skincare-products", { params });
-    return response.data as { data: SkincareProduct[]; meta?: unknown };
-  },
+  // ==== Skincare products (public read, doctor write) ====
+  products: (params?: { page?: number; per_page?: number }) =>
+    fetchPaginated<SkincareProduct>(
+      "/skincare-products",
+      paginationParams(params?.page ?? 1, params?.per_page),
+    ),
 
-  product: async (uuid: string): Promise<SkincareProduct> => {
-    const response = await api.get(`/skincare-products/${uuid}`);
-    return response.data.data;
-  },
+  product: (uuid: string): Promise<SkincareProduct> =>
+    fetchEnvelope<SkincareProduct>(`/skincare-products/${uuid}`).then((r) => r.data),
 
-  createProduct: async (payload: Record<string, unknown>) => {
-    const response = await api.post("/skincare-products", payload);
-    return response.data;
-  },
+  createProduct: (payload: Record<string, unknown>): Promise<ApiEnvelope<SkincareProduct>> =>
+    mutate("post", "/skincare-products", payload),
 
-  updateProduct: async (uuid: string, payload: Record<string, unknown>) => {
-    const response = await api.patch(`/skincare-products/${uuid}`, payload);
-    return response.data;
-  },
+  updateProduct: (uuid: string, payload: Record<string, unknown>): Promise<ApiEnvelope<SkincareProduct>> =>
+    mutate("patch", `/skincare-products/${uuid}`, payload),
 
-  deleteProduct: async (uuid: string) => {
-    const response = await api.delete(`/skincare-products/${uuid}`);
-    return response.data;
-  },
+  deleteProduct: (uuid: string): Promise<ApiEnvelope<null>> =>
+    mutate("delete", `/skincare-products/${uuid}`),
 };
 
 export { catalogService };

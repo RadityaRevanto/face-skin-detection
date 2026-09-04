@@ -1,7 +1,15 @@
-import { api } from "@/lib/api";
+import { fetchEnvelope, fetchPaginated, mutate } from "@/lib/api/handlers";
+import type { ApiEnvelope } from "@/lib/api/envelope";
+import { paginationParams } from "@/lib/api/envelope";
+import type {
+  SkincareProduct,
+  SkinRecommendation,
+} from "@/features/skin-types/services/catalogService";
 
 import type { DoctorVerification } from "./doctorVerificationService";
 export type { DoctorVerification } from "./doctorVerificationService";
+
+export type { SkincareProduct, SkinRecommendation };
 
 export type DoctorDashboardStats = {
   total_patients?: number | null;
@@ -19,39 +27,42 @@ export type RecentConversation = {
 };
 
 export type DoctorDashboardData = {
+  verification_status?: string;
   stats?: DoctorDashboardStats;
   recent_conversations?: RecentConversation[];
   [key: string]: unknown;
 };
 
 export const doctorService = {
-  dashboard: async (): Promise<DoctorDashboardData> => {
-    const response = await api.get("/doctor/dashboard");
-    return response.data.data;
-  },
+  /** GET /doctor/dashboard — stats + recent conversations. */
+  dashboard: (): Promise<DoctorDashboardData> =>
+    fetchEnvelope<DoctorDashboardData>("/doctor/dashboard").then((r) => r.data),
 
-  verification: async (): Promise<DoctorVerification | null> => {
-    const response = await api.get("/doctor-verifications");
-    return response.data.data ?? null;
-  },
+  /** GET /doctor-verifications — status verifikasi sendiri (404 jika belum ada). */
+  verification: (): Promise<DoctorVerification | null> =>
+    fetchEnvelope<DoctorVerification | null>("/doctor-verifications").then(
+      (r) => r.data ?? null,
+    ),
 
-  submitVerification: async (formData: FormData) => {
-    const response = await api.post("/doctor-verifications", formData);
-    return response.data;
-  },
+  /** POST /doctor-verifications — multipart. */
+  submitVerification: (formData: FormData): Promise<ApiEnvelope<DoctorVerification>> =>
+    mutate("post", "/doctor-verifications", formData),
 
-  resubmitVerification: async (id: string, formData: FormData) => {
-    const response = await api.post(`/doctor-verifications/${id}/resubmit`, formData);
-    return response.data;
-  },
+  /** POST /doctor-verifications/{uuid}/resubmit — multipart. */
+  resubmitVerification: (uuid: string, formData: FormData): Promise<ApiEnvelope<DoctorVerification>> =>
+    mutate("post", `/doctor-verifications/${uuid}/resubmit`, formData),
 
-  products: async (params?: { page?: number; per_page?: number }) => {
-    const response = await api.get("/doctor/products", { params });
-    return response.data;
-  },
+  /** GET /doctor/products — produk milik dokter login. */
+  products: (params?: { page?: number; per_page?: number }) =>
+    fetchPaginated<SkincareProduct>(
+      "/doctor/products",
+      paginationParams(params?.page ?? 1, params?.per_page),
+    ),
 
-  recommendations: async (params?: { page?: number; per_page?: number }) => {
-    const response = await api.get("/doctor/recommendations", { params });
-    return response.data;
-  },
+  /** GET /doctor/recommendations — rekomendasi milik dokter login. */
+  recommendations: (params?: { page?: number; per_page?: number }) =>
+    fetchPaginated<SkinRecommendation>(
+      "/doctor/recommendations",
+      paginationParams(params?.page ?? 1, params?.per_page),
+    ),
 };

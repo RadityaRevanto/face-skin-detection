@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { customToast } from "@/lib/custom-toast";
 import { aiChatService } from "@/features/ai-chat/services/aiChatService";
+import { ConsultationApiError } from "@/lib/api/consultations-query";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
 
 type ConsentStatus = {
@@ -13,6 +14,13 @@ type ConsentStatus = {
   text: string | null;
   accepted_at: string | null;
 };
+
+/** Ambil pesan error yang sesungguhnya — jangan telan jadi generik. */
+function describeError(error: unknown, fallback: string): string {
+  if (error instanceof ConsultationApiError) return error.message;
+  if (error instanceof Error && error.message) return error.message;
+  return getUserFriendlyErrorMessage(error) || fallback;
+}
 
 /**
  * Button "Chat dengan Aura" — alur khusus AI bot:
@@ -48,10 +56,7 @@ export function StartAuraChatButton() {
       }
     } catch (error: unknown) {
       customToast.error("Gagal", {
-        description:
-          (error instanceof Error && error.message
-            ? getUserFriendlyErrorMessage(error)
-            : "Gagal memulai chat Aura Skin"),
+        description: describeError(error, "Gagal memulai chat Aura Skin"),
       });
     } finally {
       setIsStarting(false);
@@ -65,10 +70,7 @@ export function StartAuraChatButton() {
       await enterChat();
     } catch (error: unknown) {
       customToast.error("Gagal", {
-        description:
-          (error instanceof Error && error.message
-            ? getUserFriendlyErrorMessage(error)
-            : "Gagal menyimpan persetujuan AI"),
+        description: describeError(error, "Gagal menyimpan persetujuan AI"),
       });
     } finally {
       setIsStarting(false);

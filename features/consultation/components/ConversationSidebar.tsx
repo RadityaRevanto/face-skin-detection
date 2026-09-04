@@ -1,22 +1,61 @@
 "use client";
 
-import {
-  MessageSquarePlus,
-  Sparkles,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { MessageSquarePlus, Search, Sparkles } from "lucide-react";
 import { Conversation } from "@/lib/api/consultations-query";
 import { ConversationItem } from "./ConversationItem";
 
-interface ConversationSidebarProps {
+export type ConversationFilter = "all" | "unread" | "done";
+
+type ConversationSidebarProps = {
   conversations: Conversation[];
   activeConversation: Conversation | null;
   showSidebar: boolean;
   isLoadingConversations: boolean;
-  isStartingAi: boolean;
-  setActiveConversation: (conv: Conversation) => void;
+  /** Role penampil — menentukan siapa yang dilihat di sidebar. */
+  role: "user" | "doctor";
+  /** Tampilkan tombol AI chat (hanya user). */
+  showAiChat?: boolean;
+  isStartingAi?: boolean;
+  handleStartAiChat?: () => void;
+  /** Callback search (doctor pakai, user static). */
+  onSearchChange?: (value: string) => void;
+  searchQuery?: string;
+  /** Load more (doctor). */
+  hasMoreConversations?: boolean;
+  isLoadingMore?: boolean;
+  onLoadMore?: () => void;
+  onSelectConversation: (conv: Conversation) => void;
   setShowSidebar: (val: boolean) => void;
-  handleStartAiChat: () => void;
+};
+
+const TABS: { key: ConversationFilter; label: string }[] = [
+  { key: "all", label: "Semua" },
+  { key: "unread", label: "Belum Dibaca" },
+  { key: "done", label: "Selesai" },
+];
+
+function filterConversations(
+  conversations: Conversation[],
+  filter: ConversationFilter,
+  role: "user" | "doctor",
+): Conversation[] {
+  if (filter === "all") return conversations;
+  return conversations.filter((c) => {
+    const lastMsg = c.last_message;
+    if (!lastMsg) return filter === "unread";
+    if (filter === "unread") {
+      return role === "doctor"
+        ? lastMsg.sender?.role === "user"
+        : lastMsg.sender?.role === "doctor";
+    }
+    if (filter === "done") {
+      return role === "doctor"
+        ? lastMsg.sender?.role === "doctor"
+        : lastMsg.sender?.role === "user";
+    }
+    return true;
+  });
 }
 
 export function ConversationSidebar({
@@ -24,103 +63,165 @@ export function ConversationSidebar({
   activeConversation,
   showSidebar,
   isLoadingConversations,
-  isStartingAi,
-  setActiveConversation,
-  setShowSidebar,
+  role,
+  showAiChat = false,
+  isStartingAi = false,
   handleStartAiChat,
+  onSearchChange,
+  searchQuery = "",
+  hasMoreConversations = false,
+  isLoadingMore = false,
+  onLoadMore,
+  onSelectConversation,
+  setShowSidebar,
 }: ConversationSidebarProps) {
-  const router = useRouter();
-  return (
-    <div className={`
-      ${showSidebar ? "flex" : "hidden"} lg:flex
-      flex-col
-      w-full lg:w-64 xl:w-72
-      shrink-0
-      h-full lg:h-auto
-      bg-white lg:bg-transparent
-    `}>
-      <div className="flex flex-col gap-4 lg:gap-5 h-full p-4 lg:p-0">
-        
+  const [activeTab, setActiveTab] = useState<ConversationFilter>("all");
+  const [localSearch, setLocalSearch] = useState("");
 
-        {/* Conversation list container */}
-        <div className="flex flex-1 min-h-0 bg-white rounded-3xl overflow-hidden shadow-xl shadow-emerald-900/5 border border-zinc-200/60 flex-col">
-          <div className="flex flex-col w-full h-full min-h-0">
-            {/* Header */}
-            <div className="p-4 sm:p-5 border-b border-zinc-100 flex items-center justify-between shrink-0">
-              <h2 className="font-semibold text-zinc-800 text-lg">Pesan</h2>
+  const effectiveSearch = onSearchChange ? searchQuery : localSearch;
+  const effectiveSetSearch = onSearchChange ?? setLocalSearch;
+
+  const searched = conversations.filter((c) => {
+    if (!effectiveSearch) return true;
+    const name =
+      role === "doctor"
+        ? c.user?.full_name ?? ""
+        : c.doctor?.full_name ?? "";
+    return name.toLowerCase().includes(effectiveSearch.toLowerCase());
+  });
+
+  const filtered = filterConversations(searched, activeTab, role);
+
+  return (
+    <div
+      className={`
+        ${showSidebar ? "flex" : "hidden"} lg:flex
+        flex-col
+        w-full lg:w-80 xl:w-96
+        shrink-0
+        h-full lg:h-auto
+        border-r border-zinc-100
+      `}
+    >
+      <div className="flex flex-col h-full min-h-0">
+        {/* Header */}
+        <div className="p-4 sm:p-5 border-b border-zinc-100 shrink-0">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-zinc-800 text-lg">Pesan</h2>
+            {showAiChat && handleStartAiChat && (
               <button
-                onClick={() => router.push("/user/consultations")}
+                onClick={() => {
+                  handleStartAiChat();
+                  setShowSidebar(false);
+                }}
                 className="flex items-center justify-center bg-emerald-100 hover:bg-emerald-200 text-emerald-700 p-2 rounded-full transition-colors"
-                title="Cari dokter untuk konsultasi baru"
+                title="Chat dengan Aura Skin"
               >
                 <MessageSquarePlus size={20} />
               </button>
-            </div>
-
-            {/* Search */}
-            <div className="px-4 sm:px-5 pt-4 pb-2 border-b border-zinc-100 shrink-0">
-              <div className="relative">
-                <input 
-                  type="text" 
-                  placeholder="Cari riwayat chat..." 
-                  className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-                />
-                <svg className="w-4 h-4 absolute left-3.5 top-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-            </div>
-
-            {/* AI Chat Button */}
-            <div className="px-3 pt-3 pb-1 shrink-0">
-              <button
-                onClick={handleStartAiChat}
-                disabled={isStartingAi}
-                className="w-full flex items-center gap-3 p-3 rounded-xl bg-linear-to-r from-violet-50 to-emerald-50 border border-violet-100 hover:border-violet-300 transition-all text-left disabled:opacity-60"
-              >
-                <span className="w-12 h-12 rounded-full bg-linear-to-br from-violet-500 to-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm">
-                  {isStartingAi ? (
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                  ) : (
-                    <Sparkles size={22} />
-                  )}
-                </span>
-                <span className="min-w-0">
-                  <span className="block font-semibold text-sm text-zinc-900">Aura Skin</span>
-                  <span className="block text-xs text-zinc-500 mt-0.5 truncate">
-                    Asisten AI skincare — tanya kapan saja
-                  </span>
-                </span>
-              </button>
-            </div>
-
-            {/* Conversation list */}
-            <div className="flex-1 overflow-y-auto min-h-0">
-              {isLoadingConversations ? (
-                <div className="flex justify-center p-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
-                </div>
-              ) : conversations.length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-8 text-center text-zinc-500">
-                  <MessageSquarePlus size={32} className="mb-3 text-zinc-300" />
-                  <p className="text-sm">Belum ada riwayat konsultasi.</p>
-                  <p className="text-xs mt-1">Klik tombol + di atas untuk mencari dokter.</p>
-                </div>
-              ) : (
-                conversations.map((conv) => (
-                  <ConversationItem
-                    key={conv.uuid}
-                    conversation={conv}
-                    isActive={activeConversation?.uuid === conv.uuid}
-                    onSelect={(c) => {
-                      setActiveConversation(c);
-                      setShowSidebar(false);
-                    }}
-                  />
-                ))
-              )}
-            </div>
+            )}
           </div>
+
+          {/* Search */}
+          <div className="mt-3 relative">
+            <input
+              type="text"
+              placeholder={role === "doctor" ? "Cari pasien..." : "Cari riwayat chat..."}
+              value={effectiveSearch}
+              onChange={(e) => effectiveSetSearch(e.target.value)}
+              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
+            />
+            <Search className="w-4 h-4 absolute left-3.5 top-3 text-zinc-400" />
+          </div>
+
+          {/* Tabs */}
+          <div className="flex gap-2 mt-3">
+            {TABS.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                  activeTab === tab.key
+                    ? "bg-zinc-900 text-white"
+                    : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* AI Chat Button (user only) */}
+        {showAiChat && handleStartAiChat && (
+          <div className="px-3 pt-3 pb-1 shrink-0 border-b border-zinc-100">
+            <button
+              onClick={handleStartAiChat}
+              disabled={isStartingAi}
+              className="w-full flex items-center gap-3 p-3 rounded-xl bg-linear-to-r from-violet-50 to-emerald-50 border border-violet-100 hover:border-violet-300 transition-all text-left disabled:opacity-60"
+            >
+              <span className="w-12 h-12 rounded-full bg-linear-to-br from-violet-500 to-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                {isStartingAi ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                ) : (
+                  <Sparkles size={22} />
+                )}
+              </span>
+              <span className="min-w-0">
+                <span className="block font-semibold text-sm text-zinc-900">Aura Skin</span>
+                <span className="block text-xs text-zinc-500 mt-0.5 truncate">
+                  Asisten AI skincare — tanya kapan saja
+                </span>
+              </span>
+            </button>
+          </div>
+        )}
+
+        {/* Conversation list */}
+        <div className="flex-1 overflow-y-auto min-h-0">
+          {isLoadingConversations ? (
+            <div className="flex justify-center p-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center p-8 text-center text-zinc-500">
+              <MessageSquarePlus size={32} className="mb-3 text-zinc-300" />
+              <p className="text-sm">Belum ada percakapan.</p>
+              <p className="text-xs mt-1">
+                {role === "doctor"
+                  ? "Menunggu pasien mengirim pesan."
+                  : "Klik tombol + untuk mencari dokter."}
+              </p>
+            </div>
+          ) : (
+            <>
+              {filtered.map((conv) => (
+                <ConversationItem
+                  key={conv.uuid}
+                  conversation={conv}
+                  isActive={activeConversation?.uuid === conv.uuid}
+                  role={role}
+                  onSelect={(c) => {
+                    onSelectConversation(c);
+                    setShowSidebar(false);
+                  }}
+                />
+              ))}
+
+              {!isLoadingConversations && hasMoreConversations && onLoadMore && (
+                <div className="p-3 border-b border-zinc-50">
+                  <button
+                    type="button"
+                    disabled={isLoadingMore}
+                    onClick={onLoadMore}
+                    className="w-full rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-emerald-100 disabled:opacity-50"
+                  >
+                    {isLoadingMore ? "Memuat..." : "Muat percakapan lainnya"}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>

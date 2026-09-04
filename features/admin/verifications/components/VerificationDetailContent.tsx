@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import type { DoctorVerificationDetail } from "@/features/admin/verifications/lib/verificationDetailTypes";
 import { RejectedReasonCard } from "./RejectedReasonCard";
-import { StatusBadge } from "./StatusBadge";
+import { StatusBadge } from "@/features/admin/components/StatusBadge";
 import { VerificationContactCard } from "./VerificationContactCard";
 import { VerificationDecisionCard } from "./VerificationDecisionCard";
 import { VerificationDocumentCard } from "./VerificationDocumentCard";
@@ -20,7 +20,7 @@ export function VerificationDetailContent({
 
   return (
     <div className='w-full space-y-6'>
-      <div className='flex flex-col justify-between gap-4 sm:flex-row sm:items-start'>
+      <div className='flex flex-col justify-between gap-3 sm:flex-row sm:items-start'>
         <div>
           <Link
             href={
@@ -28,8 +28,11 @@ export function VerificationDetailContent({
                 ? "/admin/doctor-verifications/rejected"
                 : "/admin/doctor-verifications/pending"
             }
-            className='text-sm font-semibold text-emerald-700 hover:text-emerald-800'
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 transition-colors hover:text-emerald-800"
           >
+            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4">
+              <path d="m15 5-7 7 7 7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
             Back to verification list
           </Link>
 
@@ -43,7 +46,10 @@ export function VerificationDetailContent({
           </p>
         </div>
 
-        <StatusBadge status={doctor.status} />
+        {/* §5.7 mobile: badge di baris sendiri (mt-2); desktop: kanan atas */}
+        <div className="sm:pt-9">
+          <StatusBadge status={doctor.status} />
+        </div>
       </div>
 
       <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>

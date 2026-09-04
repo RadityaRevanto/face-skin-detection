@@ -1,19 +1,18 @@
 "use client";
 
 import { RefObject } from "react";
-import {
-  Clock,
-} from "lucide-react";
+import { Clock } from "lucide-react";
 import { Message } from "@/lib/api/consultations-query";
 import { formatTime, isCurrentUser } from "../utils/consultationHelpers";
 import { ChatMessageContent } from "./ChatMessageContent";
 
-interface ChatMessagesProps {
+type ChatMessagesProps = {
   messages: Message[];
   messagesEndRef: RefObject<HTMLDivElement | null>;
-}
+  role: "user" | "doctor";
+};
 
-export function ChatMessages({ messages, messagesEndRef }: ChatMessagesProps) {
+export function ChatMessages({ messages, messagesEndRef, role }: ChatMessagesProps) {
   return (
     <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-chat-surface min-h-0">
       <div className="flex justify-center mb-6 mt-2">
@@ -24,17 +23,26 @@ export function ChatMessages({ messages, messagesEndRef }: ChatMessagesProps) {
       </div>
 
       {messages.map((message, index) => {
-        const isUser = isCurrentUser(message.sender?.role || "user");
-        const isFirstInGroup = index === 0 || messages[index - 1].sender?.uuid !== message.sender?.uuid;
+        const isOwn =
+          role === "doctor"
+            ? message.sender?.role === "doctor"
+            : isCurrentUser(message.sender?.role || "user");
+        const isFirstInGroup =
+          index === 0 ||
+          messages[index - 1].sender?.uuid !== message.sender?.uuid;
 
         return (
-          <div key={message.uuid} className={`flex ${isUser ? "justify-end" : "justify-start"} ${isFirstInGroup ? "mt-3" : "mt-1"}`}>
-            <div className={`relative max-w-[85%] sm:max-w-[75%] md:max-w-[65%] px-2.5 py-1.5 shadow-sm ${
-              isUser
-                ? "bg-chat-bubble-own text-chat-bubble-text rounded-lg rounded-tr-none"
-                : "bg-white text-chat-bubble-text rounded-lg rounded-tl-none"
-            }`}>
-
+          <div
+            key={message.uuid}
+            className={`flex ${isOwn ? "justify-end" : "justify-start"} ${isFirstInGroup ? "mt-3" : "mt-1"}`}
+          >
+            <div
+              className={`relative max-w-[85%] sm:max-w-[75%] md:max-w-[65%] px-2.5 py-1.5 shadow-sm ${
+                isOwn
+                  ? "bg-chat-bubble-own text-chat-bubble-text rounded-lg rounded-tr-none"
+                  : "bg-white text-chat-bubble-text rounded-lg rounded-tl-none"
+              }`}
+            >
               {message.type === "image" && message.media_url && (
                 <div className="mb-1 relative overflow-hidden rounded-md">
                   <img
@@ -50,8 +58,10 @@ export function ChatMessages({ messages, messagesEndRef }: ChatMessagesProps) {
               )}
 
               <div className="flex items-center gap-1 shrink-0 ml-auto mt-1">
-                <span className="text-[10px] text-zinc-500 leading-none">{formatTime(message.created_at)}</span>
-                {isUser && (
+                <span className="text-[10px] text-zinc-500 leading-none">
+                  {formatTime(message.created_at)}
+                </span>
+                {isOwn && (
                   <span className="text-zinc-400">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M20 6 9 17l-5-5" />

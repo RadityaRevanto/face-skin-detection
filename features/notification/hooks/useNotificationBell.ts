@@ -89,7 +89,7 @@ export function useNotificationBell({
     try {
       setIsLoading(true);
       const [listRes, countRes] = await Promise.all([
-        notificationService.list({ per_page: 10 }),
+        notificationService.list({ limit: 10 }),
         notificationService.unreadCount(),
       ]);
 

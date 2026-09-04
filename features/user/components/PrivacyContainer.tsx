@@ -68,8 +68,8 @@ export function PrivacyContainer({ role, basePath }: PrivacyContainerProps) {
       const response = await profileService.requestExport();
       const downloadUrl = (response?.data as { download_url?: string } | undefined)?.download_url;
       if (downloadUrl) {
-        // Download URL BE sudah signed — buka langsung dengan token via query BE.
-        window.location.href = downloadUrl;
+        // Route download protected auth:sanctum (walau URL signed) — unduh via axios blob.
+        await profileService.downloadExport(downloadUrl);
       } else {
         alert(
           ((response as { meta?: { message?: string } })?.meta?.message as string) ||

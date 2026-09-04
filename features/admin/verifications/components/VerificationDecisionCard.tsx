@@ -85,20 +85,20 @@ export function VerificationDecisionCard({
   }
 
   return (
-    <Card className='overflow-hidden rounded-3xl border border-gray-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-gray-100! dark:bg-white! dark:text-slate-950!'>
-      <div className='border-b border-gray-100 px-6 py-4'>
-        <h3 className='text-base font-semibold text-gray-900'>
+    <Card className='sticky bottom-0 z-30 overflow-visible rounded-3xl border border-slate-100 bg-white text-slate-950 shadow-lg lg:static lg:shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-slate-100 dark:bg-white dark:text-slate-950'>
+      <div className='border-b border-slate-100 px-4 py-4 sm:px-6'>
+        <h3 className='text-base font-semibold text-slate-900'>
           Keputusan Verifikasi
         </h3>
-        <p className='mt-0.5 text-sm text-gray-400'>
+        <p className='mt-0.5 text-xs text-slate-500 sm:text-sm'>
           Approve dokter jika dokumen valid, atau reject dengan alasan
           penolakan.
         </p>
       </div>
 
-      <div className='space-y-4 p-6'>
+      <div className='space-y-4 p-4 sm:p-6'>
         {message ? (
-          <div className='rounded-xl bg-gray-50/80 px-4 py-3 text-sm font-semibold text-gray-600'>
+          <div className='rounded-xl bg-slate-50/80 px-4 py-3 text-sm font-semibold text-slate-600'>
             {message}
           </div>
         ) : null}
@@ -106,7 +106,7 @@ export function VerificationDecisionCard({
         <div>
           <label
             htmlFor='review-note'
-            className='mb-2 block text-xs font-semibold text-gray-400'
+            className='mb-2 block text-xs font-semibold text-slate-400'
           >
             Alasan Penolakan
           </label>
@@ -118,11 +118,12 @@ export function VerificationDecisionCard({
             value={note}
             onChange={(event) => setNote(event.target.value)}
             placeholder='Wajib diisi jika melakukan reject. Contoh: Dokumen STR tidak terbaca jelas atau tidak sesuai identitas.'
-            className='w-full resize-none rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3 text-sm leading-6 text-gray-700 outline-none transition-colors placeholder:text-gray-400 focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+            className='w-full resize-none rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100'
           />
         </div>
 
-        <div className='grid gap-3 sm:grid-cols-2'>
+        {/* Mobile: stack w-full (§5.7); desktop: berdampingan sm:grid-cols-2 */}
+        <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
           <Button
             type='button'
             variant='ghost'

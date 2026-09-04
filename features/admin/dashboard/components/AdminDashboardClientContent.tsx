@@ -3,6 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { adminService } from "@/features/admin/services/adminService";
+import { LoadingState } from "@/components/ui/loading-state";
+import type { ActivityLog } from "@/features/activity-log/types";
 import { AdminDashboardContent } from "./AdminDashboardContent";
 import type { AdminDashboardData } from "../lib/adminDashboardTypes";
 
@@ -27,16 +29,47 @@ export function AdminDashboardClientContent() {
     queryFn: () => adminService.dashboard(),
   });
 
+  // Widget Activity Timeline (§5.1 poin 5) — method service existing.
+  const { data: activityLogs } = useQuery({
+    queryKey: ["admin", "activity-log", "dashboard"],
+    queryFn: async () => {
+      const response = await adminService.activityLog({ page: 1, per_page: 5 });
+      return (response.data ?? []) as ActivityLog[];
+    },
+    staleTime: 60 * 1000,
+  });
+
+  // Komposisi status verifikasi untuk ProgressDonut (§4.6) — count via
+  // adminService.verifications (service existing, tanpa perubahan kontrak).
+  const { data: verificationCounts } = useQuery({
+    queryKey: ["admin", "verification-counts"],
+    queryFn: async () => {
+      const [pendingRes, approvedRes, rejectedRes] = await Promise.all([
+        adminService.verifications({ status: "pending", per_page: 1, page: 1 }),
+        adminService.verifications({ status: "approved", per_page: 1, page: 1 }),
+        adminService.verifications({ status: "rejected", per_page: 1, page: 1 }),
+      ]);
+
+      return {
+        pending: pendingRes.meta?.total ?? 0,
+        approved: approvedRes.meta?.total ?? 0,
+        rejected: rejectedRes.meta?.total ?? 0,
+      };
+    },
+    staleTime: 60 * 1000,
+  });
+
   if (isLoading && !data) {
-    return (
-      <div className="w-full space-y-4">
-        <div className="h-8 w-64 animate-pulse rounded bg-slate-100" />
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-28 animate-pulse rounded-2xl bg-slate-100" />
-        ))}
-      </div>
-    );
+    return <LoadingState variant="stat-grid" />;
   }
 
-  return <AdminDashboardContent {...(data as AdminDashboardData)} />;
+  return (
+    <AdminDashboardContent
+      {...((data ?? EMPTY_DASHBOARD) as AdminDashboardData)}
+      activityLogs={activityLogs ?? []}
+      verificationCounts={
+        verificationCounts ?? { pending: 0, approved: 0, rejected: 0 }
+      }
+    />
+  );
 }

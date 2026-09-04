@@ -10,10 +10,10 @@ type UserIdentityCardProps = {
 
 export function UserIdentityCard({ user }: UserIdentityCardProps) {
   return (
-    <Card className='overflow-hidden rounded-3xl border border-gray-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-gray-100! dark:bg-white! dark:text-slate-950!'>
-      <div className='border-b border-gray-100 px-6 py-4'>
-        <h3 className='text-base font-semibold text-gray-900'>Profil User</h3>
-        <p className='mt-0.5 text-sm text-gray-400'>
+    <Card className='overflow-hidden rounded-3xl border border-slate-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+      <div className='border-b border-slate-100 px-6 py-4'>
+        <h3 className='text-base font-semibold text-slate-900'>Profil User</h3>
+        <p className='mt-0.5 text-sm text-slate-400'>
           Data akun user yang terdaftar di sistem.
         </p>
       </div>
@@ -34,8 +34,8 @@ export function UserIdentityCard({ user }: UserIdentityCardProps) {
           </div>
 
           <div>
-            <h4 className='text-lg font-bold text-gray-900'>{user.name}</h4>
-            <p className='text-sm text-gray-500'>{user.email}</p>
+            <h4 className='text-lg font-bold text-slate-900'>{user.name}</h4>
+            <p className='text-sm text-slate-500'>{user.email}</p>
           </div>
         </div>
 

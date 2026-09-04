@@ -15,12 +15,16 @@ type DoctorProfileContentProps = {
   isReviewsError?: boolean;
 };
 
-function Stars({ rating }: { rating: number | null }) {
+function Stars({ rating }: { rating: number | string | null | undefined }) {
   if (rating == null) return <span className="text-sm text-slate-400">—</span>;
+  // BE AVG() bisa mengirim string "4.5000" — normalisasi agar aman.
+  const value = Number(rating);
+  if (!Number.isFinite(value)) return <span className="text-sm text-slate-400">—</span>;
+  const rounded = Math.round(value);
   return (
     <span className="text-sm font-bold text-amber-500">
-      {"★".repeat(Math.round(rating))}
-      <span className="text-slate-300">{"★".repeat(5 - Math.round(rating))}</span>
+      {"★".repeat(rounded)}
+      <span className="text-slate-300">{"★".repeat(5 - rounded)}</span>
     </span>
   );
 }
@@ -89,7 +93,7 @@ export function DoctorProfileContent({
               <Stars rating={doctor.rating_avg} />
               <span className="text-sm text-slate-500">
                 {doctor.rating_count > 0
-                  ? `${doctor.rating_avg?.toFixed(1)} dari ${doctor.rating_count} review`
+                  ? `${Number(doctor.rating_avg).toFixed(1)} dari ${doctor.rating_count} review`
                   : "Belum ada review"}
               </span>
             </div>
@@ -146,7 +150,7 @@ export function DoctorProfileContent({
           </h2>
           {doctor.rating_avg != null && (
             <span className="text-sm font-semibold text-slate-500">
-              ⭐ {doctor.rating_avg.toFixed(1)}
+              ⭐ {Number(doctor.rating_avg).toFixed(1)}
             </span>
           )}
         </div>

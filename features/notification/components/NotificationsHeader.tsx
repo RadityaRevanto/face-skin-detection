@@ -19,7 +19,7 @@ export function NotificationsHeader({ total, hasNotifications, onMarkAllAsRead }
       <button
         onClick={onMarkAllAsRead}
         disabled={!hasNotifications}
-        className="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 text-sm font-semibold text-slate-600 rounded-xl hover:bg-slate-50 hover:text-emerald-600 transition-colors disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50 hover:text-emerald-600 disabled:opacity-50 sm:w-auto sm:py-2"
       >
         <Check size={16} /> Tandai semua dibaca
       </button>

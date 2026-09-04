@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import type { ActivityLog } from "../types";
 import { getActivityLog } from "../services/activityLogService";
 import { ActivityLogItem } from "./ActivityLogItem";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export function ActivityLogContainer() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
@@ -43,7 +44,7 @@ export function ActivityLogContainer() {
       </div>
 
       {/* Log List */}
-      <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -63,11 +64,11 @@ export function ActivityLogContainer() {
             ))}
           </div>
         ) : (
-          <div className="py-12 text-center">
-            <p className="text-sm font-semibold text-slate-500">
-              Belum ada aktivitas
-            </p>
-          </div>
+          <EmptyState
+            title="Belum ada aktivitas"
+            description="Aktivitas admin & sistem akan tampil di sini."
+            className="border-0 py-12"
+          />
         )}
       </div>
 

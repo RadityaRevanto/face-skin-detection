@@ -19,7 +19,7 @@ export function NotificationsContainer() {
   const fetchNotifications = useCallback(async (page: number = 1) => {
     try {
       setIsLoading(true);
-      const result = await notificationService.list({ page, per_page: 10 });
+      const result = await notificationService.list({ page, limit: 10 });
       if (result.data && Array.isArray(result.data)) {
         setNotifications(result.data);
       }

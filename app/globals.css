@@ -23,6 +23,14 @@
   /* Illustration accents */
   --illustration-skin: #f2c7a7;
   --illustration-skin-alt: #efc09d;
+  /* Status tokens — DESIGN.md §2.2 (satu status = satu pasangan warna) */
+  --success-fg: #047857;
+  --success-bg: #ecfdf5;
+  --warning-fg: #b45309;
+  --warning-bg: #fffbeb;
+  --destructive-fg: #be123c;
+  --destructive-bg: #fff1f2;
+  --destructive-strong: #dc2626;
 }
 
 @theme inline {
@@ -43,6 +51,13 @@
   --color-chat-input: var(--chat-input-surface);
   --color-illustration-skin: var(--illustration-skin);
   --color-illustration-skin-alt: var(--illustration-skin-alt);
+  --color-success-fg: var(--success-fg);
+  --color-success-bg: var(--success-bg);
+  --color-warning-fg: var(--warning-fg);
+  --color-warning-bg: var(--warning-bg);
+  --color-destructive-fg: var(--destructive-fg);
+  --color-destructive-bg: var(--destructive-bg);
+  --color-destructive-strong: var(--destructive-strong);
   --font-sans: var(--font-poppins);
   --font-mono: var(--font-geist-mono);
 }

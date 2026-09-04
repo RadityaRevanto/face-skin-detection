@@ -1,41 +1,17 @@
 import Link from "next/link";
+import { useState } from "react";
 
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import type { ActivityLog } from "@/features/activity-log/types";
 
 import type { AdminDashboardData } from "@/features/admin/dashboard/lib/adminDashboardTypes";
-import { DashboardIcon } from "./DashboardIcon";
-import { StatusBadge } from "./StatusBadge";
-
-const lightCardClass =
-  "!border-slate-100 !bg-white !text-slate-950 shadow-sm dark:!border-slate-100 dark:!bg-white dark:!text-slate-950";
-
-function CardHeader({
-  title,
-  description,
-  href,
-}: {
-  title: string;
-  description: string;
-  href?: string;
-}) {
-  return (
-    <div className='flex items-start justify-between gap-4 border-b border-gray-100 px-6 py-4'>
-      <div>
-        <h2 className='text-sm font-semibold text-gray-900'>{title}</h2>
-        <p className='mt-0.5 text-xs text-gray-400'>{description}</p>
-      </div>
-
-      {href ? (
-        <Link
-          href={href}
-          className='shrink-0 text-xs font-semibold text-emerald-700 hover:text-emerald-800'
-        >
-          View all
-        </Link>
-      ) : null}
-    </div>
-  );
-}
+import { StatusBadge } from "@/features/admin/components/StatusBadge";
+import { StatCard } from "./StatCard";
+import { QueueList, type QueueListItem } from "./QueueList";
+import { ProgressDonut } from "./ProgressDonut";
+import { SummaryCard } from "./SummaryCard";
+import { ActivityTimeline } from "./ActivityTimeline";
 
 function formatCurrency(value: number): string {
   return new Intl.NumberFormat("id-ID", {
@@ -57,124 +33,221 @@ function formatDate(dateStr: string | null): string {
   }
 }
 
+type VerificationCounts = {
+  pending: number;
+  approved: number;
+  rejected: number;
+};
+
+type AdminDashboardContentProps = AdminDashboardData & {
+  /** Widget Activity Timeline (§5.1 poin 5) — dari useQuery container. */
+  activityLogs?: ActivityLog[];
+  /** Komposisi status verifikasi untuk donut (§4.6). */
+  verificationCounts?: VerificationCounts;
+};
+
 export function AdminDashboardContent({
   stats,
   pending_actions,
   recent_verifications,
-}: AdminDashboardData) {
-  const statCards = [
+  activityLogs = [],
+  verificationCounts,
+}: AdminDashboardContentProps) {
+  // §5.1 mobile: akordeon "Lihat semua statistik" untuk 4 kartu sekunder.
+  const [showAllStats, setShowAllStats] = useState(false);
+
+  const primaryStats = [
     {
       label: "Total Users",
       value: String(stats.total_users),
       icon: "users",
       tone: "bg-emerald-50 text-emerald-600",
+      href: "/admin/users",
     },
     {
       label: "Total Doctors",
       value: String(stats.total_doctors),
       icon: "stethoscope",
       tone: "bg-sky-50 text-sky-600",
+      href: "/admin/doctors",
     },
     {
       label: "Verifikasi Pending",
       value: String(pending_actions.doctor_verifications),
-      icon: "shield",
+      icon: "clock",
       tone: "bg-amber-50 text-amber-600",
+      href: "/admin/doctor-verifications/pending",
     },
     {
       label: "Total Scans",
       value: String(stats.total_scans),
-      icon: "blocked",
+      icon: "scan",
       tone: "bg-violet-50 text-violet-600",
     },
+  ];
+
+  const secondaryStats = [
     {
       label: "Scans Hari Ini",
       value: String(stats.scans_today),
-      icon: "users",
+      icon: "scan",
       tone: "bg-emerald-50 text-emerald-600",
     },
     {
       label: "User Baru (7 hari)",
       value: String(stats.new_users_this_week),
-      icon: "stethoscope",
+      icon: "user-plus",
       tone: "bg-sky-50 text-sky-600",
     },
     {
       label: "Pro Subscriptions",
       value: String(stats.active_pro_subscriptions),
-      icon: "shield",
+      icon: "subscription",
       tone: "bg-amber-50 text-amber-600",
     },
     {
       label: "Revenue Bulanan",
       value: formatCurrency(stats.monthly_revenue),
-      icon: "blocked",
+      icon: "revenue",
       tone: "bg-rose-50 text-rose-600",
     },
   ];
 
-  return (
-    <div className='w-full space-y-6'>
-      <section className='grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4'>
-        {statCards.map((item) => (
-          <Card
-            key={item.label}
-            className={`overflow-visible rounded-2xl ${lightCardClass}`}
-          >
-            <div className='flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-5 sm:p-6'>
-              <div
-                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-full sm:h-16 sm:w-16 ${item.tone}`}
-              >
-                <DashboardIcon name={item.icon} />
-              </div>
+  // QueueList "Perlu Review" (§4.5) — filter client-side render:
+  // hanya item pending dari recent_verifications (keputusan approved).
+  const queueItems: QueueListItem[] = recent_verifications
+    .filter((v) => (v.verification_status ?? "pending") === "pending")
+    .slice(0, 4)
+    .map((v) => ({
+      id: v.uuid,
+      title: v.doctor?.full_name ?? "Dokter",
+      meta: v.str_number ?? v.specialization ?? "Dokumen",
+      status: "Pending",
+      statusVariant: "pending" as const,
+      href: `/admin/doctor-verifications/detail?id=${encodeURIComponent(v.uuid)}`,
+    }));
 
-              <div className='min-w-0 flex-1'>
-                <p className='text-sm font-semibold leading-snug text-slate-500'>
-                  {item.label}
-                </p>
-                <p className='mt-1 text-2xl font-bold tracking-tight sm:mt-2 sm:text-3xl'>
-                  {item.value}
-                </p>
-              </div>
-            </div>
-          </Card>
+  // Donut: pakai counts lengkap bila tersedia; fallback pending-only dari
+  // pending_actions (menampilkan komposisi yang diketahui saja).
+  const donutCounts =
+    verificationCounts ?? {
+      pending: pending_actions.doctor_verifications,
+      approved: 0,
+      rejected: 0,
+    };
+  const donutTotal = donutCounts.pending + donutCounts.approved + donutCounts.rejected;
+  const donutCenterValue =
+    donutTotal > 0
+      ? `${Math.round((donutCounts.approved / donutTotal) * 100)}%`
+      : "0%";
+  const donutCenterLabel = "approved";
+
+  return (
+    <div className="w-full space-y-6">
+      {/* §5.1 mobile poin 1: greeting ringkas */}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-950">
+            Halo, Admin
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Ringkasan platform SkinCek hari ini.
+          </p>
+        </div>
+      </div>
+
+      {/* §5.1: mobile = 4 kartu prioritas + akordeon; lg+ = 8 kartu 4 kolom */}
+      <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+        {primaryStats.map((item) => (
+          <StatCard key={item.label} {...item} />
         ))}
       </section>
 
-      <Card className='overflow-hidden rounded-3xl border-gray-100! bg-white! text-slate-950! shadow-sm dark:border-gray-100! dark:bg-white! dark:text-slate-950!'>
-        <CardHeader
-          title='Antrean Verifikasi Dokter'
-          description='Dokter yang perlu direview sebelum mendapat akses dashboard dokter.'
-          href='/admin/doctor-verifications/pending'
-        />
+      {/* Akordeon "Lihat semua statistik" (mobile/tablet) — grid 4 penuh di lg */}
+      <div className="lg:hidden">
+        <button
+          type="button"
+          onClick={() => setShowAllStats((v) => !v)}
+          aria-expanded={showAllStats}
+          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50"
+        >
+          {showAllStats ? "Sembunyikan statistik" : "Lihat semua statistik"}
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 24 24"
+            fill="none"
+            className={`h-4 w-4 text-slate-400 transition-transform ${showAllStats ? "rotate-180" : ""}`}
+          >
+            <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
 
-        <div className='grid grid-cols-1 gap-4 p-6 lg:grid-cols-2'>
-          {recent_verifications.length > 0 ? (
-            recent_verifications.slice(0, 4).map((v) => (
-              <Link
-                key={v.uuid}
-                href={`/admin/doctor-verifications/${v.uuid}`}
-                className='flex items-center justify-between gap-4 rounded-xl bg-gray-50/80 p-3.5 transition-colors hover:bg-emerald-50/70'
-              >
-                <div className='min-w-0'>
-                  <p className='truncate text-sm font-semibold text-gray-900'>
-                    {v.doctor?.full_name ?? "Dokter"}
-                  </p>
-                  <p className='truncate text-xs text-gray-500'>
-                    {v.str_number ?? v.specialization ?? "Dokumen"} - {formatDate(v.created_at)}
-                  </p>
-                </div>
+        {showAllStats ? (
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            {secondaryStats.map((item) => (
+              <StatCard key={item.label} {...item} />
+            ))}
+          </div>
+        ) : null}
+      </div>
 
-                <StatusBadge status={v.verification_status ?? "pending"} />
-              </Link>
-            ))
-          ) : (
-            <p className='rounded-xl bg-gray-50/80 p-3.5 text-sm font-semibold text-gray-500'>
-              Tidak ada antrean verifikasi dokter.
-            </p>
-          )}
+      {/* 4 kartu sekunder tampil permanen di lg+ (bagian baris-1 grid 8) */}
+      <div className="hidden gap-3 sm:gap-4 lg:grid lg:grid-cols-4">
+        {secondaryStats.map((item) => (
+          <StatCard key={item.label} {...item} />
+        ))}
+      </div>
+
+      {/* Baris 2: QueueList (2/3) + Donut (1/3) — mobile stack, sm 2 kolom, lg 2/3-1/3 */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <QueueList
+            title="Perlu Review"
+            description="Verifikasi dokter menunggu keputusan."
+            items={queueItems}
+            viewAllHref="/admin/doctor-verifications/pending"
+            emptyTitle="Tidak ada antrean review"
+            emptyDescription="Semua verifikasi sudah diproses."
+          />
         </div>
-      </Card>
+
+        <Card className="overflow-hidden rounded-2xl border-slate-100 bg-white p-4 text-slate-950 shadow-sm sm:p-6">
+          <h3 className="text-sm font-semibold text-slate-900 sm:text-base">
+            Progress Verifikasi
+          </h3>
+          <p className="mt-0.5 text-xs text-slate-500">
+            Komposisi status seluruh verifikasi dokter.
+          </p>
+          <div className="mt-5">
+            <ProgressDonut
+              centerValue={donutCenterValue}
+              centerLabel={donutCenterLabel}
+              pending={donutCounts.pending}
+              approved={donutCounts.approved}
+              rejected={donutCounts.rejected}
+            />
+          </div>
+        </Card>
+      </div>
+
+      {/* Baris 3: Activity timeline (2/3) + Revenue summary (1/3) */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <ActivityTimeline logs={activityLogs.slice(0, 5)} />
+        </div>
+
+        <SummaryCard
+          title="Revenue Bulanan"
+          value={formatCurrency(stats.monthly_revenue)}
+          meta={[
+            { label: "Pro Subscriptions aktif", value: String(stats.active_pro_subscriptions) },
+            { label: "Total Scans", value: String(stats.total_scans) },
+            { label: "Scans hari ini", value: String(stats.scans_today) },
+          ]}
+          primaryAction={{ label: "Kelola Verifikasi", href: "/admin/doctor-verifications/pending" }}
+          secondaryAction={{ label: "Lihat Users", href: "/admin/users" }}
+        />
+      </div>
     </div>
   );
 }

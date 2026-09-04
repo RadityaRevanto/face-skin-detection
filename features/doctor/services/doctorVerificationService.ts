@@ -1,26 +1,25 @@
-import { api } from "@/lib/api";
+import { fetchEnvelope, mutate } from "@/lib/api/handlers";
+import type { ApiEnvelope } from "@/lib/api/envelope";
 
 import type { DoctorVerification } from "../verification/components/VerificationTypes";
 
 export type { DoctorVerification };
 
 export const doctorVerificationService = {
-  show: async (): Promise<DoctorVerification | null> => {
-    const response = await api.get("/doctor-verifications");
-    return response.data.data ?? null;
-  },
+  /**
+   * GET /doctor-verifications — status verifikasi sendiri.
+   * 404 "Belum ada pengajuan verifikasi" jika belum pernah mengajukan.
+   */
+  show: (): Promise<DoctorVerification | null> =>
+    fetchEnvelope<DoctorVerification | null>("/doctor-verifications").then(
+      (r) => r.data ?? null,
+    ),
 
-  submit: async (formData: FormData) => {
-    const response = await api.post("/doctor-verifications", formData);
-    return response.data;
-  },
+  /** POST /doctor-verifications — multipart: data profesional + documents[]. */
+  submit: (formData: FormData): Promise<ApiEnvelope<DoctorVerification>> =>
+    mutate("post", "/doctor-verifications", formData),
 
-  resubmit: async (id: string, formData: FormData) => {
-    const response = await api.post(
-      `/doctor-verifications/${id}/resubmit`,
-      formData,
-    );
-    return response.data;
-  },
+  /** POST /doctor-verifications/{uuid}/resubmit — ajukan ulang (revisi/ditolak). */
+  resubmit: (uuid: string, formData: FormData): Promise<ApiEnvelope<DoctorVerification>> =>
+    mutate("post", `/doctor-verifications/${uuid}/resubmit`, formData),
 };
-

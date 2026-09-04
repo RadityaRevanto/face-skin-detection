@@ -86,7 +86,7 @@ export function HistoryClientContent({ page, filters }: HistoryClientContentProp
       />
 
       {isLoading ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="h-64 animate-pulse rounded-2xl bg-slate-100" />
           ))}

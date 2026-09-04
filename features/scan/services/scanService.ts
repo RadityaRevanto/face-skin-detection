@@ -94,25 +94,33 @@ export const scanService = {
     return response.data;
   },
 
+  /** GET /scans/{uuid} — JsonResource dibungkus `data` oleh Laravel. */
   detail: async (uuid: string): Promise<PredictionResult> => {
-    const response = await api.get(`/scans/${uuid}`);
+    const response = await api.get<{ data: PredictionResult }>(`/scans/${uuid}`);
     return response.data.data;
   },
 
+  /** POST /scans (multipart, status 201) — JsonResource dibungkus `data`. */
   upload: async (image: File): Promise<PredictionResult> => {
     const formData = new FormData();
     formData.append("image", image);
-    const response = await api.post("/scans", formData, { timeout: 60000 });
+    const response = await api.post<{ data: PredictionResult }>("/scans", formData, {
+      timeout: 60000,
+    });
     return response.data.data;
   },
 
+  /** POST /scans/livecam (multipart, status 201) — JsonResource dibungkus `data`. */
   livecam: async (image: Blob, fileName = "livecam.jpg"): Promise<PredictionResult> => {
     const formData = new FormData();
     formData.append("image", image, fileName);
-    const response = await api.post("/scans/livecam", formData, { timeout: 60000 });
+    const response = await api.post<{ data: PredictionResult }>("/scans/livecam", formData, {
+      timeout: 60000,
+    });
     return response.data.data;
   },
 
+  /** POST /scans/{uuid}/feedback — BE return envelope successResponse. */
   feedback: async (uuid: string, isAccurate: boolean) => {
     const response = await api.post(`/scans/${uuid}/feedback`, {
       is_accurate: isAccurate,

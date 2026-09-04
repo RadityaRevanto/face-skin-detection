@@ -1,4 +1,6 @@
-import { api } from "@/lib/api";
+import { fetchPaginated, mutate } from "@/lib/api/handlers";
+import type { ApiEnvelope } from "@/lib/api/envelope";
+import { paginationParams } from "@/lib/api/envelope";
 
 export type DeviceToken = {
   uuid: string;
@@ -9,22 +11,21 @@ export type DeviceToken = {
   [key: string]: unknown;
 };
 
+export type RegisterDeviceTokenPayload = {
+  fcm_token: string;
+  platform: string;
+};
+
 export const deviceTokenService = {
-  list: async (params?: { page?: number; per_page?: number }) => {
-    const response = await api.get("/device-tokens", { params });
-    return response.data as {
-      data: DeviceToken[];
-      meta: { current_page: number; last_page: number; per_page: number; total: number };
-    };
-  },
+  /** GET /device-tokens — paginated. */
+  list: (page = 1, perPage?: number) =>
+    fetchPaginated<DeviceToken>("/device-tokens", paginationParams(page, perPage)),
 
-  register: async (payload: { fcm_token: string; platform: string }) => {
-    const response = await api.post("/device-tokens", payload);
-    return response.data.data as DeviceToken;
-  },
+  /** POST /device-tokens — registrasi token FCM. */
+  register: (payload: RegisterDeviceTokenPayload): Promise<DeviceToken> =>
+    mutate<DeviceToken>("post", "/device-tokens", payload).then((r) => r.data),
 
-  destroy: async (uuid: string) => {
-    const response = await api.delete(`/device-tokens/${uuid}`);
-    return response.data;
-  },
+  /** DELETE /device-tokens/{uuid} — hapus token perangkat. */
+  destroy: (uuid: string): Promise<ApiEnvelope<null>> =>
+    mutate("delete", `/device-tokens/${uuid}`),
 };

@@ -5,6 +5,7 @@ import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { adminService } from "@/features/admin/services/adminService";
+import { LoadingState } from "@/components/ui/loading-state";
 import { DoctorsContent } from "./DoctorsContent";
 import type { DoctorsPageData, DoctorRow } from "../lib/doctorsTypes";
 
@@ -64,14 +65,7 @@ function DoctorsPageInner() {
   }, [data, page]);
 
   if (isLoading && !data) {
-    return (
-      <div className="w-full space-y-4">
-        <div className="h-8 w-64 animate-pulse rounded bg-slate-100" />
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-16 animate-pulse rounded-xl bg-slate-100" />
-        ))}
-      </div>
-    );
+    return <LoadingState variant="rows" />;
   }
 
   return <DoctorsContent {...pageData} />;

@@ -1,5 +1,6 @@
-import { api } from "@/lib/api";
-import type { PagePagination } from "@/lib/types/pagination";
+import { fetchPaginated, mutate } from "@/lib/api/handlers";
+import type { ApiEnvelope, PaginationMeta } from "@/lib/api/envelope";
+import { paginationParams } from "@/lib/api/envelope";
 
 export type ConversationSummary = {
   uuid: string;
@@ -20,44 +21,61 @@ export type ChatMessage = {
   [key: string]: unknown;
 };
 
+/** ConversationResource::collection + paginator — meta pagination BE. */
+export type ConversationsPage = {
+  data: ConversationSummary[];
+  meta: PaginationMeta & { total: number };
+};
+
 export const consultationService = {
-  conversations: async (params?: { page?: number; per_page?: number }) => {
-    const response = await api.get("/conversations", { params });
-    return response.data as {
-      data: ConversationSummary[];
-      meta: PagePagination & { total: number };
-    };
-  },
+  /** GET /conversations — list percakapan (user atau doctor). */
+  conversations: (page = 1, perPage?: number): Promise<ConversationsPage> =>
+    fetchPaginated<ConversationSummary, ConversationsPage["meta"]>(
+      "/conversations",
+      paginationParams(page, perPage),
+    ),
 
-  start: async (doctorUuid: string) => {
-    const response = await api.post("/conversations", {
-      doctor_id: doctorUuid,
-    });
-    return response.data;
-  },
+  /** POST /conversations — mulai chat dengan dokter (body: doctor_id uuid). */
+  start: (doctorUuid: string): Promise<ApiEnvelope<ConversationSummary>> =>
+    mutate("post", "/conversations", { doctor_id: doctorUuid }),
 
-  messages: async (conversationId: string, params?: { page?: number; per_page?: number }) => {
-    const response = await api.get(`/conversations/${conversationId}/messages`, {
-      params,
-    });
-    return response.data as {
-      data: ChatMessage[];
-      meta: PagePagination & { total: number };
-    };
-  },
+  /** GET /conversations/{id}/messages — paginated, urut terbaru. */
+  messages: (conversationId: string, page = 1, perPage?: number) =>
+    fetchPaginated<ChatMessage, ConversationsPage["meta"]>(
+      `/conversations/${conversationId}/messages`,
+      paginationParams(page, perPage),
+    ),
 
-  send: async (conversationId: string, payload: { message?: string; media?: File | Blob }) => {
-    const isFile = payload.media instanceof File || payload.media instanceof Blob;
-    const body = isFile
+  /**
+   * POST /conversations/{id}/messages — multipart saat ada media.
+   * Field BE: `content` | `media` (file) | `prediction_history_id`.
+   */
+  send: (
+    conversationId: string,
+    payload: {
+      message?: string;
+      media?: File | Blob;
+      prediction_history_id?: string;
+    },
+  ) => {
+    const hasFile = payload.media instanceof File || payload.media instanceof Blob;
+    const body: FormData | Record<string, unknown> = hasFile
       ? (() => {
           const fd = new FormData();
-          if (payload.message) fd.append("message", payload.message);
+          if (payload.message) fd.append("content", payload.message);
           if (payload.media) fd.append("media", payload.media, "attachment");
+          if (payload.prediction_history_id)
+            fd.append("prediction_history_id", payload.prediction_history_id);
           return fd;
         })()
-      : { message: payload.message };
+      : (() => {
+          const obj: Record<string, unknown> = {};
+          if (payload.message) obj.content = payload.message;
+          if (payload.prediction_history_id)
+            obj.prediction_history_id = payload.prediction_history_id;
+          return obj;
+        })();
 
-    const response = await api.post(`/conversations/${conversationId}/messages`, body);
-    return response.data;
+    return mutate("post", `/conversations/${conversationId}/messages`, body);
   },
 };

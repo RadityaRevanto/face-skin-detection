@@ -3,7 +3,8 @@ export { AdminDashboardContent } from "./dashboard/components/AdminDashboardCont
 export { DashboardCardHeader } from "./dashboard/components/DashboardCardHeader";
 export { DashboardIcon } from "./dashboard/components/DashboardIcon";
 export { PersonRow } from "./dashboard/components/PersonRow";
-export { StatusBadge } from "./dashboard/components/StatusBadge";
+export { StatusBadge } from "./components/StatusBadge";
+export type { StatusBadgeVariant } from "./components/StatusBadge";
 export { DoctorsContent } from "./doctors/components/DoctorsContent";
 export { DoctorsTable } from "./doctors/components/DoctorsTable";
 export { ActionIcon as DoctorActionIcon } from "./doctors/components/DoctorActionIcon";
@@ -17,4 +18,4 @@ export { ViewIcon, DocumentIcon as VerificationDocumentIcon } from "./verificati
 export { DoctorVerificationStats } from "./verifications/components/DoctorVerificationStats";
 export { DoctorVerificationTable } from "./verifications/components/DoctorVerificationTable";
 export { DoctorVerificationTabs } from "./verifications/components/DoctorVerificationTabs";
-export { StatusBadge as VerificationStatusBadge } from "./verifications/components/StatusBadge";
+export { StatusBadge as VerificationStatusBadge } from "./components/StatusBadge";

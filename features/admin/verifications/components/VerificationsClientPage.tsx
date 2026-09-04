@@ -5,6 +5,7 @@ import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { adminService } from "@/features/admin/services/adminService";
+import { LoadingState } from "@/components/ui/loading-state";
 import { DoctorVerificationContent } from "./DoctorVerificationContent";
 import type {
   DoctorVerificationPageData,
@@ -114,14 +115,7 @@ function VerificationsPageInner({ pageType }: { pageType: DoctorVerificationPage
   }, [listData, pendingCount, rejectedCount, approvedCount, pageType, page]);
 
   if (isLoading && !listData) {
-    return (
-      <div className="w-full space-y-4">
-        <div className="h-8 w-64 animate-pulse rounded bg-slate-100" />
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-16 animate-pulse rounded-xl bg-slate-100" />
-        ))}
-      </div>
-    );
+    return <LoadingState variant="rows" />;
   }
 
   return <DoctorVerificationContent {...pageData} />;

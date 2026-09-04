@@ -14,12 +14,12 @@ export function VerificationDocumentCard({
   const firstDoc = doctor.documents.length > 0 ? doctor.documents[0] : null;
 
   return (
-    <Card className='overflow-hidden rounded-3xl border border-gray-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-gray-100! dark:bg-white! dark:text-slate-950!'>
-      <div className='border-b border-gray-100 px-6 py-4'>
-        <h3 className='text-base font-semibold text-gray-900'>
+    <Card className='overflow-hidden rounded-3xl border border-slate-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+      <div className='border-b border-slate-100 px-6 py-4'>
+        <h3 className='text-base font-semibold text-slate-900'>
           Dokumen & Status
         </h3>
-        <p className='mt-0.5 text-sm text-gray-400'>
+        <p className='mt-0.5 text-sm text-slate-400'>
           Buka dokumen sebelum menentukan hasil verifikasi.
         </p>
       </div>
@@ -49,7 +49,7 @@ export function VerificationDocumentCard({
             </div>
           ))
         ) : (
-          <div className='flex items-center gap-4 rounded-xl bg-gray-50 p-3.5 text-gray-500'>
+          <div className='flex items-center gap-4 rounded-xl bg-slate-50 p-3.5 text-slate-500'>
             <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm'>
               <DocumentIcon />
             </div>

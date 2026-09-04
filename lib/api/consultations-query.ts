@@ -44,7 +44,7 @@ export class ConsultationApiError extends Error {
   }
 }
 
-async function toConsultationError(error: unknown, fallback: string) {
+function toConsultationError(error: unknown, fallback: string): ConsultationApiError {
   if (typeof error === "object" && error !== null && "response" in error) {
     const axiosLike = error as {
       response?: { status: number; data?: { message?: string } };

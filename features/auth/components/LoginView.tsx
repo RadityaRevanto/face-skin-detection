@@ -4,7 +4,6 @@ import Link from "next/link";
 import { type FormEvent, useState } from "react";
 import { GoogleLoginButton } from "./GoogleLoginButton";
 
-import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/constants";
 import { authService } from "../services/authService";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
@@ -46,15 +45,29 @@ export function LoginView() {
 
     try {
       const response = await authService.login({ email, password });
-      const profile = response.data?.user;
 
-      if (!profile) {
+      if (!response.data?.user || !response.data?.token) {
         setErrorMessage("Email atau password salah.");
         return;
       }
 
-      const emailVerified = (profile as any).email_verified !== false;
-      if (!emailVerified) {
+      // Login response tidak menyertakan role — ambil dari GET /profile.
+      const profile = await authService.me();
+
+      if (!profile.data) {
+        setErrorMessage("Gagal memuat profil pengguna.");
+        return;
+      }
+
+      const emailVerified =
+        Boolean(profile.data.email_verified) ||
+        Boolean((response.data.user as { email_verified_at?: string | null }).email_verified_at);
+
+      // Verifikasi email hanya diwajibkan untuk role user (fitur scan/chat
+      // meng-enforce ini per-endpoint di BE). Admin & doctor tetap masuk
+      // dashboard — kalau tidak, terjadi ping-pong /verify-email ↔
+      // RedirectIfAuthenticated tanpa toast selamat datang.
+      if (!emailVerified && profile.data.role === "user") {
         router.push(`/verify-email?email=${encodeURIComponent(email)}`);
         return;
       }
@@ -63,13 +76,13 @@ export function LoginView() {
         description: "Login berhasil. Selamat datang kembali!",
       });
 
-      if (profile.role === "admin") {
+      if (profile.data.role === "admin") {
         router.push("/admin/dashboard");
         return;
       }
 
-      if (profile.role === "doctor") {
-        if (profile.verification_status === "approved") {
+      if (profile.data.role === "doctor") {
+        if (profile.data.verification_status === "approved") {
           router.push("/doctor/dashboard");
         } else {
           router.push("/doctor/verification-status");

@@ -2,15 +2,19 @@ import Link from "next/link";
 
 import { Sparkles } from "lucide-react";
 
+import { ROUTES } from "@/lib/constants";
 import type { DoctorCard } from "../types";
 
-function Stars({ rating }: { rating: number | null }) {
+function Stars({ rating }: { rating: number | string | null | undefined }) {
   if (rating == null) return null;
+  // BE AVG() bisa mengirim string "4.5000" — guard agar .toFixed tidak crash.
+  const value = Number(rating);
+  if (!Number.isFinite(value)) return null;
   return (
     <span className="flex items-center gap-1">
       <span className="text-amber-400">★</span>
       <span className="text-xs font-bold text-slate-700">
-        {rating.toFixed(1)}
+        {value.toFixed(1)}
       </span>
     </span>
   );
@@ -19,7 +23,7 @@ function Stars({ rating }: { rating: number | null }) {
 function DoctorCardItem({ doctor }: { doctor: DoctorCard }) {
   return (
     <Link
-      href={`/user/consultations/${doctor.uuid}`}
+      href={ROUTES.USER.DOCTOR_PROFILE(doctor.uuid)}
       className="group flex items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4 transition-all hover:border-emerald-200 hover:shadow-md sm:p-5"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -58,7 +62,7 @@ function DoctorCardItem({ doctor }: { doctor: DoctorCard }) {
 function AiBotCard({ doctor }: { doctor: DoctorCard }) {
   return (
     <Link
-      href={`/user/consultations/${doctor.uuid}`}
+      href={ROUTES.USER.DOCTOR_PROFILE(doctor.uuid)}
       className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-transparent bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 p-[1.5px] transition-all hover:shadow-lg"
     >
       <div className="flex w-full items-center gap-4 rounded-[calc(1rem-1.5px)] bg-white p-4 sm:p-5">

@@ -1,7 +1,8 @@
-import { api } from "@/lib/api";
+import { fetchEnvelope, fetchPaginated, mutate } from "@/lib/api/handlers";
+import type { ApiEnvelope } from "@/lib/api/envelope";
+import { paginationParams } from "@/lib/api/envelope";
 
 import type {
-  ApiPaginationMeta,
   DoctorCard,
   DoctorProfile,
   DoctorReview,
@@ -10,30 +11,46 @@ import type {
 export { type ApiPaginationMeta } from "../types";
 export type { DoctorCard, DoctorProfile, DoctorReview } from "../types";
 
+export type RatePayload = {
+  rating: number;
+  review?: string;
+};
+
+/**
+ * MySQL AVG() (Laravel withAvg) mengembalikan string "4.5000" — normalisasi
+ * ke number di service layer agar semua consumer aman memanggil .toFixed().
+ */
+function normalizeRating<T extends DoctorCard>(doctor: T): T {
+  if (doctor?.rating_avg == null) return doctor;
+  const rating = Number(doctor.rating_avg);
+  return {
+    ...doctor,
+    rating_avg: Number.isFinite(rating) ? rating : null,
+  };
+}
+
 export const doctorsService = {
-  list: async (params?: { page?: number; per_page?: number }) => {
-    const response = await api.get<{ data: DoctorCard[]; meta: ApiPaginationMeta }>(
+  /** GET /doctors — list dokter approved, paginated (rating_avg dinormalisasi). */
+  list: (params?: { page?: number; per_page?: number }) =>
+    fetchPaginated<DoctorCard>(
       "/doctors",
-      { params },
-    );
-    return response.data;
-  },
+      paginationParams(params?.page ?? 1, params?.per_page),
+    ).then((page) => ({ ...page, data: page.data.map(normalizeRating) })),
 
-  profile: async (uuid: string): Promise<DoctorProfile> => {
-    const response = await api.get(`/doctors/${uuid}`);
-    return response.data.data;
-  },
+  /** GET /doctors/{uuid} — DoctorResource dibungkus `data`; 404 jika belum approved. */
+  profile: (uuid: string): Promise<DoctorProfile> =>
+    fetchEnvelope<DoctorProfile>(`/doctors/${uuid}`).then((r) =>
+      normalizeRating(r.data),
+    ),
 
-  ratings: async (uuid: string, params?: { page?: number; per_page?: number }) => {
-    const response = await api.get(`/doctors/${uuid}/ratings`, { params });
-    return response.data as {
-      data: DoctorReview[];
-      meta: ApiPaginationMeta;
-    };
-  },
+  /** GET /doctors/{uuid}/ratings — custom meta pagination. */
+  ratings: (uuid: string, params?: { page?: number; per_page?: number }) =>
+    fetchPaginated<DoctorReview>(
+      `/doctors/${uuid}/ratings`,
+      paginationParams(params?.page ?? 1, params?.per_page),
+    ),
 
-  rate: async (uuid: string, payload: { rating: number; review?: string }) => {
-    const response = await api.post(`/doctors/${uuid}/ratings`, payload);
-    return response.data;
-  },
+  /** POST /doctors/{uuid}/ratings — wajib pernah chat dengan dokter tsb. */
+  rate: (uuid: string, payload: RatePayload): Promise<ApiEnvelope<{ rating: number; review: string | null }>> =>
+    mutate("post", `/doctors/${uuid}/ratings`, payload),
 };

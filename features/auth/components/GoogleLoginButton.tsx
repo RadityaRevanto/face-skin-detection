@@ -7,12 +7,16 @@ import { customToast } from "@/lib/custom-toast";
 import { authService } from "../services/authService";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
 
+type GoogleCredentialResponse = {
+  credential?: string;
+};
+
 function GoogleLoginContent() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSuccess = async (credentialResponse: any) => {
+  const handleSuccess = async (credentialResponse: GoogleCredentialResponse) => {
     try {
       setIsLoading(true);
       setErrorMsg("");
@@ -21,16 +25,25 @@ function GoogleLoginContent() {
       if (!idToken) throw new Error("Token tidak valid.");
 
       const response = await authService.google(idToken);
-      const profile = response.data?.user;
 
-      if (!profile) {
+      if (!response.data?.user || !response.data?.token) {
         setErrorMsg("Gagal masuk menggunakan akun Google.");
         return;
       }
 
-      const emailVerified = (profile as any).email_verified !== false;
-      if (!emailVerified) {
-        router.push(`/verify-email?email=${encodeURIComponent(profile.email)}`);
+      // Login response tidak menyertakan role — ambil dari GET /profile.
+      const profile = await authService.me();
+
+      if (!profile.data) {
+        setErrorMsg("Gagal memuat profil pengguna.");
+        return;
+      }
+
+      const emailVerified = Boolean(profile.data.email_verified);
+
+      // Verifikasi email hanya diwajibkan untuk role user (konsisten LoginView).
+      if (!emailVerified && profile.data.role === "user") {
+        router.push(`/verify-email?email=${encodeURIComponent(profile.data.email)}`);
         return;
       }
 
@@ -38,13 +51,13 @@ function GoogleLoginContent() {
         description: "Login berhasil. Selamat datang kembali!",
       });
 
-      if (profile.role === "admin") {
+      if (profile.data.role === "admin") {
         router.push("/admin/dashboard");
         return;
       }
 
-      if (profile.role === "doctor") {
-        if (profile.verification_status === "approved") {
+      if (profile.data.role === "doctor") {
+        if (profile.data.verification_status === "approved") {
           router.push("/doctor/dashboard");
         } else {
           router.push("/doctor/verification-status");
@@ -54,7 +67,7 @@ function GoogleLoginContent() {
 
       router.push("/user/home");
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrorMsg(getUserFriendlyErrorMessage(err) || "Gagal login dengan Google.");
     } finally {
       setIsLoading(false);

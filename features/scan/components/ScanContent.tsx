@@ -60,14 +60,23 @@ export function PemeriksaanContent({
   initialProfile = null,
 }: PemeriksaanContentProps) {
   const [liveScan, setLiveScan] = useState<LiveScanResult | null>(null);
+  // Modal bisa ditutup user (onSuccess) — perlu state dismiss, default false.
+  const [profileModalDismissed, setProfileModalDismissed] = useState(false);
 
   // Gate #2 SCAN_FLOW: scan pertama butuh DOB + gender lengkap.
-  const isProfileComplete =
+  // Derived (bukan useState awal): `initialProfile` datang async dari query —
+  // kalau pakai useState(!isProfileComplete) saat mount, modal terkunci true
+  // untuk user yang datanya sebenarnya sudah lengkap (race condition).
+  const isProfileComplete = Boolean(
     initialProfile &&
-    initialProfile.gender &&
-    initialProfile.date_of_birth;
+      initialProfile.gender &&
+      initialProfile.date_of_birth,
+  );
 
-  const [showProfileModal, setShowProfileModal] = useState(!isProfileComplete);
+  // Modal hanya relevan SETELAH data profile benar-benar diambil
+  // (initialProfile != null) dan terbukti belum lengkap.
+  const showProfileModal =
+    initialProfile != null && !isProfileComplete && !profileModalDismissed;
 
   const activePrediction = liveScan
     ? toPredictionHistory(liveScan)
@@ -79,12 +88,11 @@ export function PemeriksaanContent({
     activePrediction?.severity_score ?? null,
   );
   const skinProblems = getSkinProblemsFromPrediction(activePrediction);
-  const hasScan = Boolean(activePrediction);
 
   return (
     <>
       {showProfileModal && (
-        <ProfileIncompleteModal onSuccess={() => setShowProfileModal(false)} />
+        <ProfileIncompleteModal onSuccess={() => setProfileModalDismissed(true)} />
       )}
       <div className="grid gap-6 xl:grid-cols-[1.65fr_0.75fr] xl:gap-8">
         <div className="min-w-0 space-y-6">
