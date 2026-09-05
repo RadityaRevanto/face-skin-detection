@@ -1,35 +1,12 @@
 import type { ReactNode } from "react";
 
-import { DashboardLayout } from "@/components/AppShell";
-import { getPendingVerificationCount } from "@/src/features/admin/verifications/lib/doctorVerificationsQuery";
-import { getAdminProfileData } from "@/src/features/admin/profile/lib/adminProfileQuery";
+import { ProtectedRoute } from "@/features/auth/components/ProtectedRoute";
+import { AdminShell } from "@/features/admin/components/AdminShell";
 
-type AdminLayoutProps = {
-  children: ReactNode;
-};
-
-export default async function AdminLayout({ children }: AdminLayoutProps) {
-  const [pendingCount, adminProfile] = await Promise.all([
-    getPendingVerificationCount(),
-    getAdminProfileData(),
-  ]);
-
+export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <DashboardLayout
-      role="admin"
-      headerExtra={{ pendingCount }}
-      profile={
-        adminProfile
-          ? {
-              full_name: adminProfile.full_name || "Admin",
-              avatar_url: adminProfile.avatar_url,
-              uuid: adminProfile.uuid,
-              id: adminProfile.uuid,
-            }
-          : undefined
-      }
-    >
-      {children}
-    </DashboardLayout>
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <AdminShell>{children}</AdminShell>
+    </ProtectedRoute>
   );
 }

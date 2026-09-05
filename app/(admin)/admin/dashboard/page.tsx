@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
 
-import { AdminDashboardContent } from "@/src/features/admin/dashboard/components/AdminDashboardContent";
-import { getAdminDashboardData } from "@/src/features/admin/dashboard/lib/adminDashboardQuery";
-
+import { AdminDashboardClientContent } from "@/features/admin/dashboard/components/AdminDashboardClientContent";
 
 export const metadata: Metadata = {
   title: "Dashboard Admin",
   description: "Dashboard administrasi sistem",
 };
 
-export default async function AdminDashboardPage() {
-  const dashboardData = await getAdminDashboardData();
-
-  return <AdminDashboardContent {...dashboardData} />;
+export default function AdminDashboardPage() {
+  return <AdminDashboardClientContent />;
 }

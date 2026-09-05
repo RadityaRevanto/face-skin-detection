@@ -1,3 +1,5 @@
+import { api } from "@/lib/api";
+
 export type ChatUser = {
   uuid: string;
   full_name: string;
@@ -42,158 +44,92 @@ export class ConsultationApiError extends Error {
   }
 }
 
-async function readError(res: Response, fallback: string) {
-  let message = fallback;
-  try {
-    const json = await res.json();
-    if (json?.message) message = json.message;
-  } catch {
-    // abaikan body non-JSON
+function toConsultationError(error: unknown, fallback: string): ConsultationApiError {
+  if (typeof error === "object" && error !== null && "response" in error) {
+    const axiosLike = error as {
+      response?: { status: number; data?: { message?: string } };
+    };
+    if (axiosLike.response) {
+      return new ConsultationApiError(
+        axiosLike.response.status,
+        axiosLike.response.data?.message || fallback,
+      );
+    }
   }
-  return new ConsultationApiError(res.status, message);
+  return new ConsultationApiError(0, fallback);
+}
+
+function guard<T>(promise: Promise<T>, fallback: string): Promise<T> {
+  return promise.catch((error) => {
+    throw toConsultationError(error, fallback);
+  });
 }
 
 export async function getConversations(page: number = 1) {
-  const res = await fetch(`/api/conversations?page=${page}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    throw await readError(res, "Gagal mengambil daftar obrolan");
-  }
-
-  return res.json();
+  return guard(
+    api.get(`/conversations?page=${page}`).then((r) => r.data),
+    "Gagal mengambil daftar obrolan",
+  );
 }
 
 export async function createConversation(doctorId: string) {
-  const res = await fetch(`/api/conversations`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ doctor_id: doctorId }),
-  });
-
-  if (!res.ok) {
-    throw await readError(res, "Gagal membuat ruang obrolan");
-  }
-
-  return res.json();
+  return guard(
+    api.post("/conversations", { doctor_id: doctorId }).then((r) => r.data),
+    "Gagal membuat ruang obrolan",
+  );
 }
 
 // Mulai/ambil percakapan dengan bot "Aura Skin" (butuh consent AI).
 export async function startAiConversation() {
-  const res = await fetch(`/api/ai-chat/conversations`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-  });
-
-  if (!res.ok) {
-    throw await readError(res, "Gagal memulai chat dengan Aura Skin");
-  }
-
-  return res.json();
+  return guard(
+    api.post("/ai-chat/conversations").then((r) => r.data),
+    "Gagal memulai chat dengan Aura Skin",
+  );
 }
 
 export async function deleteAiConversation(conversationUuid: string) {
-  const res = await fetch(`/api/ai-chat/conversations/${conversationUuid}`, {
-    method: "DELETE",
-  });
-
-  if (!res.ok) {
-    throw await readError(res, "Gagal menghapus riwayat chat AI");
-  }
-
-  return res.json();
+  return guard(
+    api.delete(`/ai-chat/conversations/${conversationUuid}`).then((r) => r.data),
+    "Gagal menghapus riwayat chat AI",
+  );
 }
 
 export async function getMessages(conversationId: string, page: number = 1) {
-  const res = await fetch(`/api/conversations/${conversationId}/messages?page=${page}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Gagal mengambil pesan");
-  }
-
-  return res.json();
+  return guard(
+    api.get(`/conversations/${conversationId}/messages?page=${page}`).then((r) => r.data),
+    "Gagal mengambil pesan",
+  );
 }
 
-export async function sendMessage(conversationId: string, payload: FormData | { content?: string, prediction_history_id?: string }) {
-  const isFormData = payload && typeof (payload as any).append === 'function';
-  
-  const options: RequestInit = {
-    method: "POST",
-    body: isFormData ? (payload as FormData) : JSON.stringify(payload),
-  };
-
-  if (!isFormData) {
-    options.headers = {
-      "Content-Type": "application/json",
-    };
-  }
-
-  const res = await fetch(`/api/conversations/${conversationId}/messages`, options);
-
-  if (!res.ok) {
-    throw await readError(res, "Gagal mengirim pesan");
-  }
-
-  return res.json();
+export async function sendMessage(
+  conversationId: string,
+  payload: FormData | { content?: string; prediction_history_id?: string },
+) {
+  return guard(
+    api.post(`/conversations/${conversationId}/messages`, payload).then((r) => r.data),
+    "Gagal mengirim pesan",
+  );
 }
 
 export async function getDoctors(page: number = 1) {
-  const res = await fetch(`/api/doctors?page=${page}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Gagal mengambil daftar dokter");
-  }
-
-  return res.json();
+  return guard(
+    api.get(`/doctors?page=${page}`).then((r) => r.data),
+    "Gagal mengambil daftar dokter",
+  );
 }
 
 export async function rateDoctor(doctorId: string, rating: number, review?: string) {
-  const res = await fetch(`/api/doctors/${doctorId}/ratings`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ rating, review }),
-  });
-
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Gagal mengirim ulasan dokter");
-  }
-
-  return res.json();
+  return guard(
+    api
+      .post(`/doctors/${doctorId}/ratings`, { rating, review })
+      .then((r) => r.data),
+    "Gagal mengirim ulasan dokter",
+  );
 }
 
 export async function getDoctorRatings(doctorId: string, page: number = 1) {
-  const res = await fetch(`/api/doctors/${doctorId}/ratings?page=${page}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message || "Gagal mengambil daftar ulasan dokter");
-  }
-
-  return res.json();
+  return guard(
+    api.get(`/doctors/${doctorId}/ratings?page=${page}`).then((r) => r.data),
+    "Gagal mengambil daftar ulasan dokter",
+  );
 }

@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { logoutAction } from "@/lib/auth/actions";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import type { DashboardRole } from "./AppShell";
 
 type ProfileDropdownProps = {
@@ -14,15 +13,13 @@ type ProfileDropdownProps = {
 };
 
 export function ProfileDropdown({ displayName, avatarUrl, role }: ProfileDropdownProps) {
-  const router = useRouter();
+  const { logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   async function handleLogout() {
     setIsLoggingOut(true);
-    await logoutAction();
-    router.replace("/login");
-    router.refresh();
+    await logout();
   }
 
   const profileHref = role === "admin" ? "/admin/profile" : role === "doctor" ? "/doctor/profile" : "/user/profile";

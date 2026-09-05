@@ -1,22 +1,12 @@
 import type { ReactNode } from "react";
 
 import { DashboardLayout } from "@/components/AppShell";
-import { requireUserRole } from "@/lib/auth";
+import { ProtectedRoute } from "@/features/auth/components/ProtectedRoute";
 
-export default async function UserLayout({ children }: { children: ReactNode }) {
-  const profile = await requireUserRole();
-
+export default function UserLayout({ children }: { children: ReactNode }) {
   return (
-    <DashboardLayout
-      role="user"
-      profile={{
-        full_name: profile.full_name || "Pengguna",
-        avatar_url: profile.avatar_url || profile.google_avatar_url || null,
-        uuid: profile.uuid,
-        id: profile.uuid,
-      }}
-    >
-      {children}
-    </DashboardLayout>
+    <ProtectedRoute allowedRoles={["user"]}>
+      <DashboardLayout role="user">{children}</DashboardLayout>
+    </ProtectedRoute>
   );
 }

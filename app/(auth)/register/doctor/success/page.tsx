@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ROUTES } from "@/lib/constants";
-import { LeafLogo } from "@/src/features/auth/components/BrandIcons";
+import { LeafLogo } from "@/features/auth/components/BrandIcons";
 
 export const metadata: Metadata = {
   title: "Registrasi Berhasil",

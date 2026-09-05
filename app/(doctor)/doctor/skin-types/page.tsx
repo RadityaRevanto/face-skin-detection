@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SkinTypesContainer } from "@/src/features/skin-types/components/SkinTypesContainer";
+import { SkinTypesContainer } from "@/features/skin-types/components/SkinTypesContainer";
 
 export const metadata: Metadata = {
   title: "Kelola Skin Types",

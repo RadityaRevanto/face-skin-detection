@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { LoginSecurityContainer } from "@/src/features/user/components/LoginSecurityContainer";
+import { LoginSecurityContainer } from "@/features/user/components/LoginSecurityContainer";
 
 export const metadata: Metadata = {
   title: "Login & Keamanan",

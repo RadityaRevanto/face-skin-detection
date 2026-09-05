@@ -39,20 +39,24 @@ export function SidebarNavItemView({
   item,
   currentPath,
   onNavigate,
+  collapsed = false,
 }: {
   item: SidebarNavItem;
   currentPath: string;
   onNavigate?: () => void;
+  /** Mode collapse desktop — icon-only, grup jadi link ke anak aktif. */
+  collapsed?: boolean;
 }) {
   const hasChildren = Boolean(item.children?.length);
   const isActive = isActiveItem(item, currentPath);
 
-  if (!hasChildren) {
+  if (!hasChildren || collapsed) {
     return (
       <SidebarLink
         item={item}
         currentPath={currentPath}
         onNavigate={onNavigate}
+        collapsed={collapsed}
       />
     );
   }
