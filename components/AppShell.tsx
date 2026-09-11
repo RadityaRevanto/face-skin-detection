@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import { Sidebar } from "@/components/sidebar/Sidebar";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
@@ -70,7 +70,10 @@ function MobileProfileFooter({
     <div className="flex flex-col gap-1">
       <Link href={profileHref} className="flex items-center gap-3 px-1 py-2 hover:bg-slate-100 rounded-xl transition-colors">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white overflow-hidden">
-          {avatarUrl ? <img src={avatarUrl} alt={displayName} className="h-full w-full object-cover" /> : initials}
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- avatar URL eksternal (R2/Google), next/image perlu konfigurasi domain dinamis
+            <img src={avatarUrl} alt={displayName} className="h-full w-full object-cover" />
+          ) : initials}
         </div>
         <div className="flex min-w-0 flex-col">
           <span className="text-xs font-medium text-slate-500">Masuk sebagai</span>
@@ -89,9 +92,31 @@ function MobileProfileFooter({
   );
 }
 
+/** localStorage key — preferensi collapse sidebar desktop (default: expand). */
+const SIDEBAR_COLLAPSE_KEY = "skincek_sidebar_collapsed";
+
 export function DashboardLayout({ role, children, profile, headerExtra }: DashboardLayoutProps) {
   const pathname = usePathname();
-  const { currentUser, logout } = useAuth();
+  const { currentUser } = useAuth();
+  // Collapse sidebar — default EXPANDED, persist di localStorage.
+  const [collapsed, setCollapsed] = useState(false);
+  const [isCollapsedHydrated, setIsCollapsedHydrated] = useState(false);
+
+  // Hydrate preferensi dari localStorage — defer agar setState tidak sinkron di effect.
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setCollapsed(localStorage.getItem(SIDEBAR_COLLAPSE_KEY) === "1");
+      setIsCollapsedHydrated(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const toggleCollapsed = useCallback(() => {
+    setCollapsed((prev) => {
+      localStorage.setItem(SIDEBAR_COLLAPSE_KEY, prev ? "0" : "1");
+      return !prev;
+    });
+  }, []);
 
   const displayName =
     profile?.full_name ||
@@ -126,10 +151,32 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
           items={navItems}
           mobileFooter={<MobileProfileFooter displayName={displayName} avatarUrl={avatarUrl} role={role} />}
           topbarActions={shellActions}
+          collapsed={isCollapsedHydrated ? collapsed : false}
         />
         <div className="min-w-0 flex-1">
           <header className="hidden lg:flex sticky top-0 z-40 h-14 w-full items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 sm:h-16 sm:gap-6 sm:px-6">
-            <Breadcrumb items={breadcrumbs} className="flex-1" />
+            <div className="flex min-w-0 flex-1 items-center gap-2">
+              {/* Toggle collapse sidebar — di luar sidebar, kiri breadcrumb */}
+              <button
+                type="button"
+                onClick={toggleCollapsed}
+                aria-label={collapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
+                title={collapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-slate-100 hover:text-emerald-600"
+              >
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className={`h-5 w-5 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`}
+                >
+                  <rect x="3" y="4" width="14" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
+                  <path d="M17 9h2.5A1.5 1.5 0 0 1 21 10.5v3A1.5 1.5 0 0 1 19.5 15H17" stroke="currentColor" strokeWidth="1.6" />
+                  <path d="M9.5 9.5 7 12l2.5 2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+              <Breadcrumb items={breadcrumbs} className="min-w-0 flex-1" />
+            </div>
             {shellActions}
           </header>
           <div className={`${isConsultationPage ? "flex flex-col h-[calc(100dvh-48px)] lg:h-[calc(100dvh-56px)]" : "px-4 py-6 sm:px-6 sm:py-8 lg:px-8"}`}>{children}</div>

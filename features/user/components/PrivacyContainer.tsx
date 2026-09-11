@@ -50,7 +50,10 @@ export function PrivacyContainer({ role, basePath }: PrivacyContainerProps) {
     finally { setIsLoading(false); setIsConsentLoading(false); }
   }, [needsConsent]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount, setState di dalam async callback
+    fetchData();
+  }, [fetchData]);
 
   const toggleConsent = async () => {
     try {

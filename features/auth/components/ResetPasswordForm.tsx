@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { EyeIcon, FieldIcon, HashIcon, LockIcon } from "./Icons";
 
 export function ResetPasswordForm({
-  initialEmail,
   showPassword,
   setShowPassword,
   showConfirm,
@@ -18,7 +17,6 @@ export function ResetPasswordForm({
   isError,
   handleSubmit,
 }: {
-  initialEmail: string;
   showPassword: boolean;
   setShowPassword: (value: boolean) => void;
   showConfirm: boolean;

@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Script utilitas CommonJS (bukan bagian dari bundle app).
+    "*.cjs",
+    "scripts/**",
   ]),
 ]);
 

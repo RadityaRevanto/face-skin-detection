@@ -1,4 +1,4 @@
-import { Bell, Check, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import type { NotificationData } from "../lib/NotificationTypes";
 import { NotificationList } from "./NotificationList";
 

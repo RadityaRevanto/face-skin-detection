@@ -118,7 +118,6 @@ export function ResetPasswordView() {
         </div>
 
         <ResetPasswordForm
-          initialEmail={initialEmail}
           showPassword={showPassword}
           setShowPassword={setShowPassword}
           showConfirm={showConfirm}

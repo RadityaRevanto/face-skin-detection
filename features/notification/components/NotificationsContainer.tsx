@@ -36,6 +36,7 @@ export function NotificationsContainer() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount/page, setState di dalam async callback
     fetchNotifications(currentPage);
   }, [currentPage, fetchNotifications]);
 

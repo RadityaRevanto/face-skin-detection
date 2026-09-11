@@ -22,6 +22,7 @@ export function DeviceTokensContainer({ embedded = false }: { embedded?: boolean
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount, setState di dalam async callback
     fetchTokens();
   }, [fetchTokens]);
 

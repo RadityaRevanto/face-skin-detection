@@ -125,7 +125,6 @@ export function VerificationStatusContent({
         </section>
 
         <VerificationBottomSections
-          doctorProfile={doctorProfile}
           verification={verification}
           normalizedStatus={normalizedStatus}
         />

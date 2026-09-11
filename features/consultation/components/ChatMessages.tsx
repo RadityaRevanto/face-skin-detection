@@ -45,6 +45,7 @@ export function ChatMessages({ messages, messagesEndRef, role }: ChatMessagesPro
             >
               {message.type === "image" && message.media_url && (
                 <div className="mb-1 relative overflow-hidden rounded-md">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- media URL BE dinamis */}
                   <img
                     src={message.media_url}
                     alt="Uploaded content"

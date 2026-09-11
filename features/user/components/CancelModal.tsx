@@ -26,15 +26,17 @@ export function CancelModal({ isOpen, isProcessing, onCancel, onConfirm }: Props
           <div className="flex flex-col sm:flex-row gap-3">
             <button
               onClick={onCancel}
-              className="flex-1 px-4 py-3 border border-zinc-200 text-zinc-700 font-semibold rounded-xl hover:bg-zinc-50 transition-colors"
+              disabled={isProcessing}
+              className="flex-1 px-4 py-3 border border-zinc-200 text-zinc-700 font-semibold rounded-xl hover:bg-zinc-50 transition-colors disabled:opacity-50"
             >
               Kembali
             </button>
             <button
               onClick={onConfirm}
-              className="flex-1 px-4 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-colors"
+              disabled={isProcessing}
+              className="flex-1 px-4 py-3 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50"
             >
-              Ya, Batalkan
+              {isProcessing ? "Memproses..." : "Ya, Batalkan"}
             </button>
           </div>
         </div>

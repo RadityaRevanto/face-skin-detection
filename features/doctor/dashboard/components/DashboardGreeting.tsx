@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 type DashboardGreetingProps = {
   fullName: string | null;
 };

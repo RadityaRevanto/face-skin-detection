@@ -30,6 +30,7 @@ export function ConversationItem({ conversation, isActive, role, onSelect }: Con
             <Sparkles size={20} />
           </span>
         ) : (
+          // eslint-disable-next-line @next/next/no-img-element -- avatar URL eksternal (R2/ui-avatars)
           <img
             src={contact?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(contact?.full_name || (role === "doctor" ? "D" : "U")) + "&background=10b981&color=fff"}
             alt={contact?.full_name || "Akun Dihapus"}

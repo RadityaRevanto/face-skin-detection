@@ -71,7 +71,8 @@ export function ScanRecommendationsSection({
               </p>
             </div>
           </div>
-          <div className="grid gap-4 xl:grid-cols-2">
+          {/* Sidebar sempit — produk ditumpuk 1 kolom agar mudah dibaca */}
+          <div className="grid gap-4">
             {products.map((product) => (
               <SkincareProductCard key={product.uuid} product={product} />
             ))}

@@ -11,8 +11,6 @@ type VerificationDocumentCardProps = {
 export function VerificationDocumentCard({
   doctor,
 }: VerificationDocumentCardProps) {
-  const firstDoc = doctor.documents.length > 0 ? doctor.documents[0] : null;
-
   return (
     <Card className='overflow-hidden rounded-3xl border border-slate-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
       <div className='border-b border-slate-100 px-6 py-4'>

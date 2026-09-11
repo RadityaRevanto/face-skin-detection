@@ -7,14 +7,12 @@ import axios from "axios";
 
 import { doctorService } from "@/features/doctor/services/doctorService";
 import { profileService } from "@/features/profile/services/profileService";
-import { useAuth } from "@/features/auth/hooks/useAuth";
 import type { DoctorProfile, DoctorVerification } from "./VerificationTypes";
 import { VerificationStatusContent } from "./VerificationStatusContent";
 import { normalizeStatus } from "../utils/verificationUtils";
 
 export function VerificationStatusClientContent() {
   const router = useRouter();
-  const { currentUser } = useAuth();
 
   const { data: doctorProfile } = useQuery({
     queryKey: ["profile"],

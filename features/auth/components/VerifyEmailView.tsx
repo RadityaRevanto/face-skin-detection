@@ -25,7 +25,8 @@ export function VerifyEmailView() {
     if (email) {
       handleResendOTP();
     }
-  }, [email]); // Only run when email is available
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fire sekali per email; fungsi memakai state guard sendiri
+  }, [email]);
 
   async function handleResendOTP() {
     if (isResending) return;

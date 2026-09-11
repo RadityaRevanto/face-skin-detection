@@ -102,6 +102,7 @@ function ScanResultCard({ data }: { data: ScanData }) {
   return (
     <div className="w-full max-w-xs sm:max-w-sm rounded-xl overflow-hidden border border-emerald-200 bg-white shadow-sm my-1">
       {data.fotoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element -- foto scan URL BE dinamis (R2)
         <img
           src={data.fotoUrl}
           alt="Hasil scan"

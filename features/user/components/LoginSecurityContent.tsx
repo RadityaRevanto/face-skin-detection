@@ -36,10 +36,6 @@ export function LoginSecurityContent({ showDeviceTokens = false }: { showDeviceT
   const [showLogoutAll, setShowLogoutAll] = useState(false);
   const [isLoggingOutAll, setIsLoggingOutAll] = useState(false);
 
-  useEffect(() => {
-    fetchSessions();
-  }, []);
-
   const fetchSessions = async () => {
     try {
       setIsLoadingSessions(true);
@@ -50,6 +46,11 @@ export function LoginSecurityContent({ showDeviceTokens = false }: { showDeviceT
       setIsLoadingSessions(false);
     }
   };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount + refresh manual, setState di dalam async callback
+    fetchSessions();
+  }, []);
 
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();

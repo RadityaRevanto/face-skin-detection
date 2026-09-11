@@ -108,6 +108,7 @@ export function useNotificationBell({
 
   // Fetch awal + polling fallback tiap 60 detik.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount + polling, setState di dalam async callback
     fetchNotifications();
     const interval = setInterval(fetchNotifications, POLL_INTERVAL_MS);
     return () => clearInterval(interval);

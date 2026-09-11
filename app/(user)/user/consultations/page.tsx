@@ -1,6 +1,5 @@
 "use client";
 
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 

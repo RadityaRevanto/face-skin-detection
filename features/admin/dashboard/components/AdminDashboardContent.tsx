@@ -1,12 +1,9 @@
-import Link from "next/link";
 import { useState } from "react";
 
 import { Card } from "@/components/ui/card";
-import { EmptyState } from "@/components/ui/empty-state";
 import type { ActivityLog } from "@/features/activity-log/types";
 
 import type { AdminDashboardData } from "@/features/admin/dashboard/lib/adminDashboardTypes";
-import { StatusBadge } from "@/features/admin/components/StatusBadge";
 import { StatCard } from "./StatCard";
 import { QueueList, type QueueListItem } from "./QueueList";
 import { ProgressDonut } from "./ProgressDonut";
@@ -19,18 +16,6 @@ function formatCurrency(value: number): string {
     currency: "IDR",
     maximumFractionDigits: 0,
   }).format(value);
-}
-
-function formatDate(dateStr: string | null): string {
-  if (!dateStr) return "-";
-  try {
-    return new Intl.DateTimeFormat("id-ID", {
-      dateStyle: "medium",
-      timeZone: "Asia/Jakarta",
-    }).format(new Date(dateStr));
-  } catch {
-    return "-";
-  }
 }
 
 type VerificationCounts = {

@@ -53,6 +53,7 @@ export function Avatar({
             sizeClasses[size]
           )}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element -- avatar URL eksternal (R2/Google) */}
           <img
             src={src}
             alt={name}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Sparkles } from "lucide-react";
 
 import {
   getConfidencePercent,
@@ -94,6 +95,24 @@ export function PemeriksaanContent({
       {showProfileModal && (
         <ProfileIncompleteModal onSuccess={() => setProfileModalDismissed(true)} />
       )}
+
+      {/* Hero halaman */}
+      <section className='mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between'>
+        <div>
+          <span className='inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-emerald-200'>
+            <Sparkles className='h-3.5 w-3.5' />
+            AI Skin Analysis
+          </span>
+          <h1 className='mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl'>
+            Pemeriksaan Kulit
+          </h1>
+          <p className='mt-1.5 max-w-xl text-sm leading-6 text-slate-500 sm:text-base'>
+            Scan wajah langsung via kamera atau unggah foto — AI menganalisis
+            kondisi kulit dan memberi rekomendasi perawatan dalam hitungan detik.
+          </p>
+        </div>
+      </section>
+
       <div className="grid gap-6 xl:grid-cols-[1.65fr_0.75fr] xl:gap-8">
         <div className="min-w-0 space-y-6">
           <CameraPanel

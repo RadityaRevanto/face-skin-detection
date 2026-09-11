@@ -27,6 +27,7 @@ export function AvatarSection({
       <div className="relative group">
         <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-zinc-50 bg-zinc-100 shadow-md">
           {avatarPreview ? (
+            // eslint-disable-next-line @next/next/no-img-element -- preview blob/base64 lokal, next/image tidak cocok
             <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-zinc-400">

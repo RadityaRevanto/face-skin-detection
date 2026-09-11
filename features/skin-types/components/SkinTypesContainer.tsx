@@ -27,6 +27,7 @@ export function SkinTypesContainer() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount, setState di dalam async callback
     fetchSkinTypes();
   }, [fetchSkinTypes]);
 

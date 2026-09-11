@@ -102,6 +102,7 @@ export function ChatPanel({
               <Sparkles size={18} />
             </span>
           ) : (
+            // eslint-disable-next-line @next/next/no-img-element -- avatar URL eksternal (R2/ui-avatars)
             <img
               src={contact?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(contact?.full_name || (role === "doctor" ? "U" : "D")) + "&background=10b981&color=fff"}
               alt={contact?.full_name || "Akun Dihapus"}

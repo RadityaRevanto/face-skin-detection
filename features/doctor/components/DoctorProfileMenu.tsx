@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -51,6 +51,7 @@ export function DoctorProfileMenu({
         <Link href="/doctor/profile" className="flex items-center gap-3 px-1 py-2 hover:bg-slate-100 rounded-xl transition-colors">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white overflow-hidden">
             {initialAvatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- avatar URL eksternal (R2/Google)
               <img src={initialAvatarUrl} alt={initialDisplayName} className="h-full w-full object-cover" />
             ) : (
               initials
@@ -87,6 +88,7 @@ export function DoctorProfileMenu({
       >
         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-xs font-bold text-white overflow-hidden">
             {initialAvatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- avatar URL eksternal (R2/Google)
               <img src={initialAvatarUrl} alt={initialDisplayName} className="h-full w-full object-cover" />
             ) : (
               initials

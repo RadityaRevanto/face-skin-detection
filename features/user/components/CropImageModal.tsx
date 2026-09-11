@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import Cropper from "react-easy-crop";
+import Cropper, { type Area } from "react-easy-crop";
 import { Button } from "@/components/ui/button";
 import { X, ZoomIn, ZoomOut } from "lucide-react";
 
@@ -14,9 +14,9 @@ interface CropImageModalProps {
 export function CropImageModal({ imageSrc, onCropComplete, onClose }: CropImageModalProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
-  const onCropCompleteHandler = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+  const onCropCompleteHandler = useCallback((_: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
@@ -31,7 +31,7 @@ export function CropImageModal({ imageSrc, onCropComplete, onClose }: CropImageM
 
   const getCroppedImg = async (
     imageSrc: string,
-    pixelCrop: any,
+    pixelCrop: Area,
   ): Promise<{ file: File; url: string }> => {
     const image = await createImage(imageSrc);
     const canvas = document.createElement("canvas");

@@ -50,16 +50,18 @@ export function HistoryList({ histories, pagination, filters }: HistoryListProps
                 href={`/user/history/detail?id=${encodeURIComponent(item.id)}`}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white transition-all hover:border-emerald-200 hover:shadow-md"
               >
-                <div className="relative h-40 w-full overflow-hidden bg-slate-100">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-linear-to-br from-slate-50 to-slate-100">
                   {imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
+                    // eslint-disable-next-line @next/next/no-img-element -- URL R2 dinamis; object-contain agar foto utuh tanpa crop
                     <img
                       src={imageUrl}
                       alt={label}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald-100 to-cyan-50 text-xs font-bold text-slate-400">
+                    <div className="flex h-full w-full items-center justify-center text-xs font-bold text-slate-400">
                       Foto sudah dihapus (retensi 90 hari)
                     </div>
                   )}

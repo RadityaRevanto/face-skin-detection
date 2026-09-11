@@ -17,7 +17,6 @@ type SidebarContentProps = {
   onNavigate?: () => void;
   /** Desktop collapse mode — icon-only, tanpa label/callout. */
   collapsed?: boolean;
-  onToggleCollapse?: () => void;
 };
 
 export function SidebarContent({
@@ -29,7 +28,6 @@ export function SidebarContent({
   activeHref,
   onNavigate,
   collapsed = false,
-  onToggleCollapse,
 }: SidebarContentProps) {
   const pathname = usePathname();
   const currentPath = activeHref ?? pathname;
@@ -37,21 +35,21 @@ export function SidebarContent({
 
   return (
     <div className="flex h-full flex-col">
-      {/* Brand header + tombol collapse — selalu SATU BARIS horizontal agar
-          toggle tidak "jatuh" saat collapse (animasi width tetap smooth).
-          Mobile drawer: brand kiri, tombol tutup kanan (tidak berubah). */}
+      {/* Brand header — tinggi disamakan dengan topbar (h-14 sm:h-16) agar
+          garis bawahnya sejajar/menyatu dengan garis navbar desktop.
+          Mobile drawer: brand + tombol tutup. */}
       <div className={cn(
-        "flex items-center justify-between border-b border-slate-100",
-        isMobileDrawer && "px-5 py-4",
-        !isMobileDrawer && collapsed && "px-3 pb-5 pt-6",
-        !isMobileDrawer && !collapsed && "px-5 pb-5 pt-6"
+        "flex h-14 items-center border-b border-slate-100 sm:h-16",
+        isMobileDrawer && "h-auto justify-between px-5 py-4 sm:h-auto",
+        !isMobileDrawer && collapsed && "justify-center px-3",
+        !isMobileDrawer && !collapsed && "px-5"
       )}>
         <Link
           href={brand.href}
           onClick={onNavigate}
           className={cn(
             "flex items-center",
-            collapsed && !isMobileDrawer ? "shrink-0" : "gap-3"
+            collapsed && !isMobileDrawer ? "justify-center" : "gap-3"
           )}
           title={collapsed && !isMobileDrawer ? `${brand.title} — ${brand.subtitle ?? ""}`.trim() : undefined}
         >
@@ -77,36 +75,6 @@ export function SidebarContent({
           >
             <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">
               <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-        ) : null}
-
-        {/* Toggle collapse — icon only, tetap di kanan sejajar brand
-            (posisi tidak berpindah baris saat collapse) */}
-        {!isMobileDrawer && onToggleCollapse ? (
-          <button
-            type="button"
-            onClick={onToggleCollapse}
-            aria-label={collapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
-            title={collapsed ? "Perluas sidebar" : "Ciutkan sidebar"}
-            className={cn(
-              "shrink-0 items-center justify-center rounded-xl text-slate-400 transition-colors hover:bg-slate-100 hover:text-emerald-600",
-              collapsed ? "flex h-8 w-8" : "flex h-9 w-9"
-            )}
-          >
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              fill="none"
-              className={cn(
-                "shrink-0 transition-transform duration-300",
-                collapsed ? "h-4 w-4" : "h-5 w-5",
-                collapsed && "rotate-180"
-              )}
-            >
-              <rect x="3" y="4" width="14" height="16" rx="2.5" stroke="currentColor" strokeWidth="1.6" />
-              <path d="M17 9h2.5A1.5 1.5 0 0 1 21 10.5v3A1.5 1.5 0 0 1 19.5 15H17" stroke="currentColor" strokeWidth="1.6" />
-              <path d="M10 9.5 8 12l2 2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
         ) : null}

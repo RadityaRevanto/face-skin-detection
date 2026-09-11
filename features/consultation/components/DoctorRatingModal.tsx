@@ -33,8 +33,8 @@ export function DoctorRatingModal({ isOpen, onClose, doctorId, doctorName, onSuc
     try {
       await rateDoctor(doctorId, rating, review);
       onSuccess();
-    } catch (err: any) {
-      setErrorMsg(err.message);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : "Gagal mengirim ulasan");
     } finally {
       setIsSubmitting(false);
     }

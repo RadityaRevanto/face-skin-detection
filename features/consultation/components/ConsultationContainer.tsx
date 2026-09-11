@@ -84,6 +84,7 @@ export function ConsultationContainer({ role }: ConsultationContainerProps) {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount, setState di dalam async callback
     fetchConversations();
   }, [fetchConversations]);
 
@@ -95,6 +96,7 @@ export function ConsultationContainer({ role }: ConsultationContainerProps) {
     if (initializedFromUrl || isLoadingConversations || !initialConversationId) return;
     const target = conversations.find((c) => c.uuid === initialConversationId);
     if (target) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkronisasi URL → state
       setActiveConversation(target);
       setShowSidebar(false);
       setInitializedFromUrl(true);
@@ -103,6 +105,7 @@ export function ConsultationContainer({ role }: ConsultationContainerProps) {
 
   useEffect(() => {
     if (!activeConversation) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset state saat conversation ditutup
       setMessages([]);
       return;
     }

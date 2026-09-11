@@ -39,9 +39,6 @@ export type SidebarUser = {
   status?: "online" | "offline";
 };
 
-/** localStorage key — preferensi collapse sidebar desktop (default: expand). */
-const SIDEBAR_COLLAPSE_KEY = "skincek_sidebar_collapsed";
-
 type SidebarProps = {
   brand: SidebarBrand;
   items: SidebarNavItem[];
@@ -52,6 +49,8 @@ type SidebarProps = {
   topbarActions?: React.ReactNode;
   className?: string;
   activeHref?: string;
+  /** Desktop collapse mode — dikontrol dari header (DashboardLayout). */
+  collapsed?: boolean;
 };
 
 export function Sidebar({
@@ -63,46 +62,24 @@ export function Sidebar({
   topbarActions,
   className,
   activeHref,
+  collapsed = false,
 }: SidebarProps) {
   // Mobile drawer open state.
   const [open, setOpen] = React.useState(false);
-  // Desktop collapsed state — default EXPANDED ("on"), persist di localStorage.
-  const [collapsed, setCollapsed] = React.useState(false);
-  const [isCollapsedHydrated, setIsCollapsedHydrated] = React.useState(false);
   const pathname = usePathname();
   const breadcrumbs = getBreadcrumbs(pathname);
 
-  // Hydrate preferensi collapse dari localStorage — defer via timeout agar
-  // setState tidak sinkron dalam effect (hindari cascading render).
-  React.useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setCollapsed(localStorage.getItem(SIDEBAR_COLLAPSE_KEY) === "1");
-      setIsCollapsedHydrated(true);
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  const toggleCollapsed = React.useCallback(() => {
-    setCollapsed((prev) => {
-      localStorage.setItem(SIDEBAR_COLLAPSE_KEY, prev ? "0" : "1");
-      return !prev;
-    });
-  }, []);
-
-  // Hindari flash sebelum hydration selesai — sembunyikan transisi awal.
-  const desktopClass = !isCollapsedHydrated
-    ? "hidden lg:block w-72"
-    : cn(
-        "hidden lg:block transition-[width] duration-300 ease-in-out",
-        collapsed ? "w-[92px]" : "w-72",
-      );
+  // Hindari flash sebelum preferensi termuat — lebar tanpa transisi di render awal.
+  const desktopClass = collapsed
+    ? "hidden lg:block w-[92px]"
+    : "hidden lg:block w-72";
 
   return (
     <>
-      {/* Desktop sidebar — collapse ke mode icon-only (default: expand) */}
+      {/* Desktop sidebar — collapse ke mode icon-only (dikontrol header) */}
       <aside
         className={cn(
-          "h-screen shrink-0 border-r border-slate-100 bg-white shadow-[12px_0_30px_rgba(15,23,42,0.04)] lg:sticky lg:top-0",
+          "h-screen shrink-0 border-r border-slate-100 bg-white shadow-[12px_0_30px_rgba(15,23,42,0.04)] transition-[width] duration-300 ease-in-out lg:sticky lg:top-0",
           desktopClass,
           className
         )}
@@ -114,7 +91,6 @@ export function Sidebar({
           user={user}
           activeHref={activeHref}
           collapsed={collapsed}
-          onToggleCollapse={toggleCollapsed}
         />
       </aside>
 

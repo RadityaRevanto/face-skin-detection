@@ -28,6 +28,7 @@ export function ActivityLogContainer() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount/page, setState di dalam async callback
     fetchLogs(currentPage);
   }, [currentPage, fetchLogs]);
 

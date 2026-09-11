@@ -25,6 +25,7 @@ export function useAuth() {
     const cachedUser = tokenStorage.getUser();
 
     if (globalIsLoaded) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- sinkronisasi global auth state ke lokal (fetch-on-mount)
       setCurrentUser(globalCurrentUser);
       setIsLoaded(true);
     } else if (token && cachedUser) {

@@ -16,6 +16,19 @@ import { SubscriptionHistory } from "./SubscriptionHistory";
 import { ReceiptModal } from "./ReceiptModal";
 import { CancelModal } from "./CancelModal";
 
+/** window.snap di-inject oleh <Script src=".../snap.js"> Midtrans. */
+type MidtransSnap = {
+  pay: (
+    token: string,
+    callbacks: {
+      onSuccess: () => void;
+      onPending: () => void;
+      onError: () => void;
+      onClose: () => void;
+    },
+  ) => void;
+};
+
 export function SubscriptionContainer() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -38,7 +51,10 @@ export function SubscriptionContainer() {
     }
   };
 
-  useEffect(() => { fetchSubscriptions(); }, []);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount, setState di dalam callback async
+    fetchSubscriptions();
+  }, []);
 
   const activeSubscription = subscriptions.find(
     (s) => s.status === "active" && (!s.ends_at || new Date(s.ends_at) >= new Date())
@@ -50,15 +66,15 @@ export function SubscriptionContainer() {
     try {
       const data = await subscriptionService.checkout();
       if (data.data?.snap_token) {
-        // @ts-ignore
-        window.snap.pay(data.data.snap_token, {
+        const snap = (window as unknown as { snap?: MidtransSnap }).snap;
+        snap?.pay(data.data.snap_token, {
           onSuccess: () => fetchSubscriptions(),
           onPending: () => fetchSubscriptions(),
           onError: () => setErrorMsg("Pembayaran gagal, silakan coba lagi."),
           onClose: () => fetchSubscriptions(),
         });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrorMsg(getUserFriendlyErrorMessage(err));
     } finally {
       setIsProcessing(false);
@@ -71,7 +87,7 @@ export function SubscriptionContainer() {
     try {
       const data = await subscriptionService.receipt(activeSubscription.uuid);
       setReceipt(data as unknown as ReceiptData);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrorMsg(getUserFriendlyErrorMessage(err));
     } finally {
       setIsLoadingReceipt(false);
@@ -91,7 +107,7 @@ export function SubscriptionContainer() {
     try {
       await subscriptionService.cancel(cancelTargetUuid);
       fetchSubscriptions();
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrorMsg(getUserFriendlyErrorMessage(err));
     } finally {
       setIsProcessing(false);

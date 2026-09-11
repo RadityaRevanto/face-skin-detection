@@ -1,4 +1,4 @@
-import type { PredictionHistory, Problem } from "../types";
+import type { PredictionHistory } from "../types";
 import {
   formatDate,
   getConfidencePercent,

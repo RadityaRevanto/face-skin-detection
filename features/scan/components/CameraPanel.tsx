@@ -40,6 +40,7 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
   const [modelStatus,  setModelStatus]  = useState<ModelLoadStatus>("loading");
   useEffect(() => { onScanCompleteRef.current = onScanComplete; }, [onScanComplete]);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync status model saat mount
     setModelStatus("loading");
     faceapi.nets.tinyFaceDetector.loadFromUri("/models")
       .then(() => faceapi.nets.faceLandmark68Net.loadFromUri("/models"))
