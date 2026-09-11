@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { adminService } from "@/features/admin/services/adminService";
-import { LoadingState } from "@/components/ui/loading-state";
+import { DetailPageSkeleton } from "@/components/skeletons";
 import { ErrorState } from "@/components/ui/error-state";
 import { UserDetailContent } from "@/features/admin/users/components/UserDetailContent";
 import { formatDate } from "@/features/admin/users/lib/userDetailUtils";
@@ -34,7 +34,7 @@ function UserDetailPageInner() {
   });
 
   if (isLoading) {
-    return <LoadingState variant="detail" />;
+    return <DetailPageSkeleton />;
   }
 
   if (!id || !user) {

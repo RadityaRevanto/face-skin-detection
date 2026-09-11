@@ -49,9 +49,14 @@ export function getUserFriendlyErrorMessage(error: unknown): string {
 
   if (apiError) {
     if (apiError.status === 404) return "Data tidak ditemukan.";
-    if (apiError.status === 422) return "Data yang dikirim tidak valid.";
-    if (apiError.status === 401 || apiError.status === 403)
-      return "Anda tidak memiliki akses.";
+    // 422: BE hampir selalu menyertakan pesan kontekstual (validasi Laravel /
+    // aturan bisnis, mis. "Transaksi ini tidak dapat dilanjutkan") — tampilkan.
+    if (apiError.status === 422) return apiError.message || "Data yang dikirim tidak valid.";
+    // 401: sesi bermasalah — pesan generik selalu relevan.
+    if (apiError.status === 401) return "Sesi Anda telah berakhir. Silakan login kembali.";
+    // 403: BE selalu menyertakan konteks (mis. "Verifikasi email terlebih
+    // dahulu sebelum berlangganan.") — tampilkan apa adanya, jangan ditelan.
+    if (apiError.status === 403) return apiError.message || "Anda tidak memiliki akses.";
     if (apiError.status >= 500)
       return "Terjadi gangguan pada server. Silakan coba lagi nanti.";
     return apiError.message || "Terjadi kesalahan yang tidak diketahui.";

@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 
 import { useDoctors } from "@/features/doctors/hooks/useDoctors";
 import { DoctorsContent } from "@/features/doctors/components/DoctorsContent";
+import { DoctorListSkeleton, Skeleton } from "@/components/skeletons";
 
 export default function ConsultationsPage() {
   return (
@@ -35,10 +36,12 @@ function ConsultationsPageInner() {
   if (isLoading) {
     return (
       <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-32 animate-pulse rounded-2xl bg-slate-100" />
-          ))}
+        <div className="space-y-6">
+          <div>
+            <Skeleton className="h-7 w-56 rounded" />
+            <Skeleton className="mt-2 h-4 w-80 rounded" />
+          </div>
+          <DoctorListSkeleton count={4} />
         </div>
       </main>
     );

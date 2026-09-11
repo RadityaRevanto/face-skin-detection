@@ -28,6 +28,15 @@ export function RedirectIfAuthenticated({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isLoaded || !isAuthenticated || !currentUser) return;
 
+    // User dengan email BELUM terverifikasi tidak boleh dilempar ke dashboard —
+    // biarkan ia menyelesaikan verifikasi OTP di halaman /verify-email.
+    if (
+      currentUser.role === "user" &&
+      currentUser.email_verified === false
+    ) {
+      return;
+    }
+
     const path = dashboardPathFor(
       currentUser.role,
       currentUser.verification_status ??

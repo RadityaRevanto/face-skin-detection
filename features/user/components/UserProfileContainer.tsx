@@ -5,6 +5,7 @@ import { getProfile, UserProfile } from "@/lib/api/profile-query";
 import { ProfileForm } from "@/features/user/components/ProfileForm";
 import { ProfileSidebar } from "@/features/user/components/ProfileSidebar";
 import { Info } from "lucide-react";
+import { ProfilePageSkeleton } from "@/components/skeletons";
 
 export function UserProfileContainer() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -22,7 +23,7 @@ export function UserProfileContainer() {
     fetchProfile();
   }, []);
 
-  if (isLoading) return <div className="flex justify-center items-center h-[calc(100vh-100px)]"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-500" /></div>;
+  if (isLoading) return <ProfilePageSkeleton />;
   if (error || !profile) return <div className="flex justify-center items-center h-[calc(100vh-100px)]"><div className="text-center"><p className="text-rose-500 mb-4">{error}</p><button onClick={fetchProfile} className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Coba Lagi</button></div></div>;
 
   return (

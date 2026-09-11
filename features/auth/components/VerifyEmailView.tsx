@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { type FormEvent, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,6 +13,7 @@ import { VerifyEmailForm } from "./VerifyEmailForm";
 
 export function VerifyEmailView() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || ""; // Can be passed from register
 
@@ -78,10 +80,16 @@ export function VerifyEmailView() {
       if (data?.meta?.message) {
         setMessage(String(data.meta.message));
         setIsError(false);
-        // Redirect ke login setelah verifikasi sukses
+
+        // Refresh cache profile & auth state agar banner "belum verifikasi"
+        // hilang dan dashboard membaca status terbaru.
+        await authService.me();
+        queryClient.invalidateQueries({ queryKey: ["profile"] });
+
+        // User sudah login — langsung ke dashboard, tidak perlu login ulang.
         setTimeout(() => {
-          router.push(ROUTES.LOGIN);
-        }, 2000);
+          router.push("/user/home");
+        }, 1500);
       } else {
         setMessage("Kode OTP tidak valid atau kedaluwarsa.");
         setIsError(true);

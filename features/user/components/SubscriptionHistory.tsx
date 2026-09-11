@@ -3,7 +3,20 @@
 import { Clock } from "lucide-react";
 import type { Subscription } from "./types";
 
-export function SubscriptionHistory({ subscriptions }: { subscriptions: Subscription[] }) {
+type Props = {
+  subscriptions: Subscription[];
+  /** Subscription pending yang sedang diproses lanjut-bayar. */
+  resumingUuid?: string | null;
+  onContinuePayment: (uuid: string) => void;
+  onViewReceipt: (uuid: string) => void;
+};
+
+export function SubscriptionHistory({
+  subscriptions,
+  resumingUuid = null,
+  onContinuePayment,
+  onViewReceipt,
+}: Props) {
   if (subscriptions.length === 0) return null;
   return (
     <div className="mt-12 pt-8 border-t border-slate-100">
@@ -18,6 +31,7 @@ export function SubscriptionHistory({ subscriptions }: { subscriptions: Subscrip
               <th className="py-3 px-4 font-semibold">Paket</th>
               <th className="py-3 px-4 font-semibold">Nominal</th>
               <th className="py-3 px-4 font-semibold">Status</th>
+              <th className="py-3 px-4 font-semibold">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -40,6 +54,29 @@ export function SubscriptionHistory({ subscriptions }: { subscriptions: Subscrip
                     }`}>
                     {sub.status}
                   </span>
+                </td>
+                <td className="py-3 px-4">
+                  {/* Pending → bisa lanjut pembayaran */}
+                  {sub.status === 'pending' ? (
+                    <button
+                      type="button"
+                      onClick={() => onContinuePayment(sub.uuid)}
+                      disabled={resumingUuid === sub.uuid}
+                      className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-amber-600 disabled:opacity-60"
+                    >
+                      {resumingUuid === sub.uuid ? "Membuka..." : "Lanjutkan Pembayaran"}
+                    </button>
+                  ) : sub.status === 'active' ? (
+                    <button
+                      type="button"
+                      onClick={() => onViewReceipt(sub.uuid)}
+                      className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-600 transition-colors hover:bg-slate-50"
+                    >
+                      Lihat Struk
+                    </button>
+                  ) : (
+                    <span className="text-xs text-slate-300">—</span>
+                  )}
                 </td>
               </tr>
             ))}

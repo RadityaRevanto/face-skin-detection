@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { MessageSquarePlus, Search, Sparkles } from "lucide-react";
 import { Conversation } from "@/lib/api/consultations-query";
+import { ConversationListSkeleton } from "@/components/skeletons";
 import { ConversationItem } from "./ConversationItem";
 
 export type ConversationFilter = "all" | "unread" | "done";
@@ -180,9 +181,7 @@ export function ConversationSidebar({
         {/* Conversation list */}
         <div className="flex-1 overflow-y-auto min-h-0">
           {isLoadingConversations ? (
-            <div className="flex justify-center p-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-            </div>
+            <ConversationListSkeleton count={6} />
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-8 text-center text-zinc-500">
               <MessageSquarePlus size={32} className="mb-3 text-zinc-300" />

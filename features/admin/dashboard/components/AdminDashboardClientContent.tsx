@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { adminService } from "@/features/admin/services/adminService";
-import { LoadingState } from "@/components/ui/loading-state";
+import { AdminDashboardSkeleton } from "@/components/skeletons";
 import type { ActivityLog } from "@/features/activity-log/types";
 import { AdminDashboardContent } from "./AdminDashboardContent";
 import type { AdminDashboardData } from "../lib/adminDashboardTypes";
@@ -60,7 +60,11 @@ export function AdminDashboardClientContent() {
   });
 
   if (isLoading && !data) {
-    return <LoadingState variant="stat-grid" />;
+    return (
+      <div className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <AdminDashboardSkeleton />
+      </div>
+    );
   }
 
   return (

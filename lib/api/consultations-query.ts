@@ -47,6 +47,7 @@ export class ConsultationApiError extends Error {
 function toConsultationError(error: unknown, fallback: string): ConsultationApiError {
   if (typeof error === "object" && error !== null && "response" in error) {
     const axiosLike = error as {
+      code?: string;
       response?: { status: number; data?: { message?: string } };
     };
     if (axiosLike.response) {
@@ -55,8 +56,13 @@ function toConsultationError(error: unknown, fallback: string): ConsultationApiE
         axiosLike.response.data?.message || fallback,
       );
     }
+    // Network-level: timeout atau request dibatalkan (mis. redirect 401
+    // dari interceptor). Beri pesan spesifik, bukan fallback generik.
+    if (axiosLike.code === "ECONNABORTED") {
+      return new ConsultationApiError(0, "Waktu tunggu habis. Periksa koneksi lalu coba lagi.");
+    }
   }
-  return new ConsultationApiError(0, fallback);
+  return new ConsultationApiError(0, "Koneksi jaringan terputus. Periksa koneksi internet Anda.");
 }
 
 function guard<T>(promise: Promise<T>, fallback: string): Promise<T> {

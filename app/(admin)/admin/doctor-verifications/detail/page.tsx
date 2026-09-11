@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { adminService } from "@/features/admin/services/adminService";
-import { LoadingState } from "@/components/ui/loading-state";
+import { DetailPageSkeleton } from "@/components/skeletons";
 import { ErrorState } from "@/components/ui/error-state";
 import { VerificationDetailContent } from "@/features/admin/verifications/components/VerificationDetailContent";
 import {
@@ -24,7 +24,7 @@ function VerificationDetailPageInner() {
   });
 
   if (isLoading) {
-    return <LoadingState variant="detail" />;
+    return <DetailPageSkeleton />;
   }
 
   if (!id || !verification) {

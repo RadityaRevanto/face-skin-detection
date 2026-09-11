@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Script from "next/script";
-import { Loader2 } from "lucide-react";
 
 import { subscriptionService } from "@/features/subscription/services/subscriptionService";
+import { profileService } from "@/features/profile/services/profileService";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
+import { SubscriptionCardSkeleton } from "@/components/skeletons";
 
 import type { Subscription, ReceiptData } from "./types";
 import { SubscriptionErrorBanner } from "./SubscriptionErrorBanner";
@@ -38,6 +40,15 @@ export function SubscriptionContainer() {
   const [cancelTargetUuid, setCancelTargetUuid] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<ReceiptData | null>(null);
   const [isLoadingReceipt, setIsLoadingReceipt] = useState(false);
+  const [resumingUuid, setResumingUuid] = useState<string | null>(null);
+
+  // Email user (untuk CTA verifikasi) — dari cache ["profile"] yang dipakai
+  // bersama halaman lain (scan, home). Tidak fetch ulang bila sudah ada.
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: () => profileService.get(),
+    staleTime: 60 * 1000,
+  });
 
   const fetchSubscriptions = async () => {
     setIsLoading(true);
@@ -63,8 +74,17 @@ export function SubscriptionContainer() {
   const handleCheckout = async () => {
     setIsProcessing(true);
     setErrorMsg(null);
+    await openSnapPayment(() => subscriptionService.checkout());
+    setIsProcessing(false);
+  };
+
+  /** Buka Snap Midtrans — dipakai checkout baru & lanjut pembayaran pending. */
+  const openSnapPayment = async (
+    request: () => Promise<{ data?: { snap_token?: string } }>,
+  ) => {
+    setErrorMsg(null);
     try {
-      const data = await subscriptionService.checkout();
+      const data = await request();
       if (data.data?.snap_token) {
         const snap = (window as unknown as { snap?: MidtransSnap }).snap;
         snap?.pay(data.data.snap_token, {
@@ -76,22 +96,31 @@ export function SubscriptionContainer() {
       }
     } catch (err: unknown) {
       setErrorMsg(getUserFriendlyErrorMessage(err));
-    } finally {
-      setIsProcessing(false);
     }
   };
 
-  const handleViewReceipt = async () => {
-    if (!activeSubscription) return;
+  const handleContinuePayment = async (uuid: string) => {
+    setResumingUuid(uuid);
+    setErrorMsg(null);
+    await openSnapPayment(() => subscriptionService.resumePayment(uuid));
+    setResumingUuid(null);
+  };
+
+  const handleViewReceiptByUuid = async (uuid: string) => {
     setIsLoadingReceipt(true);
     try {
-      const data = await subscriptionService.receipt(activeSubscription.uuid);
+      const data = await subscriptionService.receipt(uuid);
       setReceipt(data as unknown as ReceiptData);
     } catch (err: unknown) {
       setErrorMsg(getUserFriendlyErrorMessage(err));
     } finally {
       setIsLoadingReceipt(false);
     }
+  };
+
+  const handleViewReceipt = async () => {
+    if (!activeSubscription) return;
+    await handleViewReceiptByUuid(activeSubscription.uuid);
   };
 
   const handleCancelClick = (uuid: string) => {
@@ -124,14 +153,16 @@ export function SubscriptionContainer() {
         data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
       />
       <main className="min-h-[calc(100vh-72px)] bg-shell p-4 sm:p-6 lg:p-10 flex flex-col items-center">
-        <SubscriptionErrorBanner message={errorMsg} />
+        <SubscriptionErrorBanner
+          message={errorMsg}
+          verifyEmail={profile?.email ?? null}
+        />
         <div className="w-full max-w-3xl bg-white rounded-3xl shadow-sm border border-emerald-100/50 overflow-hidden">
           <SubscriptionHero />
           <div className="p-6 sm:p-10">
             {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="w-10 h-10 text-emerald-500 animate-spin mb-4" />
-                <p className="text-slate-500 font-medium">Memuat data langganan...</p>
+              <div className="flex justify-center py-4">
+                <SubscriptionCardSkeleton />
               </div>
             ) : activeSubscription ? (
               <ActiveSubscriptionCard
@@ -144,7 +175,12 @@ export function SubscriptionContainer() {
             ) : (
               <InactiveSubscriptionCard isProcessing={isProcessing} onCheckout={handleCheckout} />
             )}
-            <SubscriptionHistory subscriptions={subscriptions} />
+            <SubscriptionHistory
+              subscriptions={subscriptions}
+              resumingUuid={resumingUuid}
+              onContinuePayment={handleContinuePayment}
+              onViewReceipt={handleViewReceiptByUuid}
+            />
           </div>
         </div>
       </main>

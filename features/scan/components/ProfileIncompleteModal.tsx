@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 
 import { profileService } from "@/features/profile/services/profileService";
@@ -11,9 +12,10 @@ interface ProfileIncompleteModalProps {
 }
 
 export function ProfileIncompleteModal({ onSuccess }: ProfileIncompleteModalProps) {
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [gender, setGender] = useState("");
   const [dob, setDob] = useState("");
 
@@ -32,6 +34,16 @@ export function ProfileIncompleteModal({ onSuccess }: ProfileIncompleteModalProp
         gender,
         date_of_birth: dob,
       });
+
+      // Update cache ["profile"] SEKARANG — tanpa ini, ScanContent tetap
+      // membaca data lama (belum lengkap) dan modal muncul lagi saat user
+      // kembali ke /user/scan sebelum cache stale.
+      queryClient.setQueryData(["profile"], (old: unknown) => ({
+        ...(typeof old === "object" && old !== null ? old : {}),
+        gender,
+        date_of_birth: dob,
+        profile_completed: true,
+      }));
 
       onSuccess();
     } catch (err: unknown) {

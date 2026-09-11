@@ -3,6 +3,7 @@
 import { RefObject } from "react";
 import { Clock } from "lucide-react";
 import { Message } from "@/lib/api/consultations-query";
+import { ChatMessagesSkeleton } from "@/components/skeletons";
 import { formatTime, isCurrentUser } from "../utils/consultationHelpers";
 import { ChatMessageContent } from "./ChatMessageContent";
 
@@ -10,9 +11,10 @@ type ChatMessagesProps = {
   messages: Message[];
   messagesEndRef: RefObject<HTMLDivElement | null>;
   role: "user" | "doctor";
+  isLoading?: boolean;
 };
 
-export function ChatMessages({ messages, messagesEndRef, role }: ChatMessagesProps) {
+export function ChatMessages({ messages, messagesEndRef, role, isLoading = false }: ChatMessagesProps) {
   return (
     <div className="flex-1 overflow-y-auto p-3 sm:p-4 md:p-6 bg-chat-surface min-h-0">
       <div className="flex justify-center mb-6 mt-2">
@@ -22,6 +24,10 @@ export function ChatMessages({ messages, messagesEndRef, role }: ChatMessagesPro
         </div>
       </div>
 
+      {isLoading ? (
+        <ChatMessagesSkeleton />
+      ) : (
+        <>
       {messages.map((message, index) => {
         const isOwn =
           role === "doctor"
@@ -75,6 +81,8 @@ export function ChatMessages({ messages, messagesEndRef, role }: ChatMessagesPro
         );
       })}
       <div ref={messagesEndRef} className="h-2" />
+        </>
+      )}
     </div>
   );
 }

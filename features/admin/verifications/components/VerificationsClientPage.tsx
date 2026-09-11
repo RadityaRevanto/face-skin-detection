@@ -5,7 +5,7 @@ import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { adminService } from "@/features/admin/services/adminService";
-import { LoadingState } from "@/components/ui/loading-state";
+import { TableRowsSkeleton } from "@/components/skeletons";
 import { DoctorVerificationContent } from "./DoctorVerificationContent";
 import type {
   DoctorVerificationPageData,
@@ -115,7 +115,7 @@ function VerificationsPageInner({ pageType }: { pageType: DoctorVerificationPage
   }, [listData, pendingCount, rejectedCount, approvedCount, pageType, page]);
 
   if (isLoading && !listData) {
-    return <LoadingState variant="rows" />;
+    return <TableRowsSkeleton rows={5} />;
   }
 
   return <DoctorVerificationContent {...pageData} />;

@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { adminService } from "@/features/admin/services/adminService";
-import { LoadingState } from "@/components/ui/loading-state";
+import { DetailPageSkeleton } from "@/components/skeletons";
 import { ErrorState } from "@/components/ui/error-state";
 import { AdminProfileContent } from "./AdminProfileContent";
 import type { AdminProfileData } from "../types";
@@ -18,7 +18,7 @@ export function AdminProfileClientContent() {
   });
 
   if (isLoading) {
-    return <LoadingState variant="detail" />;
+    return <DetailPageSkeleton />;
   }
 
   if (!profile) {

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import {
+  ConsultationApiError,
   getConversations,
   getMessages,
   sendMessage,
@@ -65,6 +66,12 @@ export function ConsultationContainer({ role }: ConsultationContainerProps) {
       const res = await getConversations(1);
       setConversations(res.data || []);
     } catch (error) {
+      // Status 0 = network/abort — biasanya redirect 401 sedang berjalan
+      // (interceptor menangani). Log ringan, bukan console error merah.
+      if (error instanceof ConsultationApiError && error.status === 0) {
+        console.warn("[consultation] daftar obrolan gagal dimuat:", error.message);
+        return;
+      }
       console.error(error);
     } finally {
       setIsLoadingConversations(false);
@@ -77,6 +84,11 @@ export function ConsultationContainer({ role }: ConsultationContainerProps) {
       const res = await getMessages(conversationId, 1);
       setMessages([...(res.data || [])].reverse());
     } catch (error) {
+      // Status 0 = network/abort (mis. redirect 401) — log ringan.
+      if (error instanceof ConsultationApiError && error.status === 0) {
+        console.warn("[consultation] pesan gagal dimuat:", error.message);
+        return;
+      }
       console.error(error);
     } finally {
       setIsLoadingMessages(false);
@@ -372,6 +384,7 @@ export function ConsultationContainer({ role }: ConsultationContainerProps) {
           inputText={inputText}
           selectedImagePreview={selectedImagePreview}
           isSending={isSending}
+          isLoadingMessages={isLoadingMessages}
           messagesEndRef={messagesEndRef}
           fileInputRef={fileInputRef}
           onShowSidebar={() => setShowSidebar(true)}

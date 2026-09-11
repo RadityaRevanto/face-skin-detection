@@ -143,6 +143,10 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
     </div>
   );
 
+  // Banner verifikasi email — role user dengan email belum terverifikasi.
+  const needsEmailVerification =
+    role === "user" && currentUser?.email_verified === false;
+
   return (
     <div className="min-h-screen bg-shell">
       <div className="flex min-h-screen flex-col lg:flex-row">
@@ -179,6 +183,20 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
             </div>
             {shellActions}
           </header>
+          {needsEmailVerification ? (
+            <div className="flex flex-col items-start gap-2 border-b border-amber-200 bg-amber-50 px-4 py-3 sm:flex-row sm:items-center sm:gap-3 sm:px-6">
+              <p className="flex-1 text-sm font-medium text-amber-800">
+                <span className="font-bold">Email Anda belum terverifikasi.</span>{" "}
+                Fitur scan, chat, dan langganan memerlukan email terverifikasi.
+              </p>
+              <Link
+                href={`/verify-email?email=${encodeURIComponent(currentUser?.email ?? "")}`}
+                className="shrink-0 rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-amber-600"
+              >
+                Verifikasi Sekarang →
+              </Link>
+            </div>
+          ) : null}
           <div className={`${isConsultationPage ? "flex flex-col h-[calc(100dvh-48px)] lg:h-[calc(100dvh-56px)]" : "px-4 py-6 sm:px-6 sm:py-8 lg:px-8"}`}>{children}</div>
         </div>
       </div>

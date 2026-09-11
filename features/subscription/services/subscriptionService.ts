@@ -35,6 +35,13 @@ export const subscriptionService = {
   checkout: (): Promise<ApiEnvelope<CheckoutResult>> =>
     mutate("post", "/subscriptions/checkout"),
 
+  /**
+   * POST /subscriptions/{uuid}/pay — lanjutkan pembayaran PENDING:
+   * Snap token di-generate ulang untuk order_id yang sama.
+   */
+  resumePayment: (uuid: string): Promise<ApiEnvelope<CheckoutResult>> =>
+    mutate("post", `/subscriptions/${uuid}/pay`),
+
   /** GET /subscriptions/{uuid}/receipt — resource dibungkus `data`; 404 jika tidak active. */
   receipt: (uuid: string): Promise<SubscriptionReceipt> =>
     fetchEnvelope<SubscriptionReceipt>(`/subscriptions/${uuid}/receipt`).then((r) => r.data),

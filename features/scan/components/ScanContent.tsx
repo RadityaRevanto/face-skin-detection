@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles } from "lucide-react";
 
 import {
   getConfidencePercent,
@@ -61,23 +60,20 @@ export function PemeriksaanContent({
   initialProfile = null,
 }: PemeriksaanContentProps) {
   const [liveScan, setLiveScan] = useState<LiveScanResult | null>(null);
-  // Modal bisa ditutup user (onSuccess) — perlu state dismiss, default false.
-  const [profileModalDismissed, setProfileModalDismissed] = useState(false);
 
   // Gate #2 SCAN_FLOW: scan pertama butuh DOB + gender lengkap.
   // Derived (bukan useState awal): `initialProfile` datang async dari query —
   // kalau pakai useState(!isProfileComplete) saat mount, modal terkunci true
   // untuk user yang datanya sebenarnya sudah lengkap (race condition).
+  // Modal hilang otomatis saat cache ["profile"] terupdate (ProfileIncompleteModal
+  // melakukan setQueryData setelah simpan sukses).
   const isProfileComplete = Boolean(
     initialProfile &&
       initialProfile.gender &&
       initialProfile.date_of_birth,
   );
-
-  // Modal hanya relevan SETELAH data profile benar-benar diambil
-  // (initialProfile != null) dan terbukti belum lengkap.
   const showProfileModal =
-    initialProfile != null && !isProfileComplete && !profileModalDismissed;
+    initialProfile != null && !isProfileComplete;
 
   const activePrediction = liveScan
     ? toPredictionHistory(liveScan)
@@ -93,16 +89,13 @@ export function PemeriksaanContent({
   return (
     <>
       {showProfileModal && (
-        <ProfileIncompleteModal onSuccess={() => setProfileModalDismissed(true)} />
+        <ProfileIncompleteModal onSuccess={() => setLiveScan(null)} />
       )}
 
       {/* Hero halaman */}
       <section className='mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between'>
         <div>
-          <span className='inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-700 ring-1 ring-emerald-200'>
-            <Sparkles className='h-3.5 w-3.5' />
-            AI Skin Analysis
-          </span>
+          
           <h1 className='mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl'>
             Pemeriksaan Kulit
           </h1>

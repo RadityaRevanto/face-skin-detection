@@ -5,7 +5,7 @@ import { Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { adminService } from "@/features/admin/services/adminService";
-import { LoadingState } from "@/components/ui/loading-state";
+import { TableRowsSkeleton } from "@/components/skeletons";
 import { DoctorsContent } from "./DoctorsContent";
 import type { DoctorsPageData, DoctorRow } from "../lib/doctorsTypes";
 
@@ -65,7 +65,7 @@ function DoctorsPageInner() {
   }, [data, page]);
 
   if (isLoading && !data) {
-    return <LoadingState variant="rows" />;
+    return <TableRowsSkeleton rows={5} />;
   }
 
   return <DoctorsContent {...pageData} />;

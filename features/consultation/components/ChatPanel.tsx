@@ -16,6 +16,8 @@ type ChatPanelProps = {
   inputText: string;
   selectedImagePreview: string | null;
   isSending: boolean;
+  /** Sedang memuat pesan conversation aktif. */
+  isLoadingMessages?: boolean;
   messagesEndRef: RefObject<HTMLDivElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
   onShowSidebar: () => void;
@@ -40,6 +42,7 @@ export function ChatPanel({
   inputText,
   selectedImagePreview,
   isSending,
+  isLoadingMessages = false,
   messagesEndRef,
   fileInputRef,
   onShowSidebar,
@@ -167,7 +170,7 @@ export function ChatPanel({
         </div>
       </div>
 
-      <ChatMessages messages={messages} messagesEndRef={messagesEndRef} role={role} />
+      <ChatMessages messages={messages} messagesEndRef={messagesEndRef} role={role} isLoading={isLoadingMessages} />
 
       <ChatInput
         inputText={inputText}
