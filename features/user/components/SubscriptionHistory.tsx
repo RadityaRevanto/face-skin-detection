@@ -19,19 +19,19 @@ export function SubscriptionHistory({
 }: Props) {
   if (subscriptions.length === 0) return null;
   return (
-    <div className="mt-12 pt-8 border-t border-slate-100">
-      <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+    <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm sm:p-8">
+      <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
         <Clock size={20} className="text-slate-400" /> Riwayat Transaksi
       </h3>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-2xl border border-slate-100">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-slate-200 text-slate-500">
-              <th className="py-3 px-4 font-semibold">Tanggal</th>
-              <th className="py-3 px-4 font-semibold">Paket</th>
-              <th className="py-3 px-4 font-semibold">Nominal</th>
-              <th className="py-3 px-4 font-semibold">Status</th>
-              <th className="py-3 px-4 font-semibold">Aksi</th>
+            <tr className="border-b border-slate-200 bg-slate-50/60 text-xs font-bold uppercase tracking-wider text-slate-500">
+              <th className="py-3 px-4">Tanggal</th>
+              <th className="py-3 px-4">Paket</th>
+              <th className="py-3 px-4">Nominal</th>
+              <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -83,6 +83,6 @@ export function SubscriptionHistory({
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   );
 }

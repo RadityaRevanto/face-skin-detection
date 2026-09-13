@@ -235,31 +235,38 @@ export function ProfilePageSkeleton() {
 
 export function SubscriptionCardSkeleton() {
   return (
-    <div className="w-full max-w-2xl space-y-6">
-      {/* Header harga */}
-      <div className="rounded-3xl bg-slate-100/80 p-8 text-center">
-        <Skeleton className="mx-auto h-16 w-16 rounded-2xl" />
-        <Skeleton className="mx-auto mt-4 h-6 w-40 rounded" />
-        <Skeleton className="mx-auto mt-2 h-4 w-56 rounded" />
-        <Skeleton className="mx-auto mt-5 h-10 w-48 rounded" />
-      </div>
-      {/* Main card dengan benefit grid */}
-      <div className="rounded-3xl border border-slate-100 bg-white p-6 sm:p-8">
-        <Skeleton className="mx-auto h-3 w-36 rounded" />
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="flex gap-3">
-              <Skeleton className="h-9 w-9 shrink-0 rounded-xl" />
-              <div className="flex-1 space-y-1.5">
-                <Skeleton className="h-3.5 w-32 rounded" />
-                <Skeleton className="h-3 w-full rounded" />
-                <Skeleton className="h-3 w-3/4 rounded" />
+    <div className="mx-auto w-full max-w-4xl space-y-6">
+      <div className="overflow-hidden rounded-3xl border border-slate-100 bg-white">
+        <div className="rounded-3xl bg-slate-100/80 p-8 text-center">
+          <Skeleton className="mx-auto h-16 w-16 rounded-2xl" />
+          <Skeleton className="mx-auto mt-4 h-6 w-40 rounded" />
+          <Skeleton className="mx-auto mt-2 h-4 w-56 rounded" />
+          <Skeleton className="mx-auto mt-5 h-10 w-48 rounded" />
+        </div>
+        <div className="p-6 sm:p-8">
+          <Skeleton className="mx-auto h-3 w-36 rounded" />
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex gap-3">
+                <Skeleton className="h-9 w-9 shrink-0 rounded-xl" />
+                <div className="flex-1 space-y-1.5">
+                  <Skeleton className="h-3.5 w-32 rounded" />
+                  <Skeleton className="h-3 w-full rounded" />
+                  <Skeleton className="h-3 w-3/4 rounded" />
+                </div>
               </div>
-            </div>
+            ))}
+          </div>
+          <Skeleton className="mt-8 h-12 w-full rounded-xl" />
+        </div>
+      </div>
+      <div className="rounded-3xl border border-slate-100 bg-white p-6 sm:p-8">
+        <Skeleton className="h-5 w-40 rounded" />
+        <div className="mt-4 space-y-2">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-14 w-full rounded-xl" />
           ))}
         </div>
-        <Skeleton className="mt-8 h-12 w-full rounded-xl" />
-        <Skeleton className="mx-auto mt-3 h-3 w-56 rounded" />
       </div>
     </div>
   );

@@ -11,7 +11,6 @@ import { SubscriptionCardSkeleton } from "@/components/skeletons";
 
 import type { Subscription, ReceiptData } from "./types";
 import { SubscriptionErrorBanner } from "./SubscriptionErrorBanner";
-import { SubscriptionHero } from "./SubscriptionHero";
 import { ActiveSubscriptionCard } from "./ActiveSubscriptionCard";
 import { InactiveSubscriptionCard } from "./InactiveSubscriptionCard";
 import { SubscriptionHistory } from "./SubscriptionHistory";
@@ -42,8 +41,7 @@ export function SubscriptionContainer() {
   const [isLoadingReceipt, setIsLoadingReceipt] = useState(false);
   const [resumingUuid, setResumingUuid] = useState<string | null>(null);
 
-  // Email user (untuk CTA verifikasi) — dari cache ["profile"] yang dipakai
-  // bersama halaman lain (scan, home). Tidak fetch ulang bila sudah ada.
+  // Email user untuk CTA verifikasi — reuse cache ["profile"] dari halaman lain.
   const { data: profile } = useQuery({
     queryKey: ["profile"],
     queryFn: () => profileService.get(),
@@ -70,6 +68,8 @@ export function SubscriptionContainer() {
   const activeSubscription = subscriptions.find(
     (s) => s.status === "active" && (!s.ends_at || new Date(s.ends_at) >= new Date())
   );
+  // Pending bisa dilanjutkan selama <24 jam sejak dibuat.
+  const pendingSubscription = subscriptions.find((s) => s.status === "pending");
 
   const handleCheckout = async () => {
     setIsProcessing(true);
@@ -96,6 +96,8 @@ export function SubscriptionContainer() {
       }
     } catch (err: unknown) {
       setErrorMsg(getUserFriendlyErrorMessage(err));
+      // Status bisa berubah di BE — sinkronkan list agar callout tidak tertinggal.
+      await fetchSubscriptions();
     }
   };
 
@@ -152,19 +154,49 @@ export function SubscriptionContainer() {
           : "https://app.sandbox.midtrans.com/snap/snap.js"}
         data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
       />
-      <main className="min-h-[calc(100vh-72px)] bg-shell p-4 sm:p-6 lg:p-10 flex flex-col items-center">
+      <main className="mx-auto w-full max-w-4xl p-4 sm:p-6 lg:p-10">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            Langganan
+          </h1>
+          <p className="mt-1 text-sm text-slate-500 sm:text-base">
+            Kelola paket SkinCek Pro Anda — scan & konsultasi tanpa batas.
+          </p>
+        </div>
+
         <SubscriptionErrorBanner
           message={errorMsg}
           verifyEmail={profile?.email ?? null}
         />
-        <div className="w-full max-w-3xl bg-white rounded-3xl shadow-sm border border-emerald-100/50 overflow-hidden">
-          <SubscriptionHero />
-          <div className="p-6 sm:p-10">
-            {isLoading ? (
-              <div className="flex justify-center py-4">
-                <SubscriptionCardSkeleton />
+
+        {isLoading ? (
+          <SubscriptionCardSkeleton />
+        ) : (
+          <div className="space-y-6">
+            {pendingSubscription && !activeSubscription ? (
+              <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="flex items-center gap-2 text-sm font-bold text-amber-800">
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-amber-500" />
+                    Ada pembayaran menunggu — Rp{pendingSubscription.amount.toLocaleString("id-ID")}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-amber-700">
+                    Dibuat {new Date(pendingSubscription.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}.
+                    Selesaikan pembayaran untuk mengaktifkan SkinCek Pro.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleContinuePayment(pendingSubscription.uuid)}
+                  disabled={resumingUuid === pendingSubscription.uuid}
+                  className="shrink-0 rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-amber-600 disabled:opacity-60"
+                >
+                  {resumingUuid === pendingSubscription.uuid ? "Membuka..." : "Lanjutkan Pembayaran"}
+                </button>
               </div>
-            ) : activeSubscription ? (
+            ) : null}
+
+            {activeSubscription ? (
               <ActiveSubscriptionCard
                 subscription={activeSubscription}
                 isLoadingReceipt={isLoadingReceipt}
@@ -175,6 +207,7 @@ export function SubscriptionContainer() {
             ) : (
               <InactiveSubscriptionCard isProcessing={isProcessing} onCheckout={handleCheckout} />
             )}
+
             <SubscriptionHistory
               subscriptions={subscriptions}
               resumingUuid={resumingUuid}
@@ -182,7 +215,7 @@ export function SubscriptionContainer() {
               onViewReceipt={handleViewReceiptByUuid}
             />
           </div>
-        </div>
+        )}
       </main>
       <ReceiptModal receipt={receipt} onClose={() => setReceipt(null)} />
       <CancelModal
