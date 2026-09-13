@@ -3,7 +3,7 @@ import Link from "next/link";
 export function DashboardQuickActions() {
   return (
     <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+      <h2 className="mb-4 text-base font-bold text-slate-900">
         Akses Cepat
       </h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

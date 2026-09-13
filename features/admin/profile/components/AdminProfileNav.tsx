@@ -4,11 +4,9 @@ import Link from "next/link";
 import { KeyRound, Shield, User as UserIcon } from "lucide-react";
 
 /**
- * Sidebar 3-section pengaturan akun admin (§5.10):
- * - Mobile: horizontal segmented tabs (scroll-x jika sempit).
- * - Desktop (lg+): nav vertikal kiri w-64 — struktur existing dipertahankan.
+ * Nav pengaturan akun admin — kelas identik ProfileSidebar agar
+ * /admin/profile, /admin/profile/login-security, dan /privacy seragam.
  */
-
 export function AdminProfileNav({
   activePage,
 }: {
@@ -22,23 +20,20 @@ export function AdminProfileNav({
   ] as const;
 
   return (
-    <nav
-      aria-label="Pengaturan akun admin"
-      className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 lg:mx-0 lg:w-64 lg:shrink-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0"
-    >
+    <div className="w-full lg:w-64 shrink-0 flex flex-col gap-2">
       {navItems.map((item) => (
         <Link
           key={item.key}
           href={item.href}
-          className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-medium transition-colors lg:gap-3 lg:py-3 ${
+          className={`flex items-center gap-3 px-4 py-3 font-medium rounded-xl transition-colors ${
             activePage === item.key
-              ? "border border-emerald-200/50 bg-emerald-50 text-emerald-700"
-              : "border border-transparent text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+              ? "bg-emerald-50 text-emerald-700 border border-emerald-200/50"
+              : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
           }`}
         >
           {item.icon} {item.label}
         </Link>
       ))}
-    </nav>
+    </div>
   );
 }

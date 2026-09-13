@@ -9,7 +9,7 @@ export { Skeleton };
  * dimuat tidak ada "lompatan" layout.
  */
 
-// ─── StatCard (admin dashboard — gradient stat card) ───────────────────────
+// StatCard (admin dashboard — gradient stat card)
 
 export function StatCardSkeleton() {
   return (
@@ -31,7 +31,7 @@ export function StatGridSkeleton({ count = 4 }: { count?: number }) {
   );
 }
 
-// ─── HistoryCard (user/history) ─────────────────────────────────────────────
+// HistoryCard (user/history)
 
 export function HistoryCardSkeleton() {
   return (
@@ -67,7 +67,7 @@ export function HistoryListSkeleton({ count = 4 }: { count?: number }) {
   );
 }
 
-// ─── DoctorCard (user/consultations — daftar dokter) ────────────────────────
+// DoctorCard (user/consultations — daftar dokter)
 
 export function DoctorCardSkeleton() {
   return (
@@ -93,7 +93,7 @@ export function DoctorListSkeleton({ count = 4 }: { count?: number }) {
   );
 }
 
-// ─── Admin dashboard (stat grid + queue/donut + timeline/summary) ───────────
+// Admin dashboard (stat grid + queue/donut + timeline/summary)
 
 function QueueCardSkeleton() {
   return (
@@ -192,11 +192,11 @@ export function AdminDashboardSkeleton() {
   );
 }
 
-// ─── Profile page (user & doctor profile) ───────────────────────────────────
+// Profile page (user & doctor profile)
 
 export function ProfilePageSkeleton() {
   return (
-    <main className="mx-auto w-full max-w-6xl p-4 sm:p-6 lg:p-8">
+    <main className="w-full">
       <Skeleton className="h-8 w-64 rounded" />
       <Skeleton className="mt-2 h-4 w-80 rounded" />
       <div className="mt-8 flex flex-col items-start gap-6 lg:flex-row lg:gap-8">
@@ -231,7 +231,7 @@ export function ProfilePageSkeleton() {
   );
 }
 
-// ─── Subscription page ───────────────────────────────────────────────────────
+// Subscription page
 
 export function SubscriptionCardSkeleton() {
   return (
@@ -272,7 +272,7 @@ export function SubscriptionCardSkeleton() {
   );
 }
 
-// ─── Table rows (admin users / doctors / verifications) ─────────────────────
+// Table rows (admin users / doctors / verifications)
 
 export function TableRowsSkeleton({ rows = 5, cols = 5 }: { rows?: number; cols?: number }) {
   return (
@@ -301,7 +301,7 @@ export function TableRowsSkeleton({ rows = 5, cols = 5 }: { rows?: number; cols?
   );
 }
 
-// ─── Conversation item (user/chats — daftar percakapan) ─────────────────────
+// Conversation item (user/chats — daftar percakapan)
 
 export function ConversationItemSkeleton() {
   return (
@@ -328,7 +328,7 @@ export function ConversationListSkeleton({ count = 6 }: { count?: number }) {
   );
 }
 
-// ─── Chat messages (bubble kiri/kanan selang-seling) ────────────────────────
+// Chat messages (bubble kiri/kanan selang-seling)
 
 export function ChatMessagesSkeleton() {
   return (

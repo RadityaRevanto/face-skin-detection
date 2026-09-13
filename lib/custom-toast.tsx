@@ -11,8 +11,7 @@ import {
   LucideIcon,
 } from "lucide-react";
 
-// ─── Design Tokens ───────────────────────────────────────────────────────
-
+// Design Tokens
 interface ToastTypeStyle {
   label: string;
   Icon: LucideIcon;
@@ -29,45 +28,44 @@ const TOAST_STYLES: Record<string, ToastTypeStyle> = {
     Icon: CircleCheckIcon,
     iconColor: "text-emerald-600",
     iconBg:
-      "bg-emerald-50 border border-emerald-200/80 shadow-sm shadow-emerald-500/10",
+      "bg-emerald-50 border border-emerald-200/80 shadow-sm",
     borderColor: "border-emerald-200/90 hover:border-emerald-300/90",
-    progressGradient: "from-emerald-500 via-teal-400 to-emerald-400",
-    glowShadow: "shadow-[0_10px_30px_-5px_rgba(16,185,129,0.15)]",
+    progressGradient: "bg-emerald-500",
+    glowShadow: "shadow-md",
   },
   error: {
     label: "Gagal",
     Icon: OctagonXIcon,
     iconColor: "text-rose-600",
     iconBg:
-      "bg-rose-50 border border-rose-200/80 shadow-sm shadow-rose-500/10",
+      "bg-rose-50 border border-rose-200/80 shadow-sm",
     borderColor: "border-rose-200/90 hover:border-rose-300/90",
-    progressGradient: "from-rose-500 via-red-400 to-rose-400",
-    glowShadow: "shadow-[0_10px_30px_-5px_rgba(244,63,94,0.15)]",
+    progressGradient: "bg-rose-500",
+    glowShadow: "shadow-md",
   },
   warning: {
     label: "Peringatan",
     Icon: TriangleAlertIcon,
     iconColor: "text-amber-600",
     iconBg:
-      "bg-amber-50 border border-amber-200/80 shadow-sm shadow-amber-500/10",
+      "bg-amber-50 border border-amber-200/80 shadow-sm",
     borderColor: "border-amber-200/90 hover:border-amber-300/90",
-    progressGradient: "from-amber-500 via-orange-400 to-amber-400",
-    glowShadow: "shadow-[0_10px_30px_-5px_rgba(245,158,11,0.15)]",
+    progressGradient: "bg-amber-500",
+    glowShadow: "shadow-md",
   },
   info: {
     label: "Informasi",
     Icon: InfoIcon,
     iconColor: "text-sky-600",
     iconBg:
-      "bg-sky-50 border border-sky-200/80 shadow-sm shadow-sky-500/10",
+      "bg-sky-50 border border-sky-200/80 shadow-sm",
     borderColor: "border-sky-200/90 hover:border-sky-300/90",
-    progressGradient: "from-sky-500 via-blue-500 to-indigo-500",
-    glowShadow: "shadow-[0_10px_30px_-5px_rgba(14,165,233,0.15)]",
+    progressGradient: "bg-sky-500",
+    glowShadow: "shadow-md",
   },
 };
 
-// ─── Toast Render Component ──────────────────────────────────────────────
-
+// Toast Render Component
 const DEFAULT_DURATION = 5000;
 
 interface CustomToastCardProps {
@@ -138,7 +136,7 @@ function CustomToastCard({
         <div
           onAnimationEnd={() => toast.dismiss(toastId)}
           className={cn(
-            "h-full toast-progress bg-gradient-to-r",
+            "h-full toast-progress",
             style.progressGradient
           )}
           style={{
@@ -150,8 +148,7 @@ function CustomToastCard({
   );
 }
 
-// ─── Public API ──────────────────────────────────────────────────────────
-
+// Public API
 interface ShowToastOptions {
   description?: string;
   duration?: number;

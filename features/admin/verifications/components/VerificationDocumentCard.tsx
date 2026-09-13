@@ -12,7 +12,7 @@ export function VerificationDocumentCard({
   doctor,
 }: VerificationDocumentCardProps) {
   return (
-    <Card className='overflow-hidden rounded-3xl border border-slate-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+    <Card className='overflow-hidden rounded-3xl border border-slate-100 bg-white text-slate-950 shadow-sm'>
       <div className='border-b border-slate-100 px-6 py-4'>
         <h3 className='text-base font-semibold text-slate-900'>
           Dokumen & Status
@@ -32,16 +32,15 @@ export function VerificationDocumentCard({
 
               <div className='min-w-0 flex-1'>
                 <p className='truncate text-sm font-semibold'>{doc.file_name ?? "Dokumen"}</p>
-                <p className='text-xs text-emerald-600'>File preview placeholder</p>
               </div>
 
               <a href={doc.url} target='_blank' rel='noreferrer'>
                 <Button
                   type='button'
                   variant='outline'
-                  className='border-emerald-100! bg-white! text-emerald-700! hover:bg-emerald-50!'
+                  className='border-emerald-100 bg-white text-emerald-700 hover:bg-emerald-50'
                 >
-                  View
+                  Lihat
                 </Button>
               </a>
             </div>
@@ -51,7 +50,7 @@ export function VerificationDocumentCard({
             <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-white shadow-sm'>
               <DocumentIcon />
             </div>
-            <p className='text-sm font-semibold'>No Document</p>
+            <p className='text-sm font-semibold'>Belum ada dokumen</p>
           </div>
         )}
       </div>

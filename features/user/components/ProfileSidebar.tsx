@@ -42,8 +42,8 @@ export function ProfileSidebar({ profile, role, activePage }: ProfileSidebarProp
 
 function VerificationCard({ profile }: { profile: UserProfile }) {
   return (
-    <div className="mt-4 p-5 bg-linear-to-br from-emerald-900 to-emerald-800 rounded-2xl text-white shadow-lg relative overflow-hidden">
-      <p className="text-xs text-emerald-100 font-medium uppercase tracking-wider mb-1">Status Verifikasi</p>
+    <div className="mt-4 p-5 bg-emerald-800 rounded-2xl text-white shadow-sm">
+      <p className="text-xs text-emerald-100 font-medium mb-1">Status Verifikasi</p>
       <h3 className="text-xl font-bold mb-3">
         {profile.verification_status === 'approved' && <span className="text-white">Terverifikasi</span>}
         {profile.verification_status === 'pending' && <span className="text-amber-300">Menunggu Review</span>}

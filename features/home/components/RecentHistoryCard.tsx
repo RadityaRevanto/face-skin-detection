@@ -38,7 +38,7 @@ export function RecentHistoryCard({ histories }: RecentHistoryCardProps) {
                 href={`/history?id=${history.id}`}
                 className='flex items-center gap-3 rounded-2xl bg-slate-50 p-3 transition-colors hover:bg-emerald-50'
               >
-                <div className='grid h-12 w-12 place-items-center overflow-hidden rounded-xl bg-linear-to-br from-amber-200 to-emerald-100 text-slate-700'>
+                <div className='grid h-12 w-12 place-items-center overflow-hidden rounded-xl bg-emerald-100 text-slate-700'>
                   <span className='h-7 w-7 rounded-full bg-amber-100' />
                 </div>
                 <div className='min-w-0 flex-1'>

@@ -20,7 +20,7 @@ export function CameraControls({
   return (
     <>
       {/* Badge */}
-      <div className="absolute left-5 top-5 z-20 rounded-xl bg-emerald-600 px-4 py-3 text-white shadow-lg shadow-emerald-100">
+      <div className="absolute left-5 top-5 z-20 rounded-xl bg-emerald-600 px-4 py-3 text-white shadow-sm">
         <p className="text-xs font-bold leading-4">
           {faceDetected ? "✓ Wajah" : "Auto Face"}<br />
           {faceDetected ? "Terdeteksi" : "Detection"}

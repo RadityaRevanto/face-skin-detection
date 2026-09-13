@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { X, Star, AlertCircle, Loader2 } from "lucide-react";
 import { rateDoctor } from "@/lib/api/consultations-query";
+import { useDialogEscape } from "@/features/shared/hooks/useDialogEscape";
 
 interface DoctorRatingModalProps {
   isOpen: boolean;
@@ -16,6 +17,8 @@ export function DoctorRatingModal({ isOpen, onClose, doctorId, doctorName, onSuc
   const [review, setReview] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useDialogEscape(isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -41,13 +44,14 @@ export function DoctorRatingModal({ isOpen, onClose, doctorId, doctorName, onSuc
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="rating-title">
+      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
         <div className="p-5 border-b border-zinc-100 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-zinc-800">Beri Ulasan</h2>
+          <h2 id="rating-title" className="text-lg font-bold text-zinc-800">Beri Ulasan</h2>
           <button 
             onClick={onClose} 
             disabled={isSubmitting}
+            aria-label="Tutup"
             className="p-2 bg-zinc-100 rounded-full hover:bg-zinc-200 transition-colors disabled:opacity-50"
           >
             <X size={18} className="text-zinc-600" />
@@ -108,7 +112,7 @@ export function DoctorRatingModal({ isOpen, onClose, doctorId, doctorName, onSuc
           <button
             type="submit"
             disabled={isSubmitting || rating === 0}
-            className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-600/20 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none flex items-center justify-center gap-2"
+            className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {isSubmitting ? (
               <>

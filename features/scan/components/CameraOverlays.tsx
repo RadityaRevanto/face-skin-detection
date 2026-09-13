@@ -49,7 +49,7 @@ export function CameraOverlays({
           <div className="h-16 w-16 animate-spin rounded-full border-4 border-white/20 border-t-emerald-400" />
           <p className="text-lg font-bold text-white">Menganalisis kulit…</p>
           <p className="text-sm text-white/70">
-            {modelStatus === "loaded" ? "Auto crop wajah → ML service" : "Mengirim frame penuh → ML service"}
+            {modelStatus === "loaded" ? "Wajah dipotong otomatis untuk analisis" : "Mengirim foto penuh untuk analisis"}
           </p>
         </div>
       )}

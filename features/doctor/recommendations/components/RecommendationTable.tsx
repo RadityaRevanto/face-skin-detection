@@ -28,7 +28,7 @@ export function RecommendationTable({
   pagination,
 }: RecommendationTableProps) {
   return (
-    <Card className='overflow-hidden rounded-2xl border-slate-100! bg-white! text-slate-950! shadow-sm dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+    <Card className='overflow-hidden rounded-2xl border-slate-100 bg-white text-slate-950 shadow-sm'>
       <Table className='min-w-full divide-y divide-gray-100'>
         <TableHeader className='bg-gray-50/80'>
           <TableRow className='hover:bg-transparent'>
@@ -37,7 +37,7 @@ export function RecommendationTable({
             </TableHead>
 
             <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
-              Rule Match AI
+              Skin Concern
             </TableHead>
 
             <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
@@ -45,7 +45,7 @@ export function RecommendationTable({
             </TableHead>
 
             <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
-              Routine
+              Langkah Rutin
             </TableHead>
 
             <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
@@ -73,7 +73,7 @@ export function RecommendationTable({
                   {recommendation.concern}
                 </div>
                 <div className='mt-1 text-xs text-gray-500'>
-                  {recommendation.severity} · {recommendation.skinType}
+                  {recommendation.severity}
                 </div>
               </TableCell>
 
@@ -104,7 +104,7 @@ export function RecommendationTable({
                       variant='ghost'
                       size='sm'
                       title='Edit'
-                      className='h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50! hover:text-emerald-700'
+                      className='h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50 hover:text-emerald-700'
                     >
                       <RecommendationActionIcon type='edit' />
                     </Button>
@@ -121,8 +121,17 @@ export function RecommendationTable({
       </Table>
 
       {recommendations.length === 0 ? (
-        <div className='border-t border-gray-100 bg-white px-6 py-8 text-sm font-semibold text-gray-500 sm:px-8'>
-          Belum ada data rekomendasi.
+        <div className='border-t border-gray-100 bg-white px-6 py-8 text-center sm:px-8'>
+          <p className='text-sm font-semibold text-gray-500'>
+            Belum ada rekomendasi — buat aturan pertama agar hasil scan pasien
+            otomatis mendapat saran.
+          </p>
+          <Link
+            href={ROUTES.DOCTOR.RECOMMENDATIONS_CREATE}
+            className='mt-4 inline-flex h-10 items-center rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-emerald-700'
+          >
+            Tambah Rekomendasi
+          </Link>
         </div>
       ) : null}
 

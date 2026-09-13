@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, Info } from "lucide-react";
+import { useDialogEscape } from "@/features/shared/hooks/useDialogEscape";
 
 type ErrorCta = "subscription" | "consent";
 
@@ -9,25 +10,29 @@ interface ErrorPopupProps {
   setErrorState: (val: { message: string; cta?: ErrorCta } | null) => void;
   successMsg: string | null;
   setSuccessMsg: (val: string | null) => void;
+  /** Cta "subscription" hanya relevan untuk user — dokter tak punya halaman upgrade. */
+  role: "user" | "doctor";
 }
 
-export function ErrorPopup({ errorState, setErrorState, successMsg, setSuccessMsg }: ErrorPopupProps) {
+export function ErrorPopup({ errorState, setErrorState, successMsg, setSuccessMsg, role }: ErrorPopupProps) {
+  useDialogEscape(!!errorState, () => setErrorState(null));
+  useDialogEscape(!!successMsg, () => setSuccessMsg(null));
   return (
     <>
       {errorState && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-sm flex flex-col shadow-2xl overflow-hidden transform transition-all">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4" role="alertdialog" aria-modal="true" aria-labelledby="error-popup-title">
+          <div className="bg-white rounded-2xl w-full max-w-sm flex flex-col shadow-2xl overflow-hidden">
             <div className="bg-rose-50 p-4 border-b border-rose-100 flex items-center gap-3">
               <div className="bg-rose-100 text-rose-600 p-2 rounded-full">
                 <Info size={20} strokeWidth={2.5} />
               </div>
-              <h3 className="font-bold text-rose-800 text-base">Pemberitahuan</h3>
+              <h3 id="error-popup-title" className="font-bold text-rose-800 text-base">Pemberitahuan</h3>
             </div>
             <div className="p-5">
               <p className="text-zinc-600 text-sm leading-relaxed">{errorState.message}</p>
             </div>
             <div className={`p-4 bg-zinc-50 border-t border-zinc-100 flex ${errorState.cta ? "flex-col gap-2" : "justify-end"}`}>
-              {errorState.cta === "subscription" && (
+              {errorState.cta === "subscription" && role === "user" && (
                 <a
                   href="/user/subscription"
                   className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors text-center"
@@ -55,13 +60,13 @@ export function ErrorPopup({ errorState, setErrorState, successMsg, setSuccessMs
       )}
 
       {successMsg && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl w-full max-w-sm flex flex-col shadow-2xl overflow-hidden transform transition-all animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-60 flex items-center justify-center bg-zinc-900/50 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="success-popup-title">
+          <div className="bg-white rounded-2xl w-full max-w-sm flex flex-col shadow-2xl overflow-hidden">
             <div className="bg-emerald-50 p-4 border-b border-emerald-100 flex items-center gap-3">
               <div className="bg-emerald-100 text-emerald-600 p-2 rounded-full">
                 <Check size={20} strokeWidth={2.5} />
               </div>
-              <h3 className="font-bold text-emerald-800 text-base">Berhasil</h3>
+              <h3 id="success-popup-title" className="font-bold text-emerald-800 text-base">Berhasil</h3>
             </div>
             <div className="p-5 text-center">
               <p className="text-zinc-600 text-sm leading-relaxed font-medium">{successMsg}</p>

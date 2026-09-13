@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 
 import { adminService } from "@/features/admin/services/adminService";
 import { TableRowsSkeleton } from "@/components/skeletons";
+import { ErrorState } from "@/components/ui/error-state";
 import { DoctorVerificationContent } from "./DoctorVerificationContent";
 import type {
   DoctorVerificationPageData,
@@ -26,7 +27,7 @@ function VerificationsPageInner({ pageType }: { pageType: DoctorVerificationPage
   const searchParams = useSearchParams();
   const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
 
-  const { data: listData, isLoading } = useQuery({
+  const { data: listData, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin", "verifications", pageType, page],
     queryFn: () =>
       adminService.verifications({
@@ -113,6 +114,10 @@ function VerificationsPageInner({ pageType }: { pageType: DoctorVerificationPage
       },
     };
   }, [listData, pendingCount, rejectedCount, approvedCount, pageType, page]);
+
+  if (isError) {
+    return <ErrorState message="Gagal memuat daftar verifikasi." onRetry={() => refetch()} />;
+  }
 
   if (isLoading && !listData) {
     return <TableRowsSkeleton rows={5} />;

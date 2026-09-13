@@ -18,7 +18,7 @@ function formatLoginAt(iso: string | null) {
 
 export function AdminSessionInfo({ activeSessions, lastLogin }: AdminSessionInfoProps) {
   return (
-    <Card className="rounded-2xl border-slate-100! bg-white! p-5 text-slate-950! shadow-sm">
+    <Card className="rounded-2xl border-slate-100 bg-white p-5 text-slate-950 shadow-sm">
       <div className="flex items-start gap-4">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-violet-50 text-violet-600">
           <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-5 w-5">

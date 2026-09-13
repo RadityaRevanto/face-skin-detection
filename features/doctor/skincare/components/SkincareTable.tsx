@@ -25,7 +25,7 @@ type SkincareTableProps = {
 
 export function SkincareTable({ products, pagination }: SkincareTableProps) {
   return (
-    <Card className='overflow-hidden rounded-2xl border-slate-100! bg-white! text-slate-950! shadow-sm dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+    <Card className='overflow-hidden rounded-2xl border-slate-100 bg-white text-slate-950 shadow-sm'>
       <Table className='min-w-full divide-y divide-gray-100'>
         <TableHeader className='bg-gray-50/80'>
           <TableRow className='hover:bg-transparent'>
@@ -50,7 +50,7 @@ export function SkincareTable({ products, pagination }: SkincareTableProps) {
             </TableHead>
 
             <TableHead className='px-6 py-5 text-right text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
-              Action
+              Aksi
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -95,7 +95,7 @@ export function SkincareTable({ products, pagination }: SkincareTableProps) {
                       variant='ghost'
                       size='sm'
                       title='Edit'
-                      className='h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50! hover:text-emerald-700'
+                      className='h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50 hover:text-emerald-700'
                     >
                       <SkincareActionIcon type='edit' />
                     </Button>

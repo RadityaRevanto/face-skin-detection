@@ -1,10 +1,8 @@
-import { useState } from "react";
-
 import { Card } from "@/components/ui/card";
 import type { ActivityLog } from "@/features/activity-log/types";
 
 import type { AdminDashboardData } from "@/features/admin/dashboard/lib/adminDashboardTypes";
-import { StatCard } from "./StatCard";
+import { StatCard } from "@/components/ui/stat-card";
 import { QueueList, type QueueListItem } from "./QueueList";
 import { ProgressDonut } from "./ProgressDonut";
 import { SummaryCard } from "./SummaryCard";
@@ -38,63 +36,20 @@ export function AdminDashboardContent({
   activityLogs = [],
   verificationCounts,
 }: AdminDashboardContentProps) {
-  // §5.1 mobile: akordeon "Lihat semua statistik" untuk 4 kartu sekunder.
-  const [showAllStats, setShowAllStats] = useState(false);
-
   const primaryStats = [
-    {
-      label: "Total Users",
-      value: String(stats.total_users),
-      icon: "users",
-      tone: "bg-emerald-50 text-emerald-600",
-      href: "/admin/users",
-    },
-    {
-      label: "Total Doctors",
-      value: String(stats.total_doctors),
-      icon: "stethoscope",
-      tone: "bg-sky-50 text-sky-600",
-      href: "/admin/doctors",
-    },
     {
       label: "Verifikasi Pending",
       value: String(pending_actions.doctor_verifications),
-      icon: "clock",
-      tone: "bg-amber-50 text-amber-600",
       href: "/admin/doctor-verifications/pending",
-    },
-    {
-      label: "Total Scans",
-      value: String(stats.total_scans),
-      icon: "scan",
-      tone: "bg-violet-50 text-violet-600",
-    },
-  ];
-
-  const secondaryStats = [
-    {
-      label: "Scans Hari Ini",
-      value: String(stats.scans_today),
-      icon: "scan",
-      tone: "bg-emerald-50 text-emerald-600",
     },
     {
       label: "User Baru (7 hari)",
       value: String(stats.new_users_this_week),
-      icon: "user-plus",
-      tone: "bg-sky-50 text-sky-600",
-    },
-    {
-      label: "Pro Subscriptions",
-      value: String(stats.active_pro_subscriptions),
-      icon: "subscription",
-      tone: "bg-amber-50 text-amber-600",
+      href: "/admin/users",
     },
     {
       label: "Revenue Bulanan",
       value: formatCurrency(stats.monthly_revenue),
-      icon: "revenue",
-      tone: "bg-rose-50 text-rose-600",
     },
   ];
 
@@ -125,7 +80,7 @@ export function AdminDashboardContent({
     donutTotal > 0
       ? `${Math.round((donutCounts.approved / donutTotal) * 100)}%`
       : "0%";
-  const donutCenterLabel = "approved";
+  const donutCenterLabel = "disetujui";
 
   return (
     <div className="w-full space-y-6">
@@ -141,47 +96,18 @@ export function AdminDashboardContent({
         </div>
       </div>
 
-      {/* §5.1: mobile = 4 kartu prioritas + akordeon; lg+ = 8 kartu 4 kolom */}
-      <section className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+      {/* Statistik utama — keputusan harian admin. Sisanya cuma angka konteks, cukup satu baris teks. */}
+      <section className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
         {primaryStats.map((item) => (
           <StatCard key={item.label} {...item} />
         ))}
       </section>
 
-      {/* Akordeon "Lihat semua statistik" (mobile/tablet) — grid 4 penuh di lg */}
-      <div className="lg:hidden">
-        <button
-          type="button"
-          onClick={() => setShowAllStats((v) => !v)}
-          aria-expanded={showAllStats}
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50"
-        >
-          {showAllStats ? "Sembunyikan statistik" : "Lihat semua statistik"}
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            className={`h-4 w-4 text-slate-400 transition-transform ${showAllStats ? "rotate-180" : ""}`}
-          >
-            <path d="m6 9 6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-
-        {showAllStats ? (
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            {secondaryStats.map((item) => (
-              <StatCard key={item.label} {...item} />
-            ))}
-          </div>
-        ) : null}
-      </div>
-
-      {/* 4 kartu sekunder tampil permanen di lg+ (bagian baris-1 grid 8) */}
-      <div className="hidden gap-3 sm:gap-4 lg:grid lg:grid-cols-4">
-        {secondaryStats.map((item) => (
-          <StatCard key={item.label} {...item} />
-        ))}
-      </div>
+      <p className="text-sm text-slate-500">
+        Total: {stats.total_users} user · {stats.total_doctors} dokter ·{" "}
+        {stats.scans_today} scan hari ini ({stats.total_scans} total) ·{" "}
+        {stats.active_pro_subscriptions} langganan Pro aktif.
+      </p>
 
       {/* Baris 2: QueueList (2/3) + Donut (1/3) — mobile stack, sm 2 kolom, lg 2/3-1/3 */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">

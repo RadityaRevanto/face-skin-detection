@@ -7,6 +7,7 @@ import { customToast } from "@/lib/custom-toast";
 import { consultationService } from "@/features/consultation/services/consultationService";
 import { ConsultationApiError } from "@/lib/api/consultations-query";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
+import { useDialogEscape } from "@/features/shared/hooks/useDialogEscape";
 
 import type { DoctorProfile } from "../types";
 
@@ -24,6 +25,8 @@ function describeError(error: unknown, fallback: string): string {
 export function StartConsultationButton({ doctor }: { doctor: DoctorProfile }) {
   const router = useRouter();
   const [showConfirm, setShowConfirm] = useState(false);
+
+  useDialogEscape(showConfirm, () => setShowConfirm(false));
   const [isCreating, setIsCreating] = useState(false);
 
   const startConversation = async () => {
@@ -56,9 +59,9 @@ export function StartConsultationButton({ doctor }: { doctor: DoctorProfile }) {
       </button>
 
       {showConfirm && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/50 p-4 backdrop-blur-sm sm:items-center">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/50 p-4 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true" aria-labelledby="consult-confirm-title">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-bold text-slate-900">
+            <h3 id="consult-confirm-title" className="text-lg font-bold text-slate-900">
               Konsultasi Dokter
             </h3>
             <p className="mt-3 text-sm leading-6 text-slate-600">

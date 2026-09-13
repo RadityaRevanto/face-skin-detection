@@ -12,7 +12,7 @@ export function AdminProfileCard({ profile }: { profile: AdminProfileData }) {
     .join("");
 
   return (
-    <Card className="overflow-hidden rounded-2xl border-slate-100! bg-white! text-slate-950! shadow-sm">
+    <Card className="overflow-hidden rounded-2xl border-slate-100 bg-white text-slate-950 shadow-sm">
       <div className="border-b border-gray-100 px-6 py-5 sm:px-8">
         <h2 className="text-base font-bold text-slate-950">Profil Admin</h2>
         <p className="mt-1 text-sm text-slate-500">Data pribadi dan status akun admin.</p>

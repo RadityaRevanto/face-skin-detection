@@ -18,7 +18,7 @@ export function RecommendationFormActions({
         variant='ghost'
         disabled={isSubmitting}
         onClick={onCancel}
-        className='h-11 rounded-xl px-5 font-semibold text-gray-500 hover:bg-gray-50!'
+        className='h-11 rounded-xl px-5 font-semibold text-gray-500 hover:bg-gray-50'
       >
         Batal
       </Button>

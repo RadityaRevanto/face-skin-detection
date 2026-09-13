@@ -469,7 +469,7 @@ export function DoctorRegisterForm() {
               type="button"
               onClick={handleNext}
               disabled={isLoading}
-              className="h-11 rounded-xl bg-emerald-600 text-sm font-semibold shadow-xl shadow-emerald-600/25 hover:bg-emerald-700"
+              className="h-11 rounded-xl bg-emerald-600 text-sm font-semibold shadow-sm hover:bg-emerald-700"
             >
               Selanjutnya
             </Button>
@@ -477,7 +477,7 @@ export function DoctorRegisterForm() {
             <Button
               type="submit"
               disabled={isLoading || !privacyConsent}
-              className="h-11 rounded-xl bg-emerald-600 text-sm font-semibold shadow-xl shadow-emerald-600/25 hover:bg-emerald-700"
+              className="h-11 rounded-xl bg-emerald-600 text-sm font-semibold shadow-sm hover:bg-emerald-700"
             >
               {isLoading ? (
                 <>

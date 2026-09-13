@@ -35,7 +35,7 @@ export function StepIndicator({
               className={[
                 "flex items-center gap-2 rounded-full px-2.5 py-1.5 text-xs font-semibold transition-all sm:px-3",
                 isCurrent
-                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/25"
+                  ? "bg-emerald-600 text-white shadow-sm"
                   : isCompleted
                     ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
                     : "bg-zinc-100 text-zinc-400",

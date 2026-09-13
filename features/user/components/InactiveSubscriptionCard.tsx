@@ -5,6 +5,8 @@ import { CheckCircle2, Loader2, ScanFace, MessagesSquare, History, ShieldCheck }
 type Props = {
   isProcessing: boolean;
   onCheckout: () => void;
+  /** Nominal dari data langganan (pending/terakhir) — BE tetap otoritas harga. */
+  price?: number | null;
 };
 
 const BENEFITS = [
@@ -30,7 +32,10 @@ const BENEFITS = [
   },
 ];
 
-export function InactiveSubscriptionCard({ isProcessing, onCheckout }: Props) {
+// ponytail: harga single-plan di-behardcode di BE juga; hapus fallback saat endpoint plan tersedia.
+const FALLBACK_PRICE = 15000;
+
+export function InactiveSubscriptionCard({ isProcessing, onCheckout, price }: Props) {
   return (
     <section className="overflow-hidden rounded-3xl border border-amber-200 bg-white shadow-sm">
       <div className="bg-amber-50 border-b border-amber-100 p-8 text-center">
@@ -43,13 +48,13 @@ export function InactiveSubscriptionCard({ isProcessing, onCheckout }: Props) {
         </p>
 
         <div className="text-4xl font-black text-slate-900 flex items-end justify-center gap-1">
-          Rp15.000
+          Rp{(price ?? FALLBACK_PRICE).toLocaleString("id-ID")}
           <span className="text-base font-semibold text-slate-400 mb-1.5">/bulan</span>
         </div>
       </div>
 
       <div className="p-6 sm:p-8">
-        <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 text-center">
+        <p className="mb-4 text-center text-xs font-semibold text-slate-500">
           Yang Anda dapatkan
         </p>
         <ul className="grid gap-4 sm:grid-cols-2">
@@ -84,9 +89,9 @@ export function InactiveSubscriptionCard({ isProcessing, onCheckout }: Props) {
             "Berlangganan Sekarang"
           )}
         </button>
-        <p className="mt-3 text-center text-xs text-slate-400">
-          Pembayaran sekali untuk 30 hari. Bisa dibatalkan kapan saja.
-        </p>
+          <p className="mt-3 text-center text-xs text-slate-400">
+            Harga final tertera di halaman pembayaran. Pembayaran sekali untuk 30 hari. Bisa dibatalkan kapan saja.
+          </p>
       </div>
     </section>
   );

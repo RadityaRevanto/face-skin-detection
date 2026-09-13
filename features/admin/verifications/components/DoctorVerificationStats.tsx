@@ -19,17 +19,13 @@ export function DoctorVerificationStats({
 
   return (
     <div className="rounded-2xl border border-slate-100 bg-white p-4 text-slate-950 shadow-sm sm:p-6">
-      <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2">
-          <ProgressDonut
-            centerValue={`${approvedPct}%`}
-            centerLabel="approved"
-            pending={stats.pendingCount}
-            approved={stats.approvedCount}
-            rejected={stats.rejectedCount}
-          />
-        </div>
-      </div>
+      <ProgressDonut
+        centerValue={`${approvedPct}%`}
+        centerLabel="disetujui"
+        pending={stats.pendingCount}
+        approved={stats.approvedCount}
+        rejected={stats.rejectedCount}
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 
 import type { DoctorVerificationDetail } from "@/features/admin/verifications/lib/verificationDetailTypes";
-import { InfoBox } from "./InfoBox";
+import { InfoBox } from "@/components/ui/info-box";
 
 type VerificationContactCardProps = {
   doctor: DoctorVerificationDetail;
@@ -11,7 +11,7 @@ export function VerificationContactCard({
   doctor,
 }: VerificationContactCardProps) {
   return (
-    <Card className='overflow-hidden rounded-3xl border border-slate-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+    <Card className='overflow-hidden rounded-3xl border border-slate-100 bg-white text-slate-950 shadow-sm'>
       <div className='border-b border-slate-100 px-6 py-4'>
         <h3 className='text-base font-semibold text-slate-900'>
           Informasi Kontak

@@ -11,7 +11,7 @@ export function HeroSection({ latestPrediction }: HeroSectionProps) {
     <section className='rounded-3xl bg-white p-8 shadow-sm ring-1 ring-slate-100'>
       <div className='flex flex-col gap-5 md:flex-row md:items-start md:justify-between'>
         <div>
-          <p className='text-sm font-semibold uppercase tracking-[0.2em] text-blue-500'>
+          <p className='text-sm font-semibold text-emerald-600'>
             Tips Perawatan
           </p>
 
@@ -32,7 +32,7 @@ export function HeroSection({ latestPrediction }: HeroSectionProps) {
             </div>
 
             <div>
-              <p className='text-xs font-bold uppercase tracking-[0.16em] text-emerald-600'>
+              <p className='text-xs font-semibold text-emerald-700'>
                 Kondisi terbaru
               </p>
               <p className='mt-1 text-sm font-bold text-emerald-900'>

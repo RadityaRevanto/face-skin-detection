@@ -85,7 +85,7 @@ export function VerificationDecisionCard({
   }
 
   return (
-    <Card className='sticky bottom-0 z-30 overflow-visible rounded-3xl border border-slate-100 bg-white text-slate-950 shadow-lg lg:static lg:shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-slate-100 dark:bg-white dark:text-slate-950'>
+    <Card className='sticky bottom-0 z-30 overflow-visible rounded-3xl border border-slate-100 bg-white text-slate-950 shadow-lg lg:static lg:shadow-sm'>
       <div className='border-b border-slate-100 px-4 py-4 sm:px-6'>
         <h3 className='text-base font-semibold text-slate-900'>
           Keputusan Verifikasi
@@ -129,7 +129,7 @@ export function VerificationDecisionCard({
             variant='ghost'
             disabled={isLoading}
             onClick={() => submitAction("approve")}
-            className='h-12 rounded-xl bg-emerald-50! text-emerald-700! hover:bg-emerald-100!'
+            className='h-12 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
           >
             <ActionIcon type='approve' />
             Approve
@@ -140,7 +140,7 @@ export function VerificationDecisionCard({
             variant='ghost'
             disabled={isLoading}
             onClick={() => submitAction("reject")}
-            className='h-12 rounded-xl bg-rose-50! text-rose-600! hover:bg-rose-100!'
+            className='h-12 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100'
           >
             <ActionIcon type='reject' />
             Reject

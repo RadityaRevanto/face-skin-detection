@@ -28,7 +28,7 @@ export function NotificationModal({
   return (
     <div
       className={`
-        fixed lg:absolute right-0 z-50 flex flex-col bg-white overflow-hidden shadow-2xl transition-all
+        fixed lg:absolute right-0 z-50 flex flex-col bg-white overflow-hidden shadow-2xl
 
         /* Mobile: Fullscreen sliding from bottom or center */
         bottom-0 left-0 w-full h-[85vh] rounded-t-3xl lg:bottom-auto lg:left-auto

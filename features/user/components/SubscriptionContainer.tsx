@@ -154,7 +154,7 @@ export function SubscriptionContainer() {
           : "https://app.sandbox.midtrans.com/snap/snap.js"}
         data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
       />
-      <main className="mx-auto w-full max-w-4xl p-4 sm:p-6 lg:p-10">
+      <main className="mx-auto w-full max-w-4xl">
         <div className="mb-6">
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
             Langganan
@@ -205,7 +205,11 @@ export function SubscriptionContainer() {
                 onCancel={() => handleCancelClick(activeSubscription.uuid)}
               />
             ) : (
-              <InactiveSubscriptionCard isProcessing={isProcessing} onCheckout={handleCheckout} />
+              <InactiveSubscriptionCard
+                isProcessing={isProcessing}
+                onCheckout={handleCheckout}
+                price={pendingSubscription?.amount ?? subscriptions[0]?.amount ?? null}
+              />
             )}
 
             <SubscriptionHistory

@@ -6,18 +6,18 @@ import { AdminProfileNav } from "./AdminProfileNav";
 
 export function AdminProfileContent({ profile }: { profile: AdminProfileData }) {
   return (
-    <div className="w-full space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-950">Profil Admin</h1>
-        <p className="mt-1 text-sm text-slate-500">
+    <main className="w-full">
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">Profil Admin</h1>
+        <p className="text-zinc-500 mt-1.5 text-sm sm:text-base">
           Ringkasan akun admin, aktivitas login terakhir, dan statistik platform.
         </p>
       </div>
 
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-8">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
         <AdminProfileNav activePage="profile" />
 
-        <div className="min-w-0 flex-1 space-y-6">
+        <div className="flex-1 w-full min-w-0 space-y-6">
           <AdminSummaryWidgets summary={profile.summary} />
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -28,6 +28,6 @@ export function AdminProfileContent({ profile }: { profile: AdminProfileData }) 
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

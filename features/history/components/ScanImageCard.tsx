@@ -26,7 +26,7 @@ export function ScanImageCard({ history }: ScanImageCardProps) {
           <img src={imageUrl} alt={`Foto pemeriksaan ${label}`} className="h-full w-full object-cover" />
         </div>
       ) : (
-        <div className="flex aspect-[4/3] items-center justify-center rounded-t-2xl bg-gradient-to-br from-emerald-50 via-white to-cyan-50">
+        <div className="flex aspect-[4/3] items-center justify-center rounded-t-2xl bg-emerald-50/60">
           <p className="text-sm font-semibold text-slate-400">Tidak ada foto</p>
         </div>
       )}
@@ -84,7 +84,7 @@ export function ScanImageCard({ history }: ScanImageCardProps) {
 
         {history.skin_concern?.description && (
           <div className="mt-4 rounded-xl bg-slate-50 p-4">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Tentang Kondisi Ini</p>
+            <p className="text-[10px] font-bold text-slate-400">Tentang Kondisi Ini</p>
             <p className="mt-1.5 text-sm leading-relaxed text-slate-600">{history.skin_concern.description}</p>
           </div>
         )}

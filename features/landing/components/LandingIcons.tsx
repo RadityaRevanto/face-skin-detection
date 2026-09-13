@@ -90,11 +90,11 @@ export function ShieldCheckIcon({ className }: IconProps) {
   );
 }
 
-export function SparklesIcon({ className }: IconProps) {
+export function PillIcon({ className }: IconProps) {
   return (
     <Svg className={className}>
-      <path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3Z" />
-      <path d="M18 14.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7.7-1.8Z" />
+      <path d="m10.5 20.5 10-10a5 5 0 1 0-7-7l-10 10a5 5 0 1 0 7 7Z" />
+      <path d="m8.5 8.5 7 7" />
     </Svg>
   );
 }

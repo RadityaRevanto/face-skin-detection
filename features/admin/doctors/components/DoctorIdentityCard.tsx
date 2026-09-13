@@ -1,8 +1,8 @@
 import { Card } from "@/components/ui/card";
 
 import type { DoctorDetail } from "@/features/admin/doctors/lib/doctorDetailTypes";
-import { getInitials } from "@/features/admin/doctors/lib/doctorDetailUtils";
-import { InfoBox } from "./InfoBox";
+import { getInitials } from "@/lib/utils";
+import { InfoBox } from "@/components/ui/info-box";
 import { StatusBadge } from "@/features/admin/components/StatusBadge";
 
 type DoctorIdentityCardProps = {
@@ -11,7 +11,7 @@ type DoctorIdentityCardProps = {
 
 export function DoctorIdentityCard({ doctor }: DoctorIdentityCardProps) {
   return (
-    <Card className='overflow-hidden rounded-3xl border border-slate-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+    <Card className='overflow-hidden rounded-3xl border border-slate-100 bg-white text-slate-950 shadow-sm'>
       <div className='border-b border-slate-100 px-6 py-4'>
         <h3 className='text-base font-semibold text-slate-900'>Profil Dokter</h3>
         <p className='mt-0.5 text-sm text-slate-400'>
@@ -44,13 +44,13 @@ export function DoctorIdentityCard({ doctor }: DoctorIdentityCardProps) {
           <InfoBox label='Role' value='Doctor' />
           <InfoBox
             label='Status Akun'
-            value={doctor.isActive ? "Active" : "Inactive"}
+            value={doctor.isActive ? "Aktif" : "Nonaktif"}
           />
           <InfoBox label='Tanggal Bergabung' value={doctor.joinedAt} />
           <div className='rounded-xl bg-slate-50/80 p-3.5'>
             <p className='mb-1 text-xs text-slate-400'>Status Verifikasi</p>
             <StatusBadge
-              status={doctor.latestVerification?.status ?? "Not Submitted"}
+              status={doctor.latestVerification?.status ?? "Belum Diajukan"}
             />
           </div>
         </div>

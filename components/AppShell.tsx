@@ -193,7 +193,7 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
                 href={`/verify-email?email=${encodeURIComponent(currentUser?.email ?? "")}`}
                 className="shrink-0 rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-amber-600"
               >
-                Verifikasi Sekarang →
+                Verifikasi Sekarang
               </Link>
             </div>
           ) : null}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Pagination } from "@/components/ui/pagination";
@@ -12,20 +13,11 @@ type SkinConcernsTableProps = {
   pagination: PagePagination;
 };
 
-function DetailIcon() {
-  return (
-    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12Z" />
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15.25A3.25 3.25 0 1 0 12 8.75a3.25 3.25 0 0 0 0 6.5Z" />
-    </svg>
-  );
-}
-
 export function SkinConcernsTable({ concerns, pagination }: SkinConcernsTableProps) {
   const from = (pagination.currentPage - 1) * pagination.pageSize;
 
   return (
-    <Card className="overflow-hidden rounded-2xl border-slate-100! bg-white! text-slate-950! shadow-sm">
+    <Card className="overflow-hidden rounded-2xl border-slate-100 bg-white text-slate-950 shadow-sm">
       <Table className="min-w-full divide-y divide-gray-100">
         <TableHeader className="bg-gray-50/80">
           <TableRow className="hover:bg-transparent">
@@ -46,8 +38,8 @@ export function SkinConcernsTable({ concerns, pagination }: SkinConcernsTablePro
               <TableCell className="whitespace-nowrap px-6 py-5 text-sm font-medium text-gray-700 sm:px-8">{concern.default_severity_score ?? "-"}</TableCell>
               <TableCell className="whitespace-nowrap px-6 py-5 text-right text-sm font-medium sm:px-8">
                 <Link href={`/doctor/skin-concerns/detail?id=${encodeURIComponent(concern.uuid)}`}>
-                  <Button type="button" variant="ghost" size="sm" title="Lihat Detail" className="h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50! hover:text-emerald-700">
-                    <DetailIcon />
+                  <Button type="button" variant="ghost" size="sm" title="Lihat Detail" className="h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50 hover:text-emerald-700">
+                    <Eye className="h-5 w-5" />
                   </Button>
                 </Link>
               </TableCell>
@@ -56,7 +48,7 @@ export function SkinConcernsTable({ concerns, pagination }: SkinConcernsTablePro
         </TableBody>
       </Table>
       {concerns.length === 0 && (
-        <div className="border-t border-gray-100 bg-white px-6 py-8 text-sm font-semibold text-gray-500 sm:px-8">Belum ada data skin concern.</div>
+        <div className="border-t border-gray-100 bg-white px-6 py-8 text-sm font-semibold text-gray-500 sm:px-8">Data master skin concern belum diisi — hubungi admin.</div>
       )}
       <Pagination
         currentPage={pagination.currentPage}

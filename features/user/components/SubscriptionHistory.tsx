@@ -3,6 +3,13 @@
 import { Clock } from "lucide-react";
 import type { Subscription } from "./types";
 
+const STATUS_LABEL: Record<string, string> = {
+  active: "Aktif",
+  pending: "Menunggu Pembayaran",
+  cancelled: "Dibatalkan",
+  expired: "Kedaluwarsa",
+};
+
 type Props = {
   subscriptions: Subscription[];
   /** Subscription pending yang sedang diproses lanjut-bayar. */
@@ -52,7 +59,7 @@ export function SubscriptionHistory({
                         sub.status === 'cancelled' ? 'bg-red-100 text-red-700' :
                           'bg-slate-100 text-slate-700'
                     }`}>
-                    {sub.status}
+                    {STATUS_LABEL[sub.status] ?? sub.status}
                   </span>
                 </td>
                 <td className="py-3 px-4">

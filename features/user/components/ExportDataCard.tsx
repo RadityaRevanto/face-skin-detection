@@ -11,13 +11,13 @@ export function ExportDataCard({ isExporting, onExport }: Props) {
   return (
     <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
       <div className="flex items-start gap-4">
-        <div className="p-3 bg-blue-50 rounded-xl text-blue-600">
+        <div className="p-3 bg-slate-100 rounded-xl text-slate-600">
           <Download size={24} />
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-bold text-slate-900 mb-1">Ekspor Data Pribadi (UU PDP)</h3>
           <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-            Sesuai Undang-Undang Pelindungan Data Pribadi (UU PDP), Anda berhak mengunduh seluruh data aktivitas Anda di platform ini (profil, riwayat *scan*, pesan, dll.) dalam bentuk berkas digital (.json).
+            Sesuai Undang-Undang Pelindungan Data Pribadi (UU PDP), Anda berhak mengunduh seluruh data aktivitas Anda di platform ini (profil, riwayat scan, pesan, dll.) dalam bentuk berkas digital (.json).
           </p>
           <button
             onClick={onExport}

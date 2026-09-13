@@ -15,7 +15,7 @@ export function DeviceTokensSection() {
           Perangkat yang menerima notifikasi push Skincek.
         </p>
       </div>
-      <DeviceTokensContainer embedded />
+      <DeviceTokensContainer />
     </section>
   );
 }

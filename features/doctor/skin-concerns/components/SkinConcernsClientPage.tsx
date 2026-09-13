@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { catalogService } from "@/features/skin-types/services/catalogService";
+import { ErrorState } from "@/components/ui/error-state";
 import { SkinConcernsContent } from "./SkinConcernsContent";
 
 const PAGE_SIZE = 10;
@@ -13,11 +14,15 @@ function SkinConcernsPageInner() {
   const searchParams = useSearchParams();
   const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["catalog", "skin-concerns", page],
     queryFn: () => catalogService.skinConcerns({ page, per_page: PAGE_SIZE }),
     placeholderData: keepPreviousData,
   });
+
+  if (isError) {
+    return <ErrorState message="Gagal memuat data skin concern." onRetry={() => refetch()} />;
+  }
 
   if (isLoading && !data) {
     return (

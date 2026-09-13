@@ -1,7 +1,5 @@
 import type { PagePagination } from "@/lib/types/pagination";
 
-export type DoctorVerificationStatus = "approved";
-
 export type DoctorDocument = {
   uuid: string;
   url: string;
@@ -18,8 +16,7 @@ export type DoctorRow = {
   specialization: string;
   documents: DoctorDocument[];
   verifiedAt: string;
-  status: "Approved";
-  rawStatus: DoctorVerificationStatus;
+  role: string;
   isActive: boolean;
 };
 

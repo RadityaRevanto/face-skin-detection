@@ -17,7 +17,8 @@ import type {
   DoctorVerificationPageType,
   DoctorVerificationRequest,
 } from "@/features/admin/verifications/lib/doctorVerificationTypes";
-import { DocumentIcon, ViewIcon } from "./DoctorVerificationIcons";
+import { Eye } from "lucide-react";
+import { DocumentIcon } from "./DoctorVerificationIcons";
 import { StatusBadge } from "@/features/admin/components/StatusBadge";
 
 type DoctorVerificationTableProps = {
@@ -136,7 +137,7 @@ export function DoctorVerificationTable({
               ) : (
                 <span className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700">
                   <DocumentIcon />
-                  No Document
+                  Tanpa dokumen
                 </span>
               )}
             </TableCell>
@@ -163,9 +164,9 @@ export function DoctorVerificationTable({
             <TableCell className="px-6 py-5 text-right text-sm font-medium sm:px-8">
               <Link
                 href={`/admin/doctor-verifications/detail?id=${encodeURIComponent(doctor.id)}`}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl px-3 text-slate-400 transition-all duration-200 hover:bg-sky-50! hover:text-sky-700"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl px-3 text-slate-400 transition-all duration-200 hover:bg-sky-50 hover:text-sky-700"
               >
-                <ViewIcon />
+                <Eye className="h-5 w-5" />
               </Link>
             </TableCell>
           </TableRow>
@@ -226,7 +227,7 @@ export function DoctorVerificationTable({
             ) : (
               <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-500">
                 <DocumentIcon />
-                No Document
+                Tanpa dokumen
               </span>
             )}
 
@@ -234,7 +235,7 @@ export function DoctorVerificationTable({
               href={`/admin/doctor-verifications/detail?id=${encodeURIComponent(doctor.id)}`}
               className="inline-flex h-9 shrink-0 items-center justify-center rounded-xl border border-emerald-200 px-4 text-xs font-bold text-emerald-700 transition-colors hover:bg-emerald-50"
             >
-              Review →
+              Review
             </Link>
           </div>
         </div>

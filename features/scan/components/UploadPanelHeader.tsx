@@ -11,7 +11,7 @@ export function UploadPanelHeader({ hasPendingImage = false }: Props) {
   return (
     <div className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
       <div>
-        <p className='text-xs font-bold uppercase tracking-[0.2em] text-emerald-600'>
+        <p className='text-xs font-semibold text-emerald-600'>
           Upload Gambar
         </p>
         <h2 className='mt-1 text-lg font-bold text-slate-900'>

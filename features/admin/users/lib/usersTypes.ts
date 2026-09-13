@@ -8,6 +8,8 @@ export type UserRow = {
   join: string;
   gender: string;
   age: number | string;
+  role: string;
+  isActive: boolean;
 };
 
 export type UsersPageData = {

@@ -111,7 +111,7 @@ export function RecommendationForm({
   }
 
   return (
-    <Card className='overflow-hidden rounded-2xl border-slate-100! bg-white! text-slate-950! shadow-sm dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+    <Card className='overflow-hidden rounded-2xl border-slate-100 bg-white text-slate-950 shadow-sm'>
       <form onSubmit={handleSubmit} className='space-y-6 p-6'>
         {message ? (
           <div className='rounded-xl bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700'>

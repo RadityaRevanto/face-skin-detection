@@ -4,27 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 
 import { adminService } from "@/features/admin/services/adminService";
 import { AdminDashboardSkeleton } from "@/components/skeletons";
+import { ErrorState } from "@/components/ui/error-state";
 import type { ActivityLog } from "@/features/activity-log/types";
 import { AdminDashboardContent } from "./AdminDashboardContent";
 import type { AdminDashboardData } from "../lib/adminDashboardTypes";
 
-const EMPTY_DASHBOARD: AdminDashboardData = {
-  stats: {
-    total_users: 0,
-    total_doctors: 0,
-    new_users_this_week: 0,
-    total_scans: 0,
-    scans_today: 0,
-    active_pro_subscriptions: 0,
-    monthly_revenue: 0,
-  } as AdminDashboardData["stats"],
-  pending_actions: { doctor_verifications: 0 },
-  charts: { scans_last_14_days: [], registrations_last_14_days: [] },
-  recent_verifications: [],
-};
-
 export function AdminDashboardClientContent() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["admin", "dashboard"],
     queryFn: () => adminService.dashboard(),
   });
@@ -59,17 +45,21 @@ export function AdminDashboardClientContent() {
     staleTime: 60 * 1000,
   });
 
-  if (isLoading && !data) {
+  if (isError) {
     return (
-      <div className="px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <AdminDashboardSkeleton />
-      </div>
+      <ErrorState message="Gagal memuat dashboard. Data tidak dapat ditampilkan." onRetry={() => refetch()} />
     );
   }
 
+  if (isLoading && !data) {
+    return <AdminDashboardSkeleton />;
+  }
+
+  if (!data) return null;
+
   return (
     <AdminDashboardContent
-      {...((data ?? EMPTY_DASHBOARD) as AdminDashboardData)}
+      {...(data as AdminDashboardData)}
       activityLogs={activityLogs ?? []}
       verificationCounts={
         verificationCounts ?? { pending: 0, approved: 0, rejected: 0 }

@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
  * - Desktop (md+): tabel asli via slot `table` (hidden md:block + overflow-x-auto).
  * - Mobile (<md): card list via slot `cards` (md:hidden) — bukan scroll horizontal
  *   (keputusan eksplisit §4.2).
- * - Header: judul + deskripsi + count chip opsional + link "View all" kanan.
+ * - Header: judul + deskripsi + count chip opsional + link "Lihat semua" kanan.
  * - Footer: slot `footer` (Pagination).
  */
 
@@ -20,7 +20,7 @@ type TableWidgetProps = {
   description?: string;
   /** Chip jumlah (mis. "24 user") di samping judul. */
   countChip?: ReactNode;
-  /** Link "View all" kanan header. */
+  /** Link "Lihat semua" kanan header. */
   viewAllHref?: string;
   viewAllLabel?: string;
   /** Slot tabel desktop — dirender dalam Card + overflow wrapper. */
@@ -40,7 +40,7 @@ export function TableWidget({
   description,
   countChip,
   viewAllHref,
-  viewAllLabel = "View all",
+  viewAllLabel = "Lihat semua",
   table,
   cards,
   footer,

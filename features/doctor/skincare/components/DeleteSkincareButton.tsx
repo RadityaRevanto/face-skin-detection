@@ -47,7 +47,7 @@ export function DeleteSkincareButton({ productId }: DeleteSkincareButtonProps) {
       title='Delete'
       disabled={isDeleting}
       onClick={handleDelete}
-      className='h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-rose-50! hover:text-rose-600'
+      className='h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-rose-50 hover:text-rose-600'
     >
       <SkincareActionIcon type='delete' />
     </Button>

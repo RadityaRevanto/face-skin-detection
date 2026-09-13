@@ -13,7 +13,7 @@ import { ActivityLogItem } from "@/features/activity-log/components/ActivityLogI
  * - Desktop: garis timeline vertikal dashed antar item (border-start);
  *   tanpa garis di mobile (lebih bersih).
  * - Mobile: stack penuh, avatar dipadatkan (36px) via prop item.
- * - Footer CTA "View Full Log" → /admin/activity-log.
+ * - Footer CTA "Lihat semua log" → /admin/activity-log.
  *
  * Reuse ActivityLogItem — data & format relatif waktu tidak berubah.
  */
@@ -29,7 +29,7 @@ type ActivityTimelineProps = {
 export function ActivityTimeline({
   logs,
   viewAllHref = "/admin/activity-log",
-  viewAllLabel = "View Full Log",
+  viewAllLabel = "Lihat semua log",
   className,
 }: ActivityTimelineProps) {
   return (

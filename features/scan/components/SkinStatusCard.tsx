@@ -79,7 +79,7 @@ export function SkinStatusCard({
                   <span className='text-3xl font-black leading-none text-slate-900'>
                     {confidencePercent}%
                   </span>
-                  <span className='mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-400'>
+                  <span className='mt-1 text-[10px] font-bold text-slate-400'>
                     Confidence
                   </span>
                 </div>
@@ -101,7 +101,7 @@ export function SkinStatusCard({
           {/* Deskripsi kondisi — blok full-width terpisah, tidak tergencet. */}
           {latestPrediction?.skin_concern?.description ? (
             <div className='mt-5 rounded-2xl bg-slate-50 p-4 ring-1 ring-slate-100'>
-              <p className='text-[11px] font-bold uppercase tracking-wider text-slate-400'>
+              <p className='text-[11px] font-bold text-slate-400'>
                 Tentang Kondisi Ini
               </p>
               <p className='mt-1.5 text-sm leading-6 text-slate-600'>

@@ -23,7 +23,7 @@ export function ProblemDetectionCard({
       <div className='mt-6 space-y-5'>
         {probabilityEntries.length > 0 ? (
           <>
-            <p className='text-xs font-semibold uppercase tracking-wider text-slate-400'>
+            <p className='text-xs font-semibold text-slate-400'>
               Probabilitas per Kondisi
             </p>
             <div className='space-y-3'>

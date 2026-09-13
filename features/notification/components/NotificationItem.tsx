@@ -17,7 +17,6 @@ export function NotificationItem({ notif, formatTime, onMarkAsRead, onDelete }: 
 
   return (
     <div
-      key={notif.id}
       className={`group relative flex flex-col sm:flex-row gap-4 p-5 transition-colors ${
         isRead ? "bg-white hover:bg-slate-50" : "bg-emerald-50/30 hover:bg-emerald-50"
       }`}

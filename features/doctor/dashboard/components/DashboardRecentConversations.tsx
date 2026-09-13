@@ -23,7 +23,7 @@ export function DashboardRecentConversations({
   return (
     <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+        <h2 className="text-base font-bold text-slate-900">
           Percakapan Terbaru
         </h2>
         <Link

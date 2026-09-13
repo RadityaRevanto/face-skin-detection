@@ -101,7 +101,7 @@ export function PrivacyContainer({ role, basePath }: PrivacyContainerProps) {
   }
 
   return (
-    <main className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+    <main className="w-full">
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">Privasi & Data</h1>
         <p className="text-zinc-500 mt-1.5 text-sm sm:text-base">Kelola persetujuan AI, ekspor data Anda, atau hapus akun permanen.</p>

@@ -6,7 +6,7 @@ import {
   ImageIcon,
   Loader2,
   ScanFace,
-  Sparkles,
+  Check,
 } from "lucide-react";
 
 import type { ReactNode } from "react";
@@ -96,7 +96,7 @@ export function UploadPreview({
                 <StatusBadge tone='error' icon={<AlertCircle className='h-3.5 w-3.5' />} label='Gagal' />
               ) : null}
               {phase === "preview" ? (
-                <StatusBadge tone='loading' icon={<Sparkles className='h-3.5 w-3.5' />} label='Siap dianalisis' />
+                <StatusBadge tone='loading' icon={<Check className='h-3.5 w-3.5' />} label='Siap dianalisis' />
               ) : null}
             </div>
 
@@ -120,7 +120,7 @@ export function UploadPreview({
                 <button
                   type='button'
                   onClick={onAnalyze}
-                  className='inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-200 transition-colors hover:bg-emerald-700'
+                  className='inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-emerald-700'
                 >
                   <ScanFace className='h-5 w-5' />
                   {isError ? "Coba Lagi" : "Analisis Sekarang"}
@@ -131,7 +131,7 @@ export function UploadPreview({
                 <button
                   type='button'
                   onClick={onReset}
-                  className='inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-emerald-200 transition-colors hover:bg-emerald-700'
+                  className='inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition-colors hover:bg-emerald-700'
                 >
                   <ScanFace className='h-5 w-5' />
                   Scan Ulang
@@ -174,7 +174,7 @@ export function UploadPreview({
       disabled={phase === "analyzing"}
       className='group flex w-full flex-col items-center justify-center gap-3 px-6 py-12 text-center transition-colors hover:bg-white/60 disabled:cursor-wait'
     >
-      <span className='grid h-16 w-16 place-items-center rounded-2xl bg-white text-emerald-600 shadow-sm ring-1 ring-emerald-100 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:shadow-md'>
+      <span className='grid h-16 w-16 place-items-center rounded-2xl bg-white text-emerald-600 shadow-sm ring-1 ring-emerald-100 transition-shadow duration-300 group-hover:shadow-md'>
         {phase === "analyzing" ? (
           <Loader2 className='h-7 w-7 animate-spin' />
         ) : (

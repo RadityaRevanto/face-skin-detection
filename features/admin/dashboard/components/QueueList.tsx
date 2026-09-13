@@ -1,13 +1,14 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import { StatusBadge } from "@/features/admin/components/StatusBadge";
 
 /**
  * QueueList (DESIGN.md §4.5) — pola Dasher "My Task", diadaptasi jadi
  * antrean verifikasi dokter.
  *
  * - Item: ikon konteks 40px (shield emerald-50) + judul (nama dokter)
- *   + meta (STR/spesialisasi) + badge status kanan + tombol "Review →".
+ *   + meta (STR/spesialisasi) + badge status kanan + tombol "Review".
  * - Mobile: list scrollable max-h-80 overflow-y-auto.
  */
 
@@ -62,7 +63,7 @@ export function QueueList({
   description,
   items,
   viewAllHref,
-  viewAllLabel = "View all",
+  viewAllLabel = "Lihat semua",
   emptyTitle = "Tidak ada antrean",
   emptyDescription,
   className,
@@ -124,8 +125,14 @@ export function QueueList({
                 ) : null}
               </span>
 
+              <StatusBadge
+                status={item.status}
+                variant={item.statusVariant}
+                className="hidden shrink-0 sm:inline-flex"
+              />
+
               <span className="inline-flex h-8 shrink-0 items-center rounded-lg border border-emerald-200 px-3 text-xs font-bold text-emerald-700">
-                Review →
+                Review
               </span>
             </Link>
           ))}

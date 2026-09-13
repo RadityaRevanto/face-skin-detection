@@ -29,11 +29,10 @@ export function ActiveSubscriptionCard({
   return (
     <section className="overflow-hidden rounded-3xl border border-emerald-100 bg-white shadow-sm">
       <div className="bg-emerald-600 p-6 text-white sm:p-8">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[11px] font-bold uppercase tracking-wider">
-          <CheckCircle2 className="h-3.5 w-3.5" />
-          Langganan Aktif
-        </span>
-        <h2 className="mt-3 text-2xl font-bold">SkinCek Pro</h2>
+        <h2 className="flex items-center gap-2 text-2xl font-bold">
+          <CheckCircle2 className="h-6 w-6" />
+          SkinCek Pro
+        </h2>
         <p className="mt-1 text-sm text-emerald-50">
           Berlaku hingga{" "}
           <span className="font-bold text-white">{endsAt}</span>

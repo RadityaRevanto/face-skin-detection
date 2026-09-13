@@ -50,7 +50,7 @@ export function HistoryList({ histories, pagination, filters }: HistoryListProps
                 href={`/user/history/detail?id=${encodeURIComponent(item.id)}`}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white transition-all hover:border-emerald-200 hover:shadow-md"
               >
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-linear-to-br from-slate-50 to-slate-100">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                   {imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element -- URL R2 dinamis; object-contain agar foto utuh tanpa crop
                     <img
@@ -92,7 +92,7 @@ export function HistoryList({ histories, pagination, filters }: HistoryListProps
                     </div>
 
                     <span className="flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
-                      {item.scan_mode === "livecam" ? "📷 Kamera" : "🖼️ Upload"}
+                      {item.scan_mode === "livecam" ? "Kamera" : "Upload"}
                     </span>
                   </div>
 
@@ -108,8 +108,14 @@ export function HistoryList({ histories, pagination, filters }: HistoryListProps
             Belum ada riwayat pemeriksaan.
           </p>
           <p className="mt-1 text-xs text-slate-400">
-            Lakukan scan terlebih dahulu.
+            Hasil scan akan tersimpan otomatis di sini.
           </p>
+          <Link
+            href="/user/scan"
+            className="mt-4 inline-flex h-10 items-center rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+          >
+            Mulai Scan
+          </Link>
         </div>
       )}
 

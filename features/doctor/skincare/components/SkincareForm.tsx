@@ -125,7 +125,7 @@ export function SkincareForm({
   }
 
   return (
-    <Card className='overflow-hidden rounded-2xl border-slate-100! bg-white! text-slate-950! shadow-sm dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+    <Card className='overflow-hidden rounded-2xl border-slate-100 bg-white text-slate-950 shadow-sm'>
       <form onSubmit={handleSubmit} className='space-y-6 p-6'>
         <SkincareFormBody
           message={message}

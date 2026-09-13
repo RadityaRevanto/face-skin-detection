@@ -23,9 +23,9 @@ export function DoctorVerificationTabs({
     {
       key: "pending" as const,
       href: "/admin/doctor-verifications/pending",
-      label: "Pending Review",
+      label: "Menunggu Review",
       count: pendingCount,
-      activeStyle: "bg-emerald-600 text-white shadow-lg shadow-emerald-200",
+      activeStyle: "bg-emerald-600 text-white shadow-sm",
       inactiveHover:
         "bg-white text-slate-600 ring-1 ring-slate-100 hover:bg-emerald-50 hover:text-emerald-700",
       chipActive: "bg-white/20 text-white",
@@ -34,9 +34,9 @@ export function DoctorVerificationTabs({
     {
       key: "rejected" as const,
       href: "/admin/doctor-verifications/rejected",
-      label: "Rejected",
+      label: "Ditolak",
       count: rejectedCount,
-      activeStyle: "bg-rose-600 text-white shadow-lg shadow-rose-200",
+      activeStyle: "bg-rose-600 text-white shadow-sm",
       inactiveHover:
         "bg-white text-slate-600 ring-1 ring-slate-100 hover:bg-rose-50 hover:text-rose-700",
       chipActive: "bg-white/20 text-white",

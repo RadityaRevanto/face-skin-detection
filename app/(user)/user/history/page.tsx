@@ -32,7 +32,7 @@ function HistoryPageInner() {
   };
 
   return (
-    <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
+    <main className="w-full">
       <HistoryClientContent page={page} filters={filters} />
     </main>
   );

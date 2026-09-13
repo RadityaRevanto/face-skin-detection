@@ -28,7 +28,7 @@ export function DoctorProfileContainer() {
   if (error || !profile) return <div className="flex justify-center items-center h-[calc(100vh-100px)]"><div className="text-center"><p className="text-rose-500 mb-4">{error}</p><button onClick={fetchProfile} className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Coba Lagi</button></div></div>;
 
   return (
-    <main className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+    <main className="w-full">
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">Pengaturan Profil Dokter</h1>
         <p className="text-zinc-500 mt-1.5 text-sm sm:text-base">Kelola informasi pribadi dan verifikasi profesi Anda.</p>

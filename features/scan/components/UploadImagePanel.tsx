@@ -141,7 +141,7 @@ export function UploadImagePanel({
     <section className='rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-100 sm:p-6'>
       <UploadPanelHeader hasPendingImage={phase === "preview"} />
 
-      <div className='mt-4 overflow-hidden rounded-3xl border border-dashed border-emerald-200 bg-linear-to-br from-emerald-50/80 via-white to-cyan-50/60'>
+      <div className='mt-4 overflow-hidden rounded-3xl border border-dashed border-emerald-200 bg-emerald-50/50'>
         <UploadPreview
           phase={phase}
           previewUrl={previewUrl}

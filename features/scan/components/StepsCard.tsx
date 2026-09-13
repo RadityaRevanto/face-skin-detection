@@ -37,7 +37,7 @@ export function StepsCard() {
                 className={[
                   "relative z-10 grid h-14 w-14 shrink-0 place-items-center rounded-full text-lg font-black ring-4 ring-white",
                   isFirst
-                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-200"
+                    ? "bg-emerald-600 text-white shadow-sm"
                     : "bg-slate-100 text-slate-500",
                 ].join(" ")}
               >

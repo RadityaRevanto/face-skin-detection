@@ -9,12 +9,3 @@ export function formatDate(date: string | null | undefined) {
   }).format(new Date(date));
 }
 
-export function getInitials(name: string) {
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase();
-}

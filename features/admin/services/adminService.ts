@@ -49,6 +49,8 @@ export type DoctorVerificationSummary = {
     uuid?: string;
     full_name?: string;
     email?: string;
+    role?: string;
+    is_active?: boolean;
     avatar_url?: string | null;
   };
 };

@@ -39,6 +39,9 @@ export function ConsultationContainer({ role }: ConsultationContainerProps) {
   const [isScanModalOpen, setIsScanModalOpen] = useState(false);
   const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
   const [isLoadingConversations, setIsLoadingConversations] = useState(true);
+  const [convPage, setConvPage] = useState(1);
+  const [hasMoreConversations, setHasMoreConversations] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isStartingAi, setIsStartingAi] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
@@ -61,10 +64,15 @@ export function ConsultationContainer({ role }: ConsultationContainerProps) {
     }
   }, [messages, selectedImagePreview, isLoadingMessages]);
 
-  const fetchConversations = useCallback(async () => {
+  const fetchConversations = useCallback(async (page = 1) => {
     try {
-      const res = await getConversations(1);
-      setConversations(res.data || []);
+      if (page > 1) setIsLoadingMore(true);
+      const res = await getConversations(page);
+      const list = res.data || [];
+      setConversations((prev) => (page > 1 ? [...prev, ...list] : list));
+      const meta = res.meta as { current_page?: number; last_page?: number } | undefined;
+      setHasMoreConversations((meta?.current_page ?? 1) < (meta?.last_page ?? 1));
+      setConvPage(page);
     } catch (error) {
       // Status 0 = network/abort — biasanya redirect 401 sedang berjalan
       // (interceptor menangani). Log ringan, bukan console error merah.
@@ -75,6 +83,7 @@ export function ConsultationContainer({ role }: ConsultationContainerProps) {
       console.error(error);
     } finally {
       setIsLoadingConversations(false);
+      setIsLoadingMore(false);
     }
   }, []);
 
@@ -324,6 +333,7 @@ export function ConsultationContainer({ role }: ConsultationContainerProps) {
         setErrorState={setErrorState}
         successMsg={successMsg}
         setSuccessMsg={setSuccessMsg}
+        role={role}
       />
 
       {aiConsentModal && (
@@ -373,6 +383,9 @@ export function ConsultationContainer({ role }: ConsultationContainerProps) {
             setActiveConversation(conv);
             setShowSidebar(false);
           }}
+          hasMoreConversations={hasMoreConversations}
+          isLoadingMore={isLoadingMore}
+          onLoadMore={() => fetchConversations(convPage + 1)}
           setShowSidebar={setShowSidebar}
         />
 

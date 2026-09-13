@@ -164,7 +164,7 @@ export function RegisterForm() {
         loadingLabel='Membuat Akun...'
         termsLabel='Ketentuan'
         privacyLabel='Kebijakan Privasi'
-        buttonClassName='h-13 w-full rounded-xl bg-emerald-700 text-base shadow-xl shadow-emerald-700/25 hover:bg-emerald-800'
+        buttonClassName='h-13 w-full rounded-xl bg-emerald-700 text-base shadow-sm hover:bg-emerald-800'
       />
     </form>
   );

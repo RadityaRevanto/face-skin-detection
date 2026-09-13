@@ -14,14 +14,68 @@ import {
 } from "@/components/ui/table";
 
 import type { DoctorRow } from "@/features/admin/doctors/lib/doctorsTypes";
-import { ActionIcon } from "./DoctorActionIcon";
+import { Eye, Pencil, Power, Trash2 } from "lucide-react";
 
 type DoctorsTableProps = {
   doctors: DoctorRow[];
   pagination: PagePagination;
+  onEdit: (row: DoctorRow) => void;
+  onToggleActive: (row: DoctorRow) => void;
+  onDelete: (row: DoctorRow) => void;
+  busyId: string | null;
 };
 
-export function DoctorsTable({ doctors, pagination }: DoctorsTableProps) {
+export function DoctorsTable({
+  doctors,
+  pagination,
+  onEdit,
+  onToggleActive,
+  onDelete,
+  busyId,
+}: DoctorsTableProps) {
+  const renderActions = (doctor: DoctorRow) => (
+    <div className="flex items-center justify-end gap-1">
+      <Link
+        href={`/admin/doctors/detail?id=${encodeURIComponent(doctor.id)}`}
+        title="Lihat detail"
+        aria-label="Lihat detail"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-sky-50 hover:text-sky-700"
+      >
+        <Eye className="h-4 w-4" />
+      </Link>
+      <button
+        type="button"
+        title="Edit"
+        aria-label="Edit"
+        disabled={busyId === doctor.id}
+        onClick={() => onEdit(doctor)}
+        className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-emerald-50 hover:text-emerald-700 disabled:opacity-40"
+      >
+        <Pencil className="h-4 w-4" />
+      </button>
+      <button
+        type="button"
+        title={doctor.isActive ? "Suspend" : "Aktifkan"}
+        aria-label={doctor.isActive ? "Suspend" : "Aktifkan"}
+        disabled={busyId === doctor.id}
+        onClick={() => onToggleActive(doctor)}
+        className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-amber-50 hover:text-amber-700 disabled:opacity-40"
+      >
+        <Power className="h-4 w-4" />
+      </button>
+      <button
+        type="button"
+        title="Hapus"
+        aria-label="Hapus"
+        disabled={busyId === doctor.id}
+        onClick={() => onDelete(doctor)}
+        className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-700 disabled:opacity-40"
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+
   const paginationNode = (
     <Pagination
       currentPage={pagination.currentPage}
@@ -78,7 +132,10 @@ export function DoctorsTable({ doctors, pagination }: DoctorsTableProps) {
             </TableCell>
 
             <TableCell className="whitespace-nowrap px-6 py-5 text-sm font-medium text-slate-700 transition-colors group-hover:text-emerald-700 sm:px-8">
-              {doctor.name}
+              <p>{doctor.name}</p>
+              {!doctor.isActive && (
+                <p className="mt-0.5 text-xs font-semibold text-amber-700">Nonaktif</p>
+              )}
             </TableCell>
 
             <TableCell className="whitespace-nowrap px-6 py-5 text-sm text-slate-500 sm:px-8">
@@ -98,20 +155,12 @@ export function DoctorsTable({ doctors, pagination }: DoctorsTableProps) {
             <TableCell className="whitespace-nowrap px-6 py-5 text-sm font-medium text-slate-700 sm:px-8">
               {doctor.verifiedAt}
               <div className="mt-1 text-xs font-normal text-slate-500">
-                Verification approved
+                Verifikasi disetujui
               </div>
             </TableCell>
 
             <TableCell className="whitespace-nowrap px-6 py-5 text-right text-sm font-medium sm:px-8">
-              <div className="flex items-center justify-end gap-2">
-                <Link
-                  href={`/admin/doctors/detail?id=${encodeURIComponent(doctor.id)}`}
-                  title="View"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl p-0 text-slate-400 transition-all duration-200 hover:bg-sky-50! hover:text-sky-700"
-                >
-                  <ActionIcon type="view" />
-                </Link>
-              </div>
+              {renderActions(doctor)}
             </TableCell>
           </TableRow>
         ))}
@@ -143,13 +192,7 @@ export function DoctorsTable({ doctors, pagination }: DoctorsTableProps) {
             </p>
           </div>
 
-          <Link
-            href={`/admin/doctors/detail?id=${encodeURIComponent(doctor.id)}`}
-            title="View"
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition-all duration-200 hover:bg-sky-50! hover:text-sky-700"
-          >
-            <ActionIcon type="view" />
-          </Link>
+          {renderActions(doctor)}
         </div>
       ))}
     </div>

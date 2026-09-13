@@ -1,6 +1,7 @@
 "use client";
 
 import { Bot } from "lucide-react";
+import { useDialogEscape } from "@/features/shared/hooks/useDialogEscape";
 
 type AiConsentModalProps = {
   /** Teks consent (GET /ai-chat/consent) — bisa kosong → fallback default. */
@@ -22,15 +23,16 @@ export function AiConsentModal({
   onCancel,
   onAccept,
 }: AiConsentModalProps) {
+  useDialogEscape(true, onCancel);
   return (
-    <div className="fixed inset-0 z-60 flex items-end justify-center bg-zinc-900/50 p-4 backdrop-blur-sm sm:items-center">
+    <div className="fixed inset-0 z-60 flex items-end justify-center bg-zinc-900/50 p-4 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true" aria-labelledby="ai-consent-title">
       <div className="flex max-h-[85vh] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-        <div className="flex items-start gap-3 border-b border-slate-100 bg-indigo-50/60 p-5">
-          <div className="p-2.5 rounded-xl bg-indigo-100 text-indigo-600 shrink-0">
+        <div className="flex items-start gap-3 border-b border-slate-100 bg-emerald-50/60 p-5">
+          <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-600 shrink-0">
             <Bot size={22} />
           </div>
           <div className="min-w-0">
-            <h3 className="text-base font-bold text-slate-900">
+            <h3 id="ai-consent-title" className="text-base font-bold text-slate-900">
               Persetujuan Kecerdasan Buatan (AI)
             </h3>
             <p className="mt-0.5 text-xs text-slate-500">
@@ -59,7 +61,7 @@ export function AiConsentModal({
             type="button"
             disabled={isSubmitting}
             onClick={onAccept}
-            className="flex-1 rounded-xl bg-linear-to-r from-emerald-600 to-teal-500 px-4 py-3 text-sm font-bold text-white shadow-sm transition-all hover:from-emerald-700 hover:to-teal-600 disabled:opacity-50"
+            className="flex-1 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
           >
             {isSubmitting ? "Memproses..." : "Setuju & Mulai Chat"}
           </button>

@@ -4,7 +4,7 @@ import {
   ClockIcon,
   LockIcon,
   ShieldCheckIcon,
-  SparklesIcon,
+  PillIcon,
 } from "../components/LandingIcons";
 import type { LandingFeature, LandingStat, LandingStep } from "../components/LandingTypes";
 
@@ -35,7 +35,7 @@ export const landingFeatures: LandingFeature[] = [
       "Analisis lewat kamera secara langsung, atau cukup unggah foto wajah dari galeri Anda.",
   },
   {
-    icon: <SparklesIcon className="h-6 w-6" />,
+    icon: <PillIcon className="h-6 w-6" />,
     title: "Rekomendasi Perawatan",
     description:
       "Dapatkan saran skincare dan produk yang disesuaikan dengan kondisi kulit Anda.",

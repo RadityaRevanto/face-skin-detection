@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle } from "lucide-react";
+import { useDialogEscape } from "@/features/shared/hooks/useDialogEscape";
 
 type Props = {
   isOpen: boolean;
@@ -10,15 +11,16 @@ type Props = {
 };
 
 export function CancelModal({ isOpen, isProcessing, onCancel, onConfirm }: Props) {
+  useDialogEscape(isOpen, onCancel);
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="cancel-title">
+      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
         <div className="p-6 sm:p-8 text-center">
           <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-5">
             <AlertCircle size={32} />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 mb-2">Batalkan Langganan?</h2>
+          <h2 id="cancel-title" className="text-xl sm:text-2xl font-bold text-zinc-900 mb-2">Batalkan Langganan?</h2>
           <p className="text-zinc-500 mb-6 text-sm sm:text-base leading-relaxed">
             Anda akan kehilangan akses prioritas dan konsultasi tanpa batas. <br /><br />
             <span className="font-semibold text-red-600">Peringatan:</span> Sisa waktu paket yang sudah dibayar tidak dapat di-refund (dikembalikan).

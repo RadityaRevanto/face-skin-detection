@@ -44,7 +44,7 @@ export function VerificationDocumentSummary({
                 statusConfig.badgeClass,
               ].join(" ")}
             >
-              {statusConfig.badgeLabel}
+              {statusConfig.label}
             </span>
           </div>
 

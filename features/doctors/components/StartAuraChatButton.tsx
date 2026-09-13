@@ -7,6 +7,7 @@ import { customToast } from "@/lib/custom-toast";
 import { aiChatService } from "@/features/ai-chat/services/aiChatService";
 import { ConsultationApiError } from "@/lib/api/consultations-query";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
+import { useDialogEscape } from "@/features/shared/hooks/useDialogEscape";
 
 type ConsentStatus = {
   accepted: boolean;
@@ -31,6 +32,8 @@ export function StartAuraChatButton() {
   const router = useRouter();
   const [isStarting, setIsStarting] = useState(false);
   const [consent, setConsent] = useState<ConsentStatus | null>(null);
+
+  useDialogEscape(!!consent, () => setConsent(null));
 
   const enterChat = async () => {
     const response = await aiChatService.startConversation();
@@ -84,16 +87,16 @@ export function StartAuraChatButton() {
         type="button"
         disabled={isStarting}
         onClick={handleStart}
-        className="w-full rounded-xl bg-linear-to-r from-emerald-600 to-teal-500 px-5 py-3.5 text-sm font-bold text-white shadow-sm transition-all hover:from-emerald-700 hover:to-teal-600 disabled:opacity-50"
+        className="w-full rounded-xl bg-emerald-600 px-5 py-3.5 text-sm font-bold text-white transition-colors hover:bg-emerald-700 disabled:opacity-50"
       >
         {isStarting ? "Memproses..." : "Chat dengan Aura"}
       </button>
 
       {consent && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/50 p-4 backdrop-blur-sm sm:items-center">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/50 p-4 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true" aria-labelledby="aura-consent-title">
           <div className="flex max-h-[85vh] w-full max-w-md flex-col rounded-2xl bg-white shadow-xl">
             <div className="p-6">
-              <h3 className="text-lg font-bold text-slate-900">
+              <h3 id="aura-consent-title" className="text-lg font-bold text-slate-900">
                 Persetujuan Penggunaan AI
               </h3>
               <div className="mt-3 max-h-64 overflow-y-auto rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-600">

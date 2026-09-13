@@ -35,7 +35,7 @@ function ConsultationsPageInner() {
 
   if (isLoading) {
     return (
-      <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
+      <main className="w-full">
         <div className="space-y-6">
           <div>
             <Skeleton className="h-7 w-56 rounded" />
@@ -49,7 +49,7 @@ function ConsultationsPageInner() {
 
   if (isError) {
     return (
-      <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
+      <main className="w-full">
         <div className="rounded-2xl border border-rose-100 bg-rose-50 p-8 text-center text-sm text-rose-600">
           Gagal memuat daftar dokter. Coba muat ulang halaman.
         </div>
@@ -58,7 +58,7 @@ function ConsultationsPageInner() {
   }
 
   return (
-    <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
+    <main className="w-full">
       <DoctorsContent doctors={doctors} pagination={pagination} />
     </main>
   );

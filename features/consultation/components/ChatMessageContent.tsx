@@ -2,7 +2,7 @@
 
 import Markdown from "react-markdown";
 import { getConcernDisplayName, translateSkinLabel } from "@/lib/utils/skin-labels";
-import { Scan } from "lucide-react";
+import { Scan, Target, Calendar } from "lucide-react";
 
 type ChatMessageContentProps = {
   content: string;
@@ -109,25 +109,25 @@ function ScanResultCard({ data }: { data: ScanData }) {
           className="w-full h-36 object-cover"
         />
       ) : (
-        <div className="w-full h-36 bg-gradient-to-br from-emerald-50 to-teal-50 flex flex-col items-center justify-center gap-2">
+        <div className="flex h-36 w-full flex-col items-center justify-center gap-2 bg-emerald-50">
           <Scan className="h-10 w-10 text-emerald-300" strokeWidth={1.5} />
           <span className="text-xs text-emerald-400 font-medium">Foto Scan</span>
         </div>
       )}
       <div className="p-3 space-y-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm">🔍</span>
+          <Scan className="h-4 w-4 shrink-0 text-emerald-500" />
           <span className="text-xs font-bold text-slate-900">{kondisiLabel}</span>
         </div>
         {data.akurasi && (
           <div className="flex items-center gap-2">
-            <span className="text-sm">🎯</span>
+            <Target className="h-4 w-4 shrink-0 text-slate-400" />
             <span className="text-xs text-slate-600">Akurasi {data.akurasi}</span>
           </div>
         )}
         {Object.keys(data.probabilitas).length > 0 && (
           <div className="space-y-1">
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Probabilitas Lain</span>
+            <span className="text-[10px] font-bold text-slate-400">Probabilitas Lain</span>
             <div className="flex flex-wrap gap-1.5">
               {Object.entries(data.probabilitas).map(([label, val]) => (
                 <span key={label} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
@@ -139,7 +139,7 @@ function ScanResultCard({ data }: { data: ScanData }) {
         )}
         {data.tanggal && (
           <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
-            <span className="text-sm">📅</span>
+            <Calendar className="h-4 w-4 shrink-0 text-slate-400" />
             <span className="text-[10px] text-slate-400">{data.tanggal}</span>
           </div>
         )}

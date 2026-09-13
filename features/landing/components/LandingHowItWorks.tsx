@@ -5,7 +5,7 @@ export function LandingHowItWorks({ steps }: { steps: LandingStep[] }) {
     <section id="cara-kerja" className="scroll-mt-20">
       <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-600">
+          <p className="text-sm font-bold text-emerald-600">
             Cara Kerja
           </p>
           <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">

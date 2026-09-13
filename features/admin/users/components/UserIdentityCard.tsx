@@ -1,8 +1,8 @@
 import { Card } from "@/components/ui/card";
 
 import type { UserDetail } from "@/features/admin/users/lib/userDetailTypes";
-import { getInitials } from "@/features/admin/users/lib/userDetailUtils";
-import { InfoBox } from "./InfoBox";
+import { getInitials } from "@/lib/utils";
+import { InfoBox } from "@/components/ui/info-box";
 
 type UserIdentityCardProps = {
   user: UserDetail;
@@ -10,7 +10,7 @@ type UserIdentityCardProps = {
 
 export function UserIdentityCard({ user }: UserIdentityCardProps) {
   return (
-    <Card className='overflow-hidden rounded-3xl border border-slate-100! bg-white! text-slate-950! shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
+    <Card className='overflow-hidden rounded-3xl border border-slate-100 bg-white text-slate-950 shadow-sm'>
       <div className='border-b border-slate-100 px-6 py-4'>
         <h3 className='text-base font-semibold text-slate-900'>Profil User</h3>
         <p className='mt-0.5 text-sm text-slate-400'>
