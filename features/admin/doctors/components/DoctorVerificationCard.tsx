@@ -14,12 +14,12 @@ export function DoctorVerificationCard({
   const verification = doctor.latestVerification;
 
   return (
-    <Card className='overflow-hidden rounded-3xl border border-slate-100 bg-white text-slate-950 shadow-sm'>
-      <div className='border-b border-slate-100 px-6 py-4'>
-        <h3 className='text-base font-semibold text-slate-900'>
+    <Card>
+      <div className='border-b border-[var(--line)] px-6 py-4'>
+        <h3 className='font-heading text-base font-semibold text-[var(--ink)]'>
           Data Verifikasi Terakhir
         </h3>
-        <p className='mt-0.5 text-sm text-slate-400'>
+        <p className='mt-0.5 text-sm text-[var(--ink-muted)]'>
           Informasi pengajuan verifikasi terakhir dari doctor.
         </p>
       </div>
@@ -39,13 +39,13 @@ export function DoctorVerificationCard({
             <InfoBox label='Tanggal Review' value={verification.reviewedAt} />
           </div>
 
-          <div className='rounded-xl bg-slate-50/80 p-3.5'>
-            <p className='mb-2 text-xs text-slate-400'>Status Verifikasi</p>
+          <div className='rounded-[var(--radius-control)] bg-[var(--surface-2)] p-3.5'>
+            <p className='mb-2 text-xs text-[var(--ink-muted)]'>Status Verifikasi</p>
             <StatusBadge status={verification.status} />
           </div>
 
-          <div className='rounded-xl bg-slate-50/80 p-3.5'>
-            <p className='mb-1 text-xs text-slate-400'>Dokumen Verifikasi</p>
+          <div className='rounded-[var(--radius-control)] bg-[var(--surface-2)] p-3.5'>
+            <p className='mb-1 text-xs text-[var(--ink-muted)]'>Dokumen Verifikasi</p>
             {verification.documents.length > 0 ? (
               <div className='space-y-1'>
                 {verification.documents.map((doc) => (
@@ -54,22 +54,22 @@ export function DoctorVerificationCard({
                     href={doc.url}
                     target='_blank'
                     rel='noreferrer'
-                    className='block text-sm font-semibold text-emerald-700 hover:text-emerald-800'
+                    className='block text-sm font-semibold text-[var(--role-accent-strong)] hover:text-[var(--role-accent)]'
                   >
                     {doc.file_name ?? "Dokumen"}
                   </a>
                 ))}
               </div>
             ) : (
-              <p className='text-sm font-semibold text-slate-900'>
+              <p className='text-sm font-semibold text-[var(--ink)]'>
                 Tanpa dokumen
               </p>
             )}
           </div>
 
           {verification.rejectionReason ? (
-            <div className='rounded-xl bg-rose-50 p-3.5 text-rose-700'>
-              <p className='mb-1 text-xs font-semibold text-rose-500'>
+            <div className='rounded-[var(--radius-control)] bg-[var(--destructive-bg)] p-3.5 text-[var(--destructive-fg)]'>
+              <p className='mb-1 text-xs font-semibold text-[var(--destructive-fg)]'>
                 Alasan Penolakan
               </p>
               <p className='text-sm font-semibold leading-6'>
@@ -80,7 +80,7 @@ export function DoctorVerificationCard({
         </div>
       ) : (
         <div className='p-6'>
-          <div className='rounded-xl bg-slate-50/80 p-3.5 text-sm font-semibold text-slate-500'>
+          <div className='rounded-[var(--radius-control)] bg-[var(--surface-2)] p-3.5 text-sm font-semibold text-[var(--ink-muted)]'>
             Doctor ini belum mengajukan verifikasi.
           </div>
         </div>

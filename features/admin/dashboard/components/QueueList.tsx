@@ -71,7 +71,7 @@ export function QueueList({
   return (
     <section
       className={cn(
-        "overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm",
+        "overflow-hidden rounded-[var(--radius-card)] border border-slate-100 bg-white shadow-[var(--shadow-card)]",
         className,
       )}
     >
@@ -108,7 +108,7 @@ export function QueueList({
             <Link
               key={item.id}
               href={item.href}
-              className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-emerald-50/50 sm:px-6"
+              className="flex items-center gap-3 px-4 py-3.5 transition-colors duration-[var(--motion-fast)] hover:bg-[var(--role-accent-soft)] sm:px-6"
             >
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-50">
                 <ShieldIcon />

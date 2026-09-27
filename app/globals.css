@@ -1,17 +1,35 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  /* Surface tokens — dipakai border/background netral (slate-200/900 dari palet existing) */
-  --border: #e2e8f0;
-  --muted-foreground: #64748b;
-  /* Brand tokens — satu sumber kebenaran untuk warna brand di seluruh shell */
-  --brand-primary: #10b981;
-  --brand-primary-strong: #047857;
+  /* ── Core surfaces (palet custom — bukan kelas warna default Tailwind) ── */
+  --background: #f5f7f6;
+  --foreground: #0f1d1b;
+  --surface: #ffffff;
+  --surface-2: #eef2f1;
+  --surface-3: #e4eae8;
+  --line: #e3e9e7;
+  --line-strong: #cfd8d5;
+  --ink: #0f1d1b;
+  --ink-soft: #4a5c58;
+  --ink-muted: #7e908b;
+  --border: var(--line);
+  --muted-foreground: var(--ink-muted);
+
+  /* Brand Skincek (CTA utama) */
+  --brand-primary: #12a074;
+  --brand-primary-strong: #0b7a58;
+  --cta: #12a074;
+  --cta-hover: #0e8a65;
+
   /* Shell backgrounds */
-  --shell-background: #f7fbf8;
-  --shell-background-alt: #f6fbf8;
+  --shell-background: #f5f7f6;
+  --shell-background-alt: #eef2f1;
+
+  /* Role accent — penanda identitas role (bukan CTA utama). Override via [data-role]. */
+  --role-accent: #12a074;
+  --role-accent-soft: #e7f6ef;
+  --role-accent-strong: #0b7a58;
+
   /* Chat surface tokens (gaya chat konsultasi) */
   --chat-surface: #efeae2;
   --chat-notice: #ffeecd;
@@ -23,25 +41,80 @@
   /* Illustration accents */
   --illustration-skin: #f2c7a7;
   --illustration-skin-alt: #efc09d;
-  /* Status tokens — DESIGN.md §2.2 (satu status = satu pasangan warna) */
-  --success-fg: #047857;
-  --success-bg: #ecfdf5;
-  --warning-fg: #b45309;
-  --warning-bg: #fffbeb;
-  --destructive-fg: #be123c;
-  --destructive-bg: #fff1f2;
+
+  /* Status tokens — satu status = satu pasangan warna */
+  --success-fg: #0b7a58;
+  --success-bg: #e7f6ef;
+  --warning-fg: #9a6b06;
+  --warning-bg: #fcf4de;
+  --destructive-fg: #c93651;
+  --destructive-bg: #fdedf0;
   --destructive-strong: #dc2626;
+  --info-fg: #1d6fa5;
+  --info-bg: #e9f3fa;
+
+  /* Tone tokens — palet custom untuk metric/ikon (Geex multi-tone) */
+  --tone-blue-fg: #1d6fa5;
+  --tone-blue-bg: #e9f3fa;
+  --tone-teal-fg: #0b6f7a;
+  --tone-teal-bg: #e6f4f5;
+  --tone-violet-fg: #6d4bd4;
+  --tone-violet-bg: #f1ecfd;
+  --tone-coral-fg: #c2613a;
+  --tone-coral-bg: #fdf0ea;
+
+  /* Radius */
+  --radius-control: 12px;
+  --radius-card: 16px;
+  --radius-hero: 24px;
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgba(15, 29, 27, 0.04), 0 1px 3px rgba(15, 29, 27, 0.06);
+  --shadow-card-hover: 0 8px 24px -8px rgba(15, 29, 27, 0.16), 0 2px 6px rgba(15, 29, 27, 0.06);
+  --shadow-cta: 0 8px 20px -6px rgba(18, 160, 116, 0.4);
+  --shadow-overlay: 0 24px 48px -12px rgba(15, 29, 27, 0.32);
+  /* Motion */
+  --motion-fast: 150ms;
+  --motion-base: 250ms;
+  --motion-slow: 400ms;
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Admin role — rasa Geex/enterprise: teal-petrol tegas */
+[data-role="admin"] {
+  --role-accent: #0b6f7a;
+  --role-accent-soft: #e6f4f5;
+  --role-accent-strong: #07525b;
+}
+
+/* Doctor role — rasa Doclinic/medical: biru hangat & trustworthy */
+[data-role="doctor"] {
+  --role-accent: #3563e9;
+  --role-accent-soft: #ebf0fe;
+  --role-accent-strong: #234bc4;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-muted: var(--ink-muted);
   --color-border: var(--border);
   --color-muted-foreground: var(--muted-foreground);
   --color-brand-primary: var(--brand-primary);
   --color-brand-primary-strong: var(--brand-primary-strong);
+  --color-cta: var(--cta);
+  --color-cta-hover: var(--cta-hover);
   --color-shell: var(--shell-background);
   --color-shell-alt: var(--shell-background-alt);
+  --color-role-accent: var(--role-accent);
+  --color-role-accent-soft: var(--role-accent-soft);
+  --color-role-accent-strong: var(--role-accent-strong);
   --color-chat-surface: var(--chat-surface);
   --color-chat-notice: var(--chat-notice);
   --color-chat-bubble-own: var(--chat-bubble-own);
@@ -58,13 +131,35 @@
   --color-destructive-fg: var(--destructive-fg);
   --color-destructive-bg: var(--destructive-bg);
   --color-destructive-strong: var(--destructive-strong);
-  --font-sans: var(--font-poppins);
+  --color-info-fg: var(--info-fg);
+  --color-info-bg: var(--info-bg);
+  --color-tone-blue-fg: var(--tone-blue-fg);
+  --color-tone-blue-bg: var(--tone-blue-bg);
+  --color-tone-teal-fg: var(--tone-teal-fg);
+  --color-tone-teal-bg: var(--tone-teal-bg);
+  --color-tone-violet-fg: var(--tone-violet-fg);
+  --color-tone-violet-bg: var(--tone-violet-bg);
+  --color-tone-coral-fg: var(--tone-coral-fg);
+  --color-tone-coral-bg: var(--tone-coral-bg);
+  --font-sans: var(--font-jakarta), var(--font-poppins), Arial, Helvetica, sans-serif;
+  --font-heading: var(--font-poppins), Arial, Helvetica, sans-serif;
   --font-mono: var(--font-geist-mono);
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+  --radius-hero: var(--radius-hero);
+  --shadow-card: var(--shadow-card);
+  --shadow-card-hover: var(--shadow-card-hover);
+  --shadow-cta: var(--shadow-cta);
+  --shadow-overlay: var(--shadow-overlay);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-jakarta), var(--font-poppins), Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
 }
 
@@ -82,5 +177,47 @@ body {
 
 /* Base toast font */
 .cn-toast {
-  font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
+  font-family: var(--font-jakarta), var(--font-poppins), Arial, Helvetica, sans-serif;
+}
+
+/* ─── Micro-interaction utilities ───────────────────────────────────── */
+
+/* Enter section/kartu: fade + naik halus */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-rise {
+  animation: riseIn var(--motion-base) var(--ease-out-soft) both;
+}
+
+/* Shimmer skeleton */
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+  animation: shimmer 1.4s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

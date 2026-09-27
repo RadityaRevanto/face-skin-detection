@@ -37,7 +37,7 @@ export function SummaryCard({
   return (
     <Card
       className={cn(
-        "overflow-hidden rounded-2xl border-slate-100 bg-white text-slate-950 shadow-sm",
+        "overflow-hidden rounded-[var(--radius-card)] border-slate-100 bg-white text-slate-950 shadow-[var(--shadow-card)]",
         className,
       )}
     >
@@ -73,7 +73,7 @@ export function SummaryCard({
           {primaryAction ? (
             <Link
               href={primaryAction.href}
-              className="inline-flex h-10 w-full items-center justify-center rounded-xl bg-emerald-600 px-4 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+              className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] bg-emerald-600 px-4 text-sm font-semibold text-white shadow-[var(--shadow-cta)] transition-colors hover:bg-emerald-700"
             >
               {primaryAction.label}
             </Link>
@@ -82,7 +82,7 @@ export function SummaryCard({
           {secondaryAction ? (
             <Link
               href={secondaryAction.href}
-              className="inline-flex h-10 w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+              className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
             >
               {secondaryAction.label}
             </Link>

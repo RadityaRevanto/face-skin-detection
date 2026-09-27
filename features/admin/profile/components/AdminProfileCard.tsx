@@ -12,8 +12,8 @@ export function AdminProfileCard({ profile }: { profile: AdminProfileData }) {
     .join("");
 
   return (
-    <Card className="overflow-hidden rounded-2xl border-slate-100 bg-white text-slate-950 shadow-sm">
-      <div className="border-b border-gray-100 px-6 py-5 sm:px-8">
+    <Card className="overflow-hidden rounded-[var(--radius-card)] border-slate-100 bg-white text-slate-950 shadow-[var(--shadow-card)]">
+      <div className="border-b border-slate-100 px-6 py-5 sm:px-8">
         <h2 className="text-base font-bold text-slate-950">Profil Admin</h2>
         <p className="mt-1 text-sm text-slate-500">Data pribadi dan status akun admin.</p>
       </div>
@@ -48,7 +48,7 @@ export function AdminProfileCard({ profile }: { profile: AdminProfileData }) {
         </div>
       </div>
 
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-slate-100">
         <ProfileRow label="Role" value={profile.role} />
         <ProfileRow label="Akun dibuat" value={formatAdminProfileDate(profile.account_created_at)} />
         <ProfileRow label="Login terakhir" value={formatAdminProfileDate(profile.last_login.at)} />

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { aiChatService } from "@/features/ai-chat/services/aiChatService";
 import { profileService } from "@/features/profile/services/profileService";
 import { tokenStorage } from "@/lib/api";
+import { customToast } from "@/lib/custom-toast";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
 
 import { PrivacySidebar } from "./PrivacySidebar";
@@ -74,24 +75,27 @@ export function PrivacyContainer({ role, basePath }: PrivacyContainerProps) {
         // Route download protected auth:sanctum (walau URL signed) — unduh via axios blob.
         await profileService.downloadExport(downloadUrl);
       } else {
-        alert(
+        customToast.info(
           ((response as { meta?: { message?: string } })?.meta?.message as string) ||
             "Fitur ekspor data sedang dalam pengembangan.",
         );
       }
-    } catch (error) { alert(getUserFriendlyErrorMessage(error)); }
+    } catch (error) { customToast.error("Gagal", { description: getUserFriendlyErrorMessage(error) }); }
     finally { setIsExporting(false); }
   };
 
   const deleteAccount = async () => {
-    if (deleteConfirmText !== "HAPUS AKUN SAYA") { alert("Teks konfirmasi tidak sesuai"); return; }
+    if (deleteConfirmText !== "HAPUS AKUN SAYA") {
+      customToast.warning("Teks konfirmasi tidak sesuai");
+      return;
+    }
     try {
       setIsDeleting(true);
       await profileService.destroy();
       tokenStorage.clear();
       router.replace("/login");
     } catch (error) {
-      alert(getUserFriendlyErrorMessage(error));
+      customToast.error("Gagal", { description: getUserFriendlyErrorMessage(error) });
       setIsDeleting(false);
     }
   };

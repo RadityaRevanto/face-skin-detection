@@ -2,23 +2,41 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-type ButtonVariant = "default" | "success" | "outline" | "ghost";
-type ButtonSize = "default" | "sm" | "lg";
+type ButtonVariant =
+  | "default"
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "success"
+  | "danger"
+  | "accent";
+type ButtonSize = "sm" | "md" | "lg";
+
+const BASE =
+  "inline-flex items-center justify-center gap-2 rounded-[var(--radius-control)] text-sm font-semibold transition-all duration-[var(--motion-fast)] ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--role-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] disabled:pointer-events-none disabled:opacity-50 active:scale-[.98] cursor-pointer";
 
 const variantClasses: Record<ButtonVariant, string> = {
+  primary:
+    "bg-[var(--cta)] text-white shadow-[var(--shadow-cta)] hover:bg-[var(--cta-hover)]",
+  // "default" dipertahankan sebagai alias primary — pemakaian lama (auth/form) tetap aman.
   default:
-    "bg-zinc-950 text-white shadow hover:bg-zinc-800 dark:bg-zinc-50 dark:text-zinc-950 dark:hover:bg-zinc-200",
+    "bg-[var(--cta)] text-white shadow-[var(--shadow-cta)] hover:bg-[var(--cta-hover)]",
   success:
-    "bg-emerald-600 text-white shadow hover:bg-emerald-700 dark:bg-emerald-500 dark:text-white dark:hover:bg-emerald-600",
+    "bg-[var(--cta)] text-white shadow-[var(--shadow-cta)] hover:bg-[var(--cta-hover)]",
+  secondary:
+    "border border-[var(--line)] bg-[var(--surface)] text-[var(--ink-soft)] shadow-sm hover:bg-[var(--surface-2)] hover:text-[var(--ink)]",
   outline:
-    "border border-zinc-200 bg-white text-zinc-950 shadow-sm hover:bg-zinc-100 dark:border-zinc-200 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100",
-  ghost: "hover:bg-zinc-100 dark:hover:bg-zinc-100",
+    "border border-[var(--line)] bg-[var(--surface)] text-[var(--ink-soft)] shadow-sm hover:bg-[var(--surface-2)] hover:text-[var(--ink)]",
+  ghost: "text-[var(--ink-soft)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]",
+  danger: "bg-[var(--destructive-strong)] text-white shadow-sm hover:bg-[var(--destructive-fg)]",
+  accent: "bg-[var(--role-accent)] text-white shadow-sm hover:opacity-90",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  default: "h-10 px-4 py-2",
   sm: "h-9 px-3",
-  lg: "h-11 px-8",
+  md: "h-10 px-4",
+  lg: "h-11 px-6",
 };
 
 export interface ButtonProps
@@ -29,18 +47,13 @@ export interface ButtonProps
 
 export function Button({
   className,
-  variant = "default",
-  size = "default",
+  variant = "primary",
+  size = "md",
   ...props
 }: ButtonProps) {
   return (
     <button
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950 disabled:pointer-events-none disabled:opacity-50 dark:focus-visible:ring-zinc-300",
-        variantClasses[variant],
-        sizeClasses[size],
-        className
-      )}
+      className={cn(BASE, variantClasses[variant], sizeClasses[size], className)}
       {...props}
     />
   );

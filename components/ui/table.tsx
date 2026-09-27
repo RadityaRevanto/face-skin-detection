@@ -32,7 +32,7 @@ export function TableFooter({
 }: React.ComponentProps<"tfoot">) {
   return (
     <tfoot
-      className={cn("border-t bg-zinc-50/50 font-medium", className)}
+      className={cn("border-t bg-[var(--surface-2)] font-medium", className)}
       {...props}
     />
   );
@@ -42,8 +42,8 @@ export function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return (
     <tr
       className={cn(
-        "border-b border-zinc-100 transition-colors hover:bg-zinc-50/60",
-        className
+        "border-b border-[var(--line)] transition-colors hover:bg-[var(--surface-2)]",
+        className,
       )}
       {...props}
     />
@@ -54,18 +54,21 @@ export function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   return (
     <th
       className={cn(
-        "h-11 px-4 text-left align-middle text-xs font-semibold text-zinc-500",
-        className
+        "h-11 px-4 text-left align-middle text-xs font-semibold text-[var(--ink-muted)]",
+        className,
       )}
       {...props}
     />
   );
 }
 
-export function TableCell({ className, ...props }: React.ComponentProps<"td">) {
+export function TableCell({
+  className,
+  ...props
+}: React.ComponentProps<"td">) {
   return (
     <td
-      className={cn("px-4 py-3 align-middle text-sm text-zinc-700", className)}
+      className={cn("px-4 py-3 align-middle text-sm text-[var(--ink-soft)]", className)}
       {...props}
     />
   );
@@ -77,7 +80,7 @@ export function TableCaption({
 }: React.ComponentProps<"caption">) {
   return (
     <caption
-      className={cn("mt-4 text-sm text-zinc-500", className)}
+      className={cn("mt-4 text-sm text-[var(--ink-muted)]", className)}
       {...props}
     />
   );

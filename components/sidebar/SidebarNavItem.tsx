@@ -67,15 +67,15 @@ export function SidebarNavItemView({
         className={cn(
           "group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm font-medium transition-colors",
           isActive
-            ? "bg-emerald-50 text-emerald-700"
-            : "text-slate-500 hover:bg-slate-50 hover:text-emerald-700"
+            ? "bg-[var(--role-accent-soft)] text-[var(--role-accent-strong)]"
+            : "text-slate-500 hover:bg-slate-50 hover:text-[var(--role-accent-strong)]"
         )}
       >
         {item.icon ? (
           <span
             className={cn(
               "flex h-5 w-5 shrink-0 items-center justify-center",
-              isActive ? "text-emerald-600" : "text-slate-500"
+              isActive ? "text-[var(--role-accent-strong)]" : "text-slate-500"
             )}
           >
             {item.icon}

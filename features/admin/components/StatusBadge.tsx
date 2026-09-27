@@ -26,25 +26,25 @@ export type StatusBadgeVariant =
   | "neutral";
 
 const VARIANT_STYLES: Record<StatusBadgeVariant, string> = {
-  approved: "border-emerald-100 bg-emerald-50 text-emerald-700",
-  success: "border-emerald-100 bg-emerald-50 text-emerald-700",
-  pending: "border-amber-100 bg-amber-50 text-amber-700",
-  warning: "border-amber-100 bg-amber-50 text-amber-700",
-  rejected: "border-rose-100 bg-rose-50 text-rose-700",
-  destructive: "border-rose-100 bg-rose-50 text-rose-700",
-  info: "border-sky-100 bg-sky-50 text-sky-700",
-  neutral: "border-slate-200 bg-slate-100 text-slate-700",
+  approved: "border-[var(--success-fg)]/20 bg-[var(--success-bg)] text-[var(--success-fg)]",
+  success: "border-[var(--success-fg)]/20 bg-[var(--success-bg)] text-[var(--success-fg)]",
+  pending: "border-[var(--warning-fg)]/20 bg-[var(--warning-bg)] text-[var(--warning-fg)]",
+  warning: "border-[var(--warning-fg)]/20 bg-[var(--warning-bg)] text-[var(--warning-fg)]",
+  rejected: "border-[var(--destructive-fg)]/20 bg-[var(--destructive-bg)] text-[var(--destructive-fg)]",
+  destructive: "border-[var(--destructive-fg)]/20 bg-[var(--destructive-bg)] text-[var(--destructive-fg)]",
+  info: "border-[var(--info-fg)]/20 bg-[var(--info-bg)] text-[var(--info-fg)]",
+  neutral: "border-[var(--line-strong)] bg-[var(--surface-2)] text-[var(--ink-soft)]",
 };
 
 const VARIANT_DOTS: Record<StatusBadgeVariant, string> = {
-  approved: "bg-emerald-500",
-  success: "bg-emerald-500",
-  pending: "bg-amber-500",
-  warning: "bg-amber-500",
-  rejected: "bg-rose-500",
-  destructive: "bg-rose-500",
-  info: "bg-sky-500",
-  neutral: "bg-slate-500",
+  approved: "bg-[var(--success-fg)]",
+  success: "bg-[var(--success-fg)]",
+  pending: "bg-[var(--warning-fg)]",
+  warning: "bg-[var(--warning-fg)]",
+  rejected: "bg-[var(--destructive-fg)]",
+  destructive: "bg-[var(--destructive-fg)]",
+  info: "bg-[var(--info-fg)]",
+  neutral: "bg-[var(--ink-muted)]",
 };
 
 /** Pemetaan status → varian (§4.3). Keputusan identik pra/pasca konsolidasi. */

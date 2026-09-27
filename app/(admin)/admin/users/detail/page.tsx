@@ -21,13 +21,16 @@ function UserDetailPageInner() {
       return response as unknown as {
         id?: string;
         uuid?: string;
-        full_name?: string;
-        email?: string;
-        role?: string;
-        roles?: { name: string }[];
+        full_name: string;
+        email: string;
+        // UserResource (BE) mengirim `role` sebagai string tunggal, bukan array.
+        role?: "user" | "doctor" | "admin";
         is_active?: boolean;
         avatar_url?: string | null;
         created_at?: string;
+        gender?: string | null;
+        age?: number | null;
+        doctor_verification?: unknown;
       };
     },
     enabled: !!id,
@@ -41,19 +44,18 @@ function UserDetailPageInner() {
     return <ErrorState message="User tidak ditemukan." />;
   }
 
-  const roleObj = user.roles?.[0];
-  const role = roleObj ? roleObj.name : user.role;
-
   return (
     <UserDetailContent
       user={{
         id: user.uuid ?? user.id ?? "unknown",
         name: user.full_name ?? "User",
         email: user.email ?? "-",
-        role: (role as "user" | "doctor" | "admin") ?? "user",
+        role: user.role ?? "user",
         avatarUrl: user.avatar_url ?? null,
         isActive: user.is_active ?? true,
         createdAt: formatDate(user.created_at ?? null),
+        gender: user.gender ?? null,
+        age: user.age ?? null,
       }}
     />
   );

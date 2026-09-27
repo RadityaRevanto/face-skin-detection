@@ -34,14 +34,27 @@ function VerificationDetailPageInner() {
   const row = verification as unknown as {
     uuid: string;
     doctor_id?: string;
-    specialization: string;
     str_number: string;
+    title?: string | null;
+    specialization: string;
+    sub_specialization?: string | null;
+    experience_years?: number | null;
+    alma_mater?: string | null;
+    practice_locations?: string[] | null;
+    professional_organizations?: string[] | null;
+    revision_note?: string | null;
     documents?: { uuid: string; url: string; file_name: string }[];
     verification_status: string;
     created_at: string;
     reviewed_at?: string;
     rejection_reason?: string | null;
-    doctor?: { id: string; uuid: string; name: string; email: string };
+    doctor?: {
+      id?: string;
+      uuid?: string;
+      full_name?: string;
+      email?: string;
+      avatar_url?: string | null;
+    };
   };
   const profile = row.doctor;
 
@@ -50,17 +63,24 @@ function VerificationDetailPageInner() {
       doctor={{
         id: row.uuid,
         doctorId: row.doctor_id ?? profile?.uuid ?? "",
-        name: profile?.name ?? "Dokter",
+        name: profile?.full_name ?? "Dokter",
         email: profile?.email ?? "-",
-        phone: "-",
-        address: "-",
+        avatarUrl: profile?.avatar_url ?? null,
+        title: row.title ?? null,
         identity: row.str_number ?? "-",
         specialization: row.specialization ?? "-",
+        subSpecialization: row.sub_specialization ?? null,
+        experienceYears: row.experience_years ?? null,
+        almaMater: row.alma_mater ?? null,
+        practiceLocations: row.practice_locations ?? [],
+        professionalOrganizations: row.professional_organizations ?? [],
         documents: row.documents ?? [],
         status: mapVerificationStatus(row.verification_status),
         rawStatus: row.verification_status as never,
         submittedAt: formatDate(row.created_at),
+        reviewedAt: row.reviewed_at ? formatDate(row.reviewed_at) : null,
         rejectionReason: row.rejection_reason ?? null,
+        revisionNote: row.revision_note ?? null,
       }}
     />
   );

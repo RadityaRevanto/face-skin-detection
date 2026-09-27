@@ -142,26 +142,26 @@ export function SkincareFormBody({
         placeholder='Contoh: Hentikan penggunaan jika muncul iritasi berlebihan.'
       />
 
-      <label className='flex cursor-pointer items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/80 px-4 py-3'>
+      <label className='flex cursor-pointer items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/80 px-4 py-3'>
         <input
           type='checkbox'
           checked={isActive}
           onChange={(event) => setIsActive(event.target.checked)}
-          className='h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500'
+          className='h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500'
         />
 
-        <span className='text-sm font-semibold text-gray-700'>
+        <span className='text-sm font-semibold text-slate-700'>
           Produk skincare aktif
         </span>
       </label>
 
-      <div className='flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:justify-end'>
+      <div className='flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end'>
         <Button
           type='button'
           variant='ghost'
           disabled={isSubmitting}
           onClick={onCancel}
-          className='h-11 rounded-xl px-5 font-semibold text-gray-500 hover:bg-gray-50'
+          className='h-11 rounded-xl px-5 font-semibold text-slate-500 hover:bg-slate-50'
         >
           Batal
         </Button>

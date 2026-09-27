@@ -1,9 +1,10 @@
-import Link from "next/link";
+import { Eye, Pencil, Power, PowerOff, Trash2 } from "lucide-react";
 
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { TableWidget } from "@/components/ui/table-widget";
-import type { PagePagination } from "@/lib/types/pagination";
+import { TableRowActions } from "@/components/ui/table-row-actions";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import {
   Table,
   TableBody,
@@ -12,9 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { PagePagination } from "@/lib/types/pagination";
 
 import type { UserRow } from "@/features/admin/users/lib/usersTypes";
-import { Eye, Pencil, Power, Trash2 } from "lucide-react";
 
 type UsersTableProps = {
   users: UserRow[];
@@ -25,6 +26,42 @@ type UsersTableProps = {
   busyId: string | null;
 };
 
+function buildActions(
+  user: UserRow,
+  handlers: Pick<UsersTableProps, "onEdit" | "onToggleActive" | "onDelete">,
+) {
+  return {
+    primary: {
+      key: "view",
+      label: "Lihat detail",
+      icon: <Eye className="h-4 w-4" />,
+      href: `/admin/users/detail?id=${encodeURIComponent(user.id)}`,
+    },
+    actions: [
+      {
+        key: "edit",
+        label: "Edit user",
+        icon: <Pencil className="h-4 w-4" />,
+        onSelect: () => handlers.onEdit(user),
+      },
+      {
+        key: "toggle",
+        label: user.isActive ? "Suspend" : "Aktifkan",
+        tone: (user.isActive ? "warning" : "success") as "warning" | "success",
+        icon: user.isActive ? <PowerOff className="h-4 w-4" /> : <Power className="h-4 w-4" />,
+        onSelect: () => handlers.onToggleActive(user),
+      },
+      {
+        key: "delete",
+        label: "Hapus",
+        tone: "danger" as const,
+        icon: <Trash2 className="h-4 w-4" />,
+        onSelect: () => handlers.onDelete(user),
+      },
+    ],
+  };
+}
+
 export function UsersTable({
   users,
   pagination,
@@ -33,48 +70,7 @@ export function UsersTable({
   onDelete,
   busyId,
 }: UsersTableProps) {
-  const renderActions = (user: UserRow, align = "justify-end") => (
-    <div className={`flex items-center gap-1 ${align}`}>
-      <Link
-        href={`/admin/users/detail?id=${encodeURIComponent(user.id)}`}
-        title="Lihat detail"
-        aria-label="Lihat detail"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-sky-50 hover:text-sky-700"
-      >
-        <Eye className="h-4 w-4" />
-      </Link>
-      <button
-        type="button"
-        title="Edit"
-        aria-label="Edit"
-        disabled={busyId === user.id}
-        onClick={() => onEdit(user)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-emerald-50 hover:text-emerald-700 disabled:opacity-40"
-      >
-        <Pencil className="h-4 w-4" />
-      </button>
-      <button
-        type="button"
-        title={user.isActive ? "Suspend" : "Aktifkan"}
-        aria-label={user.isActive ? "Suspend" : "Aktifkan"}
-        disabled={busyId === user.id}
-        onClick={() => onToggleActive(user)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-amber-50 hover:text-amber-700 disabled:opacity-40"
-      >
-        <Power className="h-4 w-4" />
-      </button>
-      <button
-        type="button"
-        title="Hapus"
-        aria-label="Hapus"
-        disabled={busyId === user.id}
-        onClick={() => onDelete(user)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-700 disabled:opacity-40"
-      >
-        <Trash2 className="h-4 w-4" />
-      </button>
-    </div>
-  );
+  const handlers = { onEdit, onToggleActive, onDelete };
 
   const paginationNode = (
     <Pagination
@@ -88,81 +84,83 @@ export function UsersTable({
   );
 
   const tableNode = (
-    <Table className="min-w-full divide-y divide-slate-100">
-      <TableHeader className="bg-slate-50/80">
+    <Table className="min-w-full divide-y divide-[var(--line)]">
+      <TableHeader className="bg-[var(--surface-2)]/70">
         <TableRow className="hover:bg-transparent">
-          <TableHead className="hidden w-16 px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:table-cell sm:px-6 lg:px-8">
+          <TableHead className="hidden w-16 px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-muted)] sm:table-cell sm:px-6 lg:px-8">
             No
           </TableHead>
 
-          <TableHead className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-6 lg:px-8">
-            Username
+          <TableHead className="px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-muted)] sm:px-6 lg:px-8">
+            User
           </TableHead>
 
-          <TableHead className="hidden px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 md:table-cell sm:px-6 lg:px-8">
-            Email
-          </TableHead>
-
-          <TableHead className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-6 lg:px-8">
+          <TableHead className="hidden px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-muted)] md:table-cell sm:px-6 lg:px-8">
             Profil
           </TableHead>
 
-          <TableHead className="hidden px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 lg:table-cell lg:px-8">
-            Join
+          <TableHead className="hidden px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-muted)] lg:table-cell lg:px-8">
+            Bergabung
           </TableHead>
 
-          <TableHead className="px-4 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-6 lg:px-8">
+          <TableHead className="px-4 py-3.5 text-right text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-muted)] sm:px-6 lg:px-8">
             Aksi
           </TableHead>
         </TableRow>
       </TableHeader>
 
-      <TableBody className="divide-y divide-slate-100 bg-white">
+      <TableBody className="divide-y divide-[var(--line)] bg-[var(--surface)]">
         {users.map((user) => (
           <TableRow
             key={user.id}
-            className="group border-slate-100 transition-colors hover:bg-emerald-50/30"
+            className="group transition-colors hover:bg-[var(--role-accent-soft)]/50"
           >
-            <TableCell className="hidden whitespace-nowrap px-4 py-4 text-sm font-medium text-slate-500 sm:table-cell sm:px-6 lg:px-8">
+            <TableCell className="hidden whitespace-nowrap px-4 py-3 text-sm font-medium text-[var(--ink-muted)] tabular-nums sm:table-cell sm:px-6 lg:px-8">
               {user.no}
             </TableCell>
 
-            <TableCell className="whitespace-nowrap px-4 py-4 sm:px-6 lg:px-8">
-              <p className="text-sm font-medium text-slate-700 transition-colors group-hover:text-emerald-700">
-                {user.username}
-              </p>
-              {!user.isActive && (
-                <p className="mt-0.5 text-xs font-semibold text-amber-700">Nonaktif</p>
-              )}
-              <p className="mt-0.5 text-xs text-slate-400 md:hidden">
-                {user.email}
-              </p>
+            <TableCell className="px-4 py-3 sm:px-6 lg:px-8">
+              <div className="flex items-center gap-3">
+                <UserAvatar
+                  name={user.username}
+                  src={user.avatarUrl}
+                  status={user.isActive ? "active" : "inactive"}
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-[var(--ink)] transition-colors group-hover:text-[var(--role-accent-strong)]">
+                    {user.username}
+                  </p>
+                  <p className="truncate text-xs text-[var(--ink-muted)]">
+                    {user.email}
+                    {!user.isActive ? (
+                      <span className="font-semibold text-[var(--warning-fg)]"> · Nonaktif</span>
+                    ) : null}
+                  </p>
+                </div>
+              </div>
             </TableCell>
 
-            <TableCell className="hidden whitespace-nowrap px-4 py-4 text-sm text-slate-500 md:table-cell sm:px-6 lg:px-8">
-              {user.email}
-            </TableCell>
-
-            <TableCell className="whitespace-nowrap px-4 py-4 sm:px-6 lg:px-8">
-              <p className="text-sm font-medium text-slate-700">
+            <TableCell className="hidden whitespace-nowrap px-4 py-3 sm:px-6 md:table-cell lg:px-8">
+              <p className="text-sm font-medium text-[var(--ink-soft)]">
                 {user.gender === "-" ? "Belum diisi" : user.gender}
               </p>
-              <p className="mt-0.5 text-xs text-slate-500">
+              <p className="mt-0.5 text-xs text-[var(--ink-muted)]">
                 {user.age === "-" ? "-" : `${user.age} tahun`}
               </p>
             </TableCell>
 
-            <TableCell className="hidden whitespace-nowrap px-4 py-4 lg:table-cell lg:px-8">
-              <p className="text-sm font-medium text-slate-700">
+            <TableCell className="hidden whitespace-nowrap px-4 py-3 lg:table-cell lg:px-8">
+              <p className="text-sm font-medium text-[var(--ink-soft)] tabular-nums">
                 {user.join}
               </p>
-              <p className="mt-1 text-xs font-normal text-slate-500">
-                Pengguna terdaftar
-              </p>
+              <p className="mt-0.5 text-xs text-[var(--ink-muted)]">Pengguna terdaftar</p>
             </TableCell>
 
-            <TableCell className="whitespace-nowrap px-4 py-4 text-right text-sm font-medium sm:px-6 lg:px-8">
-              {renderActions(user)}
+            <TableCell className="whitespace-nowrap px-4 py-3 text-right sm:px-6 lg:px-8">
+              <TableRowActions
+                {...buildActions(user, handlers)}
+                busy={busyId === user.id}
+              />
             </TableCell>
           </TableRow>
         ))}
@@ -170,26 +168,35 @@ export function UsersTable({
     </Table>
   );
 
-  // Mobile card list (§4.2 §5.2) — username bold, meta gender/umur, email, View kanan-atas.
   const cardsNode = (
-    <div className="divide-y divide-slate-100 bg-white">
+    <div className="divide-y divide-[var(--line)] bg-[var(--surface)]">
       {users.map((user) => (
-        <div key={user.id} className="flex items-start justify-between gap-3 p-4">
+        <div key={user.id} className="flex items-start gap-3 p-4">
+          <UserAvatar
+            name={user.username}
+            src={user.avatarUrl}
+            status={user.isActive ? "active" : "inactive"}
+          />
           <div className="min-w-0 flex-1 space-y-1">
-            <p className="truncate text-sm font-bold text-slate-900">
+            <p className="truncate text-sm font-bold text-[var(--ink)]">
               {user.username}
             </p>
-            {!user.isActive && (
-              <p className="text-xs font-semibold text-amber-700">Nonaktif</p>
-            )}
-            <p className="text-xs text-slate-500">
-              {user.gender === "-" ? "Belum diisi" : user.gender}
-              {user.age !== "-" ? ` · ${user.age} tahun` : ""}
+            <p className="truncate text-xs text-[var(--ink-muted)]">
+              {user.email}
+              {!user.isActive ? (
+                <span className="font-semibold text-[var(--warning-fg)]"> · Nonaktif</span>
+              ) : null}
             </p>
-            <p className="truncate text-xs text-slate-400">{user.email}</p>
+            <p className="text-xs text-[var(--ink-muted)]">
+              {user.gender === "-" ? "Belum diisi" : user.gender}
+              {user.age !== "-" ? ` · ${user.age} tahun` : ""} · {user.join}
+            </p>
           </div>
 
-          {renderActions(user)}
+          <TableRowActions
+            {...buildActions(user, handlers)}
+            busy={busyId === user.id}
+          />
         </div>
       ))}
     </div>
@@ -203,7 +210,7 @@ export function UsersTable({
         users.length === 0 ? (
           <EmptyState
             title="Belum ada data user"
-            description="User terdaftar akan tampil di sini setelah mereka mendaftar."
+            description="User terdaftar akan tampil di sini setelah mereka mendaftar, atau ubah kata kunci pencarian."
           />
         ) : undefined
       }

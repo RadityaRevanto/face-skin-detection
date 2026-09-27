@@ -81,6 +81,7 @@ function VerificationsPageInner({ pageType }: { pageType: DoctorVerificationPage
         no: from + index + 1,
         name: (profile?.full_name as string) ?? "Dokter",
         email: (profile?.email as string) ?? "-",
+        avatarUrl: (profile?.avatar_url as string | null | undefined) ?? null,
         identity: verification.str_number ?? "-",
         specialization: verification.specialization ?? "-",
         documents: verification.documents ?? [],

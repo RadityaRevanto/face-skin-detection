@@ -8,8 +8,8 @@ export function AdminProfileContent({ profile }: { profile: AdminProfileData }) 
   return (
     <main className="w-full">
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">Profil Admin</h1>
-        <p className="text-zinc-500 mt-1.5 text-sm sm:text-base">
+        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Profil Admin</h1>
+        <p className="text-slate-500 mt-1.5 text-sm sm:text-base">
           Ringkasan akun admin, aktivitas login terakhir, dan statistik platform.
         </p>
       </div>

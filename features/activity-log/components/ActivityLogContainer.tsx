@@ -5,6 +5,7 @@ import type { ActivityLog } from "../types";
 import { getActivityLog } from "../services/activityLogService";
 import { ActivityLogItem } from "./ActivityLogItem";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Pagination } from "@/components/ui/pagination";
 
 export function ActivityLogContainer() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
@@ -36,7 +37,13 @@ export function ActivityLogContainer() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+        <div className="flex items-center gap-2">
+          <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[var(--role-accent)]" />
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--role-accent-strong)]">
+            Jejak Audit
+          </p>
+        </div>
+        <h1 className="mt-1 font-heading text-2xl font-bold tracking-tight text-slate-900">
           Activity Log
         </h1>
         <p className="mt-1 text-sm text-slate-500">
@@ -45,7 +52,7 @@ export function ActivityLogContainer() {
       </div>
 
       {/* Log List */}
-      <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm sm:p-6">
+      <div className="rounded-[var(--radius-card)] border border-slate-100 bg-white p-4 shadow-[var(--shadow-card)] sm:p-6">
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -75,27 +82,17 @@ export function ActivityLogContainer() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <button
-            type="button"
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage <= 1}
-            className="rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:pointer-events-none disabled:bg-slate-100 disabled:text-slate-400 hover:bg-slate-100"
-          >
-            Sebelumnya
-          </button>
-          <span className="px-4 py-2 text-sm font-medium text-slate-600">
-            Halaman {currentPage} dari {totalPages}
-          </span>
-          <button
-            type="button"
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage >= totalPages}
-            className="rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:pointer-events-none disabled:bg-slate-100 disabled:text-slate-400 hover:bg-slate-100"
-          >
-            Selanjutnya
-          </button>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={total}
+          pageSize={20}
+          itemLabel="aktivitas"
+          onPageChange={(p) => {
+            setCurrentPage(p);
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+        />
       )}
     </div>
   );

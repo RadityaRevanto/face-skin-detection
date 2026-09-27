@@ -148,7 +148,7 @@ export function DashboardLayout({ role, children, profile, headerExtra }: Dashbo
     role === "user" && currentUser?.email_verified === false;
 
   return (
-    <div className="min-h-screen bg-shell">
+    <div className="min-h-screen bg-shell" data-role={role} data-density={role === "admin" ? "compact" : "comfortable"}>
       <div className="flex min-h-screen flex-col lg:flex-row">
         <Sidebar
           brand={brand}

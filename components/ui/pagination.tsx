@@ -104,8 +104,8 @@ function PageButton({
         href={buildPageUrl(basePath!, page, searchParams)}
         aria-label={ariaLabel}
         className={cn(
-          "inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-200 dark:bg-white dark:text-gray-600",
-          variant === "success" && "border-emerald-600 bg-emerald-600 text-white hover:bg-emerald-700",
+          "inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--line)] bg-[var(--surface)] text-[var(--ink-soft)] transition-colors hover:bg-[var(--surface-2)]",
+          variant === "success" && "bg-[var(--cta)] hover:bg-[var(--cta-hover)] text-white border-transparent",
           className
         )}
       >
@@ -125,8 +125,8 @@ function PageButton({
       className={cn(
         "h-9 w-9 rounded-lg p-0",
         variant === "success"
-          ? "bg-emerald-600 text-white hover:bg-emerald-700"
-          : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-200 dark:bg-white dark:text-gray-600 dark:hover:bg-gray-50",
+          ? "bg-[var(--cta)] text-white hover:bg-[var(--cta-hover)]"
+          : "border-[var(--line)] bg-[var(--surface)] text-[var(--ink-soft)] hover:bg-[var(--surface-2)]",
         disabled && "cursor-not-allowed opacity-40",
         className
       )}
@@ -154,30 +154,30 @@ export function Pagination({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 border-t border-gray-100 bg-white px-4 py-4 dark:bg-white sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-8",
+        "flex flex-col gap-3 border-t border-[var(--line)] bg-[var(--surface)] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-8",
         className
       )}
     >
       {/* Mobile: ringkas "1/5" (§4.2) — info lengkap tampil sm+ */}
-      <p className="text-xs text-gray-500 sm:text-sm">
+      <p className="text-xs text-[var(--ink-muted)] sm:text-sm">
         <span className="sm:hidden">
           Halaman{" "}
-          <span className="font-semibold text-gray-700">{currentPage}</span>
+          <span className="font-semibold text-[var(--ink-soft)]">{currentPage}</span>
           {" "}dari{" "}
-          <span className="font-semibold text-gray-700">{totalPages}</span>
+          <span className="font-semibold text-[var(--ink-soft)]">{totalPages}</span>
           {totalItems > 0 ? (
             <>
               {" "}·{" "}
-              <span className="font-medium text-gray-700">{totalItems}</span>{" "}
+              <span className="font-medium text-[var(--ink-soft)]">{totalItems}</span>{" "}
               {itemLabel}
             </>
           ) : null}
         </span>
         <span className="hidden sm:inline">
           Menampilkan{" "}
-          <span className="font-medium text-gray-700">{firstItem}</span>–
-          <span className="font-medium text-gray-700">{lastItem}</span> dari{" "}
-          <span className="font-medium text-gray-700">{totalItems}</span>{" "}
+          <span className="font-medium text-[var(--ink-soft)]">{firstItem}</span>–
+          <span className="font-medium text-[var(--ink-soft)]">{lastItem}</span> dari{" "}
+          <span className="font-medium text-[var(--ink-soft)]">{totalItems}</span>{" "}
           {itemLabel}
         </span>
       </p>
@@ -190,13 +190,13 @@ export function Pagination({
           searchParams={searchParams}
           onPageChange={onPageChange}
           ariaLabel="Halaman sebelumnya"
-          className="text-gray-500"
+          className="text-[var(--ink-muted)]"
         >
           <ChevronIcon direction="left" />
         </PageButton>
 
         {/* Mobile: hanya angka halaman aktif — daftar lengkap sm+ */}
-        <span className="flex h-9 min-w-9 items-center justify-center rounded-lg bg-emerald-600 px-2 text-sm font-semibold text-white sm:hidden">
+        <span className="flex h-9 min-w-9 items-center justify-center rounded-lg bg-[var(--role-accent)] px-2 text-sm font-semibold text-white sm:hidden">
           {currentPage}
         </span>
 
@@ -208,7 +208,7 @@ export function Pagination({
             return (
               <React.Fragment key={page}>
                 {showEllipsis ? (
-                  <span className="flex h-9 w-9 items-center justify-center text-sm text-gray-400">
+                  <span className="flex h-9 w-9 items-center justify-center text-sm text-[var(--ink-muted)]">
                     ...
                   </span>
                 ) : null}
@@ -233,7 +233,7 @@ export function Pagination({
           searchParams={searchParams}
           onPageChange={onPageChange}
           ariaLabel="Halaman berikutnya"
-          className="text-gray-500"
+          className="text-[var(--ink-muted)]"
         >
           <ChevronIcon direction="right" />
         </PageButton>

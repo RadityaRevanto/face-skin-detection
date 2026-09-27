@@ -35,7 +35,7 @@ export function ActivityTimeline({
   return (
     <Card
       className={cn(
-        "overflow-hidden rounded-2xl border-slate-100 bg-white text-slate-950 shadow-sm",
+        "overflow-hidden rounded-[var(--radius-card)] border-slate-100 bg-white text-slate-950 shadow-[var(--shadow-card)]",
         className,
       )}
     >
@@ -68,7 +68,7 @@ export function ActivityTimeline({
       <div className="border-t border-slate-100 p-4 sm:p-6">
         <Link
           href={viewAllHref}
-          className="inline-flex h-10 w-full items-center justify-center rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+          className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] border border-slate-200 bg-white text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
         >
           {viewAllLabel}
         </Link>

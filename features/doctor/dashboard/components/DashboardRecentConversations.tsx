@@ -21,14 +21,14 @@ export function DashboardRecentConversations({
   formatRelativeTime,
 }: DashboardRecentConversationsProps) {
   return (
-    <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
+    <section className="rounded-[var(--radius-card)] border border-slate-100 bg-white p-5 shadow-[var(--shadow-card)] sm:p-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-base font-bold text-slate-900">
           Percakapan Terbaru
         </h2>
         <Link
           href="/doctor/consultations"
-          className="text-sm font-semibold text-emerald-600 hover:text-emerald-700"
+          className="flex items-center gap-2.5 text-sm font-semibold text-[var(--role-accent-strong)] transition-colors hover:text-[var(--role-accent)]"
         >
           Lihat semua
         </Link>
@@ -46,7 +46,7 @@ export function DashboardRecentConversations({
               href={`/doctor/consultations?conversation=${conv.uuid}`}
               className="flex items-center gap-4 py-3 transition-colors hover:bg-slate-50 -mx-3 px-3 rounded-xl"
             >
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-700">
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-[var(--role-accent-soft)] text-sm font-bold text-[var(--role-accent-strong)]">
                 {(conv.user?.full_name ?? "?").charAt(0).toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">

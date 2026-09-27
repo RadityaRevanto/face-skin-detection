@@ -25,22 +25,22 @@ export function DoctorVerificationTabs({
       href: "/admin/doctor-verifications/pending",
       label: "Menunggu Review",
       count: pendingCount,
-      activeStyle: "bg-emerald-600 text-white shadow-sm",
+      activeStyle: "bg-[var(--role-accent)] text-white shadow-[var(--shadow-cta)]",
       inactiveHover:
-        "bg-white text-slate-600 ring-1 ring-slate-100 hover:bg-emerald-50 hover:text-emerald-700",
+        "bg-[var(--surface)] text-[var(--ink-soft)] ring-1 ring-[var(--line)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]",
       chipActive: "bg-white/20 text-white",
-      chipInactive: "bg-emerald-50 text-emerald-700",
+      chipInactive: "bg-[var(--surface-2)] text-[var(--ink-soft)]",
     },
     {
       key: "rejected" as const,
       href: "/admin/doctor-verifications/rejected",
       label: "Ditolak",
       count: rejectedCount,
-      activeStyle: "bg-rose-600 text-white shadow-sm",
+      activeStyle: "bg-[var(--destructive-fg)] text-white shadow-sm",
       inactiveHover:
-        "bg-white text-slate-600 ring-1 ring-slate-100 hover:bg-rose-50 hover:text-rose-700",
+        "bg-[var(--surface)] text-[var(--ink-soft)] ring-1 ring-[var(--line)] hover:bg-[var(--destructive-bg)] hover:text-[var(--destructive-fg)]",
       chipActive: "bg-white/20 text-white",
-      chipInactive: "bg-rose-50 text-rose-700",
+      chipInactive: "bg-[var(--destructive-bg)] text-[var(--destructive-fg)]",
     },
   ];
 

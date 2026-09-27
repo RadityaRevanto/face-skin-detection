@@ -12,6 +12,7 @@ export type DoctorRow = {
   no: number;
   name: string;
   email: string;
+  avatarUrl: string | null;
   identity: string;
   specialization: string;
   documents: DoctorDocument[];

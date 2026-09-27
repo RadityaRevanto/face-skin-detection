@@ -2,11 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { Check, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-
-import { ActionIcon } from "./ActionIcon";
+import { adminService } from "@/features/admin/services/adminService";
+import { customToast } from "@/lib/custom-toast";
+import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
 
 type VerificationDecisionCardProps = {
   verificationId: string;
@@ -16,58 +19,38 @@ export function VerificationDecisionCard({
   verificationId,
 }: VerificationDecisionCardProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [note, setNote] = useState("");
-  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   async function submitAction(type: "approve" | "reject") {
-    setMessage("");
-
     const trimmedNote = note.trim();
 
     if (type === "reject" && !trimmedNote) {
-      setMessage("Alasan penolakan wajib diisi sebelum reject.");
+      customToast.warning("Alasan penolakan wajib diisi sebelum reject.");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        `/api/admin/doctor-verifications/${verificationId}/${type}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body:
-            type === "approve"
-              ? JSON.stringify({})
-              : JSON.stringify({ reason: trimmedNote }),
-        },
+      await adminService.reviewVerification(
+        verificationId,
+        type === "approve" ? "approved" : "rejected",
+        type === "approve" ? undefined : trimmedNote,
       );
 
-      const contentType = response.headers.get("content-type");
+      customToast.success(
+        type === "approve" ? "Verifikasi disetujui" : "Verifikasi ditolak",
+        { description: "Keputusan tersimpan dan dokter sudah diberi notifikasi." },
+      );
 
-      if (!contentType?.includes("application/json")) {
-        const text = await response.text();
-        console.error("Non JSON response:", text);
-
-        setMessage(
-          `Response API bukan JSON. Status: ${response.status}. Cek console/browser network.`,
-        );
-        return;
-      }
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        setMessage(result.message || `Aksi gagal. Status: ${response.status}`);
-        return;
-      }
-
-      setMessage(result.message || "Aksi berhasil diproses.");
+      queryClient.invalidateQueries({ queryKey: ["admin", "verifications"] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin", "pending-verifications-count"],
+      });
+      queryClient.invalidateQueries({ queryKey: ["admin", "verification", verificationId] });
 
       if (type === "approve") {
         router.push("/admin/doctors");
@@ -77,75 +60,75 @@ export function VerificationDecisionCard({
 
       router.refresh();
     } catch (error) {
-      console.error("Submit verification action error:", error);
-      setMessage("Terjadi kesalahan saat memproses aksi. Cek console browser.");
+      customToast.error("Gagal", { description: getUserFriendlyErrorMessage(error) });
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <Card className='sticky bottom-0 z-30 overflow-visible rounded-3xl border border-slate-100 bg-white text-slate-950 shadow-lg lg:static lg:shadow-sm'>
-      <div className='border-b border-slate-100 px-4 py-4 sm:px-6'>
-        <h3 className='text-base font-semibold text-slate-900'>
+    <Card
+      variant="accent-top"
+      className="overflow-visible shadow-[var(--shadow-card)]"
+    >
+      <div className="border-b border-[var(--line)] px-4 py-4 sm:px-6">
+        <h3 className="font-heading text-base font-semibold text-[var(--ink)]">
           Keputusan Verifikasi
         </h3>
-        <p className='mt-0.5 text-xs text-slate-500 sm:text-sm'>
+        <p className="mt-0.5 text-xs text-[var(--ink-muted)] sm:text-sm">
           Approve dokter jika dokumen valid, atau reject dengan alasan
           penolakan.
         </p>
       </div>
 
-      <div className='space-y-4 p-4 sm:p-6'>
-        {message ? (
-          <div className='rounded-xl bg-slate-50/80 px-4 py-3 text-sm font-semibold text-slate-600'>
-            {message}
-          </div>
-        ) : null}
-
+      <div className="space-y-4 p-4 sm:p-6">
         <div>
           <label
-            htmlFor='review-note'
-            className='mb-2 block text-xs font-semibold text-slate-400'
+            htmlFor="review-note"
+            className="mb-2 block text-xs font-semibold text-[var(--ink-soft)]"
           >
             Alasan Penolakan
           </label>
 
           <textarea
-            id='review-note'
-            name='review-note'
+            id="review-note"
+            name="review-note"
             rows={3}
             value={note}
             onChange={(event) => setNote(event.target.value)}
-            placeholder='Wajib diisi jika melakukan reject. Contoh: Dokumen STR tidak terbaca jelas atau tidak sesuai identitas.'
-            className='w-full resize-none rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm leading-6 text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+            placeholder="Wajib diisi jika melakukan reject. Contoh: Dokumen STR tidak terbaca jelas atau tidak sesuai identitas."
+            className="w-full resize-none rounded-[var(--radius-control)] border border-[var(--line)] bg-[var(--surface-2)]/60 px-4 py-3 text-sm leading-6 text-[var(--ink)] outline-none transition-colors placeholder:text-[var(--ink-muted)] focus:border-[var(--role-accent)] focus:bg-[var(--surface)] focus:ring-2 focus:ring-[var(--role-accent-soft)]"
           />
         </div>
 
         {/* Mobile: stack w-full (§5.7); desktop: berdampingan sm:grid-cols-2 */}
-        <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Button
-            type='button'
-            variant='ghost'
+            type="button"
+            size="lg"
             disabled={isLoading}
             onClick={() => submitAction("approve")}
-            className='h-12 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+            className="bg-[var(--success-bg)] text-[var(--success-fg)] shadow-none hover:bg-[var(--success-fg)]/15"
           >
-            <ActionIcon type='approve' />
-            Approve
+            <Check className="h-4 w-4" aria-hidden="true" />
+            {isLoading ? "Memproses..." : "Approve"}
           </Button>
 
           <Button
-            type='button'
-            variant='ghost'
+            type="button"
+            size="lg"
             disabled={isLoading}
             onClick={() => submitAction("reject")}
-            className='h-12 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-100'
+            className="bg-[var(--destructive-bg)] text-[var(--destructive-fg)] shadow-none hover:bg-[var(--destructive-fg)]/15"
           >
-            <ActionIcon type='reject' />
+            <X className="h-4 w-4" aria-hidden="true" />
             Reject
           </Button>
         </div>
+
+        <p className="text-center text-[11px] text-[var(--ink-muted)]">
+          Keputusan bersifat permanen — pastikan dokumen sudah diverifikasi.
+        </p>
       </div>
     </Card>
   );

@@ -38,15 +38,15 @@ export function SidebarLink({
         !collapsed && !isChild && "py-3",
         isChild ? "rounded-xl px-3 py-2 pl-12" : "",
         isActive
-          ? "bg-emerald-50 text-emerald-700"
-          : "text-slate-500 hover:bg-slate-50 hover:text-emerald-700"
+          ? "bg-[var(--role-accent-soft)] text-[var(--role-accent-strong)]"
+          : "text-slate-500 hover:bg-slate-50 hover:text-[var(--role-accent-strong)]"
       )}
     >
       {showIcon ? (
         <span
           className={cn(
             "flex h-5 w-5 shrink-0 items-center justify-center",
-            isActive ? "text-emerald-600" : "text-slate-500"
+            isActive ? "text-[var(--role-accent-strong)]" : "text-slate-500"
           )}
         >
           {item.icon}
@@ -60,11 +60,11 @@ export function SidebarLink({
       {collapsed && !isChild && isActive ? (
         <span
           aria-hidden="true"
-          className="absolute -left-1 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-emerald-500"
+          className="absolute -left-1 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-[var(--role-accent)]"
         />
       ) : null}
       {item.badge && (!collapsed || isChild) ? (
-        <span className="rounded-full bg-emerald-500 px-2 py-0.5 text-[10px] font-bold leading-4 text-white">
+        <span className="rounded-full bg-[var(--role-accent)] px-2 py-0.5 text-[10px] font-bold leading-4 text-white">
           {item.badge}
         </span>
       ) : null}
@@ -72,7 +72,7 @@ export function SidebarLink({
       {collapsed && !isChild && item.badge ? (
         <span
           aria-hidden="true"
-          className="absolute right-2.5 top-2 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white"
+          className="absolute right-2.5 top-2 h-2 w-2 rounded-full bg-[var(--role-accent)] ring-2 ring-white"
         />
       ) : null}
     </Link>

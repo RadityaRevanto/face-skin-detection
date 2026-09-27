@@ -25,7 +25,7 @@ export function AdminDashboardClientContent() {
     staleTime: 60 * 1000,
   });
 
-  // Komposisi status verifikasi untuk ProgressDonut (§4.6) — count via
+  // Komposisi status verifikasi untuk donut — count via
   // adminService.verifications (service existing, tanpa perubahan kontrak).
   const { data: verificationCounts } = useQuery({
     queryKey: ["admin", "verification-counts"],

@@ -2,7 +2,14 @@ export type ActivityLog = {
   id: string;
   causer_type: string;
   causer_id: string;
-  causer_name: string;
+  /** Nama pelaku — fallback ringkas untuk keadaan tanpa causer. */
+  causer_name?: string;
+  /** Objek pelaku dari ActivityLogResource (BE): { uuid, full_name, email }. */
+  causer?: {
+    uuid: string;
+    full_name: string | null;
+    email: string | null;
+  } | null;
   event: string;
   description: string;
   properties: Record<string, unknown>;

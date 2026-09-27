@@ -6,4 +6,6 @@ export type UserDetail = {
   avatarUrl: string | null;
   isActive: boolean;
   createdAt: string;
+  gender?: string | null;
+  age?: number | null;
 };

@@ -12,13 +12,13 @@ export function RecommendationFormActions({
   onCancel,
 }: RecommendationFormActionsProps) {
   return (
-    <div className='flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:justify-end'>
+    <div className='flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end'>
       <Button
         type='button'
         variant='ghost'
         disabled={isSubmitting}
         onClick={onCancel}
-        className='h-11 rounded-xl px-5 font-semibold text-gray-500 hover:bg-gray-50'
+        className='h-11 rounded-xl px-5 font-semibold text-slate-500 hover:bg-slate-50'
       >
         Batal
       </Button>

@@ -91,16 +91,16 @@ export function UserFormModal({ open, initial, defaultRole = "user", onClose, on
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
       role="dialog"
       aria-modal="true"
       aria-labelledby="user-form-title"
     >
       <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
-        <h2 id="user-form-title" className="text-lg font-bold text-zinc-900">
+        <h2 id="user-form-title" className="text-lg font-bold text-slate-900">
           {isEdit ? "Edit User" : "Tambah User"}
         </h2>
-        <p className="mt-1 text-sm text-zinc-500">
+        <p className="mt-1 text-sm text-slate-500">
           {isEdit
             ? "Kosongkan password bila tidak ingin mengubahnya."
             : "User baru langsung aktif dan bisa login dengan password ini."}
@@ -114,7 +114,7 @@ export function UserFormModal({ open, initial, defaultRole = "user", onClose, on
 
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           <div>
-            <label htmlFor="uf-name" className="mb-1.5 block text-sm font-medium text-zinc-700">
+            <label htmlFor="uf-name" className="mb-1.5 block text-sm font-medium text-slate-700">
               Nama lengkap
             </label>
             <Input
@@ -127,7 +127,7 @@ export function UserFormModal({ open, initial, defaultRole = "user", onClose, on
           </div>
 
           <div>
-            <label htmlFor="uf-email" className="mb-1.5 block text-sm font-medium text-zinc-700">
+            <label htmlFor="uf-email" className="mb-1.5 block text-sm font-medium text-slate-700">
               Email
             </label>
             <Input
@@ -141,7 +141,7 @@ export function UserFormModal({ open, initial, defaultRole = "user", onClose, on
           </div>
 
           <div>
-            <label htmlFor="uf-pass" className="mb-1.5 block text-sm font-medium text-zinc-700">
+            <label htmlFor="uf-pass" className="mb-1.5 block text-sm font-medium text-slate-700">
               Password
             </label>
             <Input
@@ -155,14 +155,14 @@ export function UserFormModal({ open, initial, defaultRole = "user", onClose, on
           </div>
 
           <div>
-            <label htmlFor="uf-role" className="mb-1.5 block text-sm font-medium text-zinc-700">
+            <label htmlFor="uf-role" className="mb-1.5 block text-sm font-medium text-slate-700">
               Role
             </label>
             <select
               id="uf-role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-sm text-zinc-950 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-950"
+              className="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-950 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950"
             >
               {ROLES.map((r) => (
                 <option key={r.value} value={r.value}>
@@ -182,7 +182,7 @@ export function UserFormModal({ open, initial, defaultRole = "user", onClose, on
               type="button"
               onClick={onClose}
               disabled={busy}
-              className="flex-1 rounded-xl border border-zinc-200 px-4 py-2.5 text-sm font-semibold text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-50"
+              className="flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
             >
               Batal
             </button>

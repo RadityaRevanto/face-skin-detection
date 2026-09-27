@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { adminService } from "@/features/admin/services/adminService";
 import { TableRowsSkeleton } from "@/components/skeletons";
 import { ErrorState } from "@/components/ui/error-state";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { UserFormModal, type UserFormInitial } from "@/features/admin/components/UserFormModal";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
 import { customToast } from "@/lib/custom-toast";
@@ -45,6 +46,7 @@ function DoctorsPageInner() {
         no: from + index + 1,
         name: (profile?.full_name as string) ?? "Dokter",
         email: (profile?.email as string) ?? "-",
+        avatarUrl: (profile?.avatar_url as string | null | undefined) ?? null,
         identity: verification.str_number ?? "-",
         specialization: verification.specialization ?? "-",
         documents: verification.documents ?? [],
@@ -70,6 +72,8 @@ function DoctorsPageInner() {
   const queryClient = useQueryClient();
   const [form, setForm] = useState<{ initial: UserFormInitial | null } | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<DoctorRow | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["admin", "doctors"] });
 
@@ -86,17 +90,18 @@ function DoctorsPageInner() {
     }
   }
 
-  async function handleDelete(row: DoctorRow) {
-    if (!window.confirm(`Hapus akun dokter "${row.name}"? Data verifikasinya ikut terhapus.`)) return;
-    setBusyId(row.id);
+  async function confirmDelete() {
+    if (!pendingDelete) return;
+    setIsDeleting(true);
     try {
-      await adminService.destroyUser(row.id);
+      await adminService.destroyUser(pendingDelete.id);
       customToast.success("Akun dokter dihapus");
       invalidate();
+      setPendingDelete(null);
     } catch (err: unknown) {
       customToast.error("Gagal", { description: getUserFriendlyErrorMessage(err) });
     } finally {
-      setBusyId(null);
+      setIsDeleting(false);
     }
   }
 
@@ -119,7 +124,7 @@ function DoctorsPageInner() {
           })
         }
         onToggleActive={handleToggleActive}
-        onDelete={handleDelete}
+        onDelete={(row) => setPendingDelete(row)}
         busyId={busyId}
       />
       {form && (
@@ -134,6 +139,16 @@ function DoctorsPageInner() {
           }}
         />
       )}
+      <ConfirmDialog
+        open={pendingDelete !== null}
+        title="Hapus akun dokter?"
+        description={`Akun "${pendingDelete?.name ?? ""}" dan data verifikasinya akan dihapus permanen. Tindakan ini tidak bisa dibatalkan.`}
+        confirmLabel="Hapus Akun"
+        tone="danger"
+        loading={isDeleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setPendingDelete(null)}
+      />
     </>
   );
 }
