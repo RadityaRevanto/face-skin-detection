@@ -9,7 +9,7 @@ type VerificationProfileCardProps = {
 };
 
 /**
- * Kartu profil profesional dokter — data asli dari DoctorVerificationResource
+ * Kartu profil profesional dokter: data asli dari DoctorVerificationResource
  * (gelar, subspesialisasi, pengalaman, alma mater, lokasi praktik, organisasi).
  * Menggantikan kartu "kontak" lama yang cuma menampilkan "-" hardcode.
  */

@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 /**
- * SummaryCard (DESIGN.md §4.7) — pola Dasher "Project Budget".
+ * SummaryCard (DESIGN.md §4.7): pola Dasher "Project Budget".
  *
  * Kartu angka besar + baris meta label:value + 2 CTA berdampingan
  * (primary emerald-600 + secondary outline), w-full masing-masing.
@@ -17,9 +17,9 @@ type SummaryCardProps = {
   value: string;
   /** Baris meta label:value (mis. Total/Spent Skincek). */
   meta: { label: string; value: string }[];
-  /** CTA primary — dirender sebagai Link emerald-600. */
+  /** CTA primary: dirender sebagai Link emerald-600. */
   primaryAction?: { label: string; href: string };
-  /** CTA secondary — outline. */
+  /** CTA secondary: outline. */
   secondaryAction?: { label: string; href: string };
   className?: string;
 };

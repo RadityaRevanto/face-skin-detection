@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Clock3, ShieldQuestion } from "lucide-react";
 
 /**
- * HeroStat — kartu aksi utama dashboard admin.
+ * HeroStat: kartu aksi utama dashboard admin.
  * Ukuran & bobot visual lebih besar dari StatCard satelit:
  * angka pending verifikasi = keputusan paling penting hari ini.
  */
@@ -17,7 +17,7 @@ export function HeroStat({ value, href }: { value: string; href: string }) {
       href={href}
       className="group relative flex min-h-40 flex-col justify-between overflow-hidden rounded-[var(--radius-card)] border border-[var(--role-accent)]/25 bg-[var(--role-accent)] p-5 text-white shadow-[var(--shadow-card)] transition-all duration-[var(--motion-base)] ease-out hover:-translate-y-0.5 hover:shadow-[var(--shadow-card-hover)] sm:p-6"
     >
-      {/* Motif lingkaran dekoratif — memecah flat-nya blok solid */}
+      {/* Motif lingkaran dekoratif: memecah flat-nya blok solid */}
       <svg
         aria-hidden="true"
         viewBox="0 0 200 200"

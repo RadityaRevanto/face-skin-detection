@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { StatusBadge } from "@/features/admin/components/StatusBadge";
 
 /**
- * QueueList (DESIGN.md §4.5) — pola Dasher "My Task", diadaptasi jadi
+ * QueueList (DESIGN.md §4.5): pola Dasher "My Task", diadaptasi jadi
  * antrean verifikasi dokter.
  *
  * - Item: ikon konteks 40px (shield emerald-50) + judul (nama dokter)

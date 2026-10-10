@@ -8,14 +8,14 @@ import type { ActivityLog } from "@/features/activity-log/types";
 import { ActivityLogItem } from "@/features/activity-log/components/ActivityLogItem";
 
 /**
- * ActivityTimeline (DESIGN.md §4.4) — pola Dasher "Activity Log".
+ * ActivityTimeline (DESIGN.md §4.4): pola Dasher "Activity Log".
  *
  * - Desktop: garis timeline vertikal dashed antar item (border-start);
  *   tanpa garis di mobile (lebih bersih).
  * - Mobile: stack penuh, avatar dipadatkan (36px) via prop item.
  * - Footer CTA "Lihat semua log" → /admin/activity-log.
  *
- * Reuse ActivityLogItem — data & format relatif waktu tidak berubah.
+ * Reuse ActivityLogItem: data & format relatif waktu tidak berubah.
  */
 
 type ActivityTimelineProps = {

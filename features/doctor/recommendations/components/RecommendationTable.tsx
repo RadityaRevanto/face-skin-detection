@@ -1,42 +1,39 @@
-import Link from "next/link";
+"use client";
 
-import { EmptyState } from "@/components/ui/empty-state";
-import { Pagination } from "@/components/ui/pagination";
-import { TableWidget } from "@/components/ui/table-widget";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import Link from "next/link";
+import { FlaskConical, ShieldAlert, Pencil, Layers } from "lucide-react";
 import { ROUTES } from "@/lib/constants";
+import { Pagination } from "@/components/ui/pagination";
 import type { PagePagination } from "@/lib/types/pagination";
 
-import type { RecommendationRow } from "@/features/doctor/recommendations/lib/recommendationsTypes";
+import type { RecommendationRow } from "../lib/recommendationsTypes";
 import { DeleteRecommendationButton } from "./DeleteRecommendationButton";
-import { RecommendationActionIcon } from "./RecommendationActionIcon";
 
 type RecommendationTableProps = {
   recommendations: RecommendationRow[];
   pagination: PagePagination;
 };
 
-const PRIORITY_BADGE: Record<string, string> = {
-  "High Priority": "border-rose-100 bg-rose-50 text-rose-700",
-  "Medium Priority": "border-amber-100 bg-amber-50 text-amber-700",
-  "Low Priority": "border-sky-100 bg-sky-50 text-sky-700",
-};
+function PriorityPill({ priority }: { priority: string }) {
+  const isHigh = priority.toLowerCase().includes("high");
+  const isMed = priority.toLowerCase().includes("medium");
 
-function PriorityBadge({ label }: { label: string }) {
+  const colorClass = isHigh
+    ? "bg-error-container/30 text-error border-error/20"
+    : isMed
+      ? "bg-amber-500/10 text-warning border-amber-500/20"
+      : "bg-info/10 text-info border-info/20";
+
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${
-        PRIORITY_BADGE[label] ?? "border-slate-200 bg-slate-100 text-slate-600"
-      }`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-caption text-caption font-semibold border ${colorClass}`}
     >
-      {label}
+      <span
+        className={`w-1.5 h-1.5 rounded-full ${
+          isHigh ? "bg-error" : isMed ? "bg-warning" : "bg-info"
+        }`}
+      />
+      {priority}
     </span>
   );
 }
@@ -45,147 +42,136 @@ export function RecommendationTable({
   recommendations,
   pagination,
 }: RecommendationTableProps) {
-  const renderActions = (rec: RecommendationRow) => (
-    <div className="flex items-center justify-end gap-1.5">
-      <Link
-        href={ROUTES.DOCTOR.RECOMMENDATIONS_EDIT(rec.id)}
-        aria-label="Edit rekomendasi"
-        title="Edit"
-        className="inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-control)] text-slate-400 transition-colors duration-[var(--motion-fast)] hover:bg-[var(--role-accent-soft)] hover:text-[var(--role-accent-strong)]"
-      >
-        <RecommendationActionIcon type="edit" />
-      </Link>
-      <DeleteRecommendationButton
-        recommendationId={rec.id}
-        recommendationTitle={rec.routineStep}
-      />
-    </div>
-  );
-
-  const tableNode = (
-    <Table className="min-w-full divide-y divide-slate-100">
-      <TableHeader className="bg-slate-50/80">
-        <TableRow className="hover:bg-transparent">
-          <TableHead className="w-14 px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            No
-          </TableHead>
-          <TableHead className="px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Skin Concern
-          </TableHead>
-          <TableHead className="px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Produk
-          </TableHead>
-          <TableHead className="px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Langkah Rutin
-          </TableHead>
-          <TableHead className="px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Catatan
-          </TableHead>
-          <TableHead className="px-4 py-3.5 text-right text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-            Aksi
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-
-      <TableBody className="divide-y divide-slate-100 bg-white">
-        {recommendations.map((rec) => (
-          <TableRow
-            key={rec.id}
-            className="group border-slate-100 transition-colors hover:bg-[var(--role-accent-soft)]/40"
-          >
-            <TableCell className="px-4 py-3.5 text-sm font-medium text-slate-500 tabular-nums">
-              {rec.no}
-            </TableCell>
-
-            <TableCell className="px-4 py-3.5">
-              <div className="text-sm font-semibold text-slate-800 transition-colors group-hover:text-[var(--role-accent-strong)]">
-                {rec.concern}
-              </div>
-              <div className="mt-1">
-                <PriorityBadge label={rec.severity} />
-              </div>
-            </TableCell>
-
-            <TableCell className="px-4 py-3.5">
-              <div className="text-sm font-medium text-slate-700">
-                {rec.productName}
-              </div>
-              <div className="mt-0.5 text-xs text-slate-400">
-                {rec.productBrand}
-              </div>
-            </TableCell>
-
-            <TableCell className="px-4 py-3.5 text-sm text-slate-500">
-              {rec.routineStep}
-            </TableCell>
-
-            <TableCell className="max-w-72 px-4 py-3.5 text-sm text-slate-500">
-              <p className="line-clamp-2">{rec.doctorNote}</p>
-            </TableCell>
-
-            <TableCell className="px-4 py-3.5 text-right text-sm font-medium">
-              {renderActions(rec)}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-
-  const cardsNode = (
-    <div className="divide-y divide-slate-100 bg-white">
-      {recommendations.map((rec) => (
-        <div key={rec.id} className="flex items-start justify-between gap-3 p-4">
-          <div className="min-w-0 flex-1 space-y-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="min-w-0 truncate text-sm font-bold text-slate-900">
-                {rec.concern}
-              </p>
-              <PriorityBadge label={rec.severity} />
-            </div>
-            <p className="truncate text-xs text-slate-500">
-              {rec.productName} · {rec.routineStep}
-            </p>
-            <p className="line-clamp-2 text-xs text-slate-400">
-              {rec.doctorNote}
-            </p>
-          </div>
-          {renderActions(rec)}
-        </div>
-      ))}
-    </div>
-  );
-
   return (
-    <TableWidget
-      table={tableNode}
-      cards={recommendations.length > 0 ? cardsNode : undefined}
-      empty={
-        recommendations.length === 0 ? (
-          <EmptyState
-            title="Belum ada rekomendasi"
-            description="Buat aturan pertama agar hasil scan pasien otomatis mendapat saran."
-            action={
-              <Link
-                href={ROUTES.DOCTOR.RECOMMENDATIONS_CREATE}
-                className="inline-flex h-9 items-center rounded-[var(--radius-control)] bg-emerald-600 px-4 text-sm font-semibold text-white shadow-[var(--shadow-cta)] transition-colors hover:bg-emerald-700"
-              >
-                Tambah Rekomendasi
-              </Link>
-            }
+    <section className="bg-surface rounded-2xl shadow-xs border border-border/50 overflow-hidden flex flex-col">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-surface-container-low text-ink-muted font-eyebrow text-eyebrow uppercase tracking-wider h-12">
+              <th className="py-3.5 px-space-md">Target Concern</th>
+              <th className="py-3.5 px-space-md">Prioritas</th>
+              <th className="py-3.5 px-space-md">Produk Rekomendasi</th>
+              <th className="py-3.5 px-space-md">Judul Langkah</th>
+              <th className="py-3.5 px-space-md">Catatan Dokter</th>
+              <th className="py-3.5 px-space-md text-center">Status</th>
+              <th className="py-3.5 px-space-md text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/30 font-body-default text-body-default text-ink">
+            {recommendations.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-space-lg py-12 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-ink-subtle">
+                      <Layers className="w-6 h-6" />
+                    </div>
+                    <p className="font-headline-sm text-headline-sm text-ink font-semibold">
+                      Belum Ada Aturan Rekomendasi
+                    </p>
+                    <p className="font-body-default text-caption text-ink-muted max-w-sm">
+                      Buat aturan inferensi pertama untuk memetakan hasil deteksi AI ke formula skincare klinik Anda.
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              recommendations.map((rec) => (
+                <tr
+                  key={rec.id}
+                  className="h-14 hover:bg-surface-alt transition-colors group"
+                >
+                  {/* Target Concern */}
+                  <td className="py-3.5 px-space-md whitespace-nowrap">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-surface-container-low text-role-accent-doctor flex items-center justify-center shrink-0">
+                        <ShieldAlert className="w-4 h-4" />
+                      </div>
+                      <span className="font-headline-sm text-headline-sm text-ink font-semibold">
+                        {rec.concern}
+                      </span>
+                    </div>
+                  </td>
+
+                  {/* Prioritas */}
+                  <td className="py-3.5 px-space-md whitespace-nowrap">
+                    <PriorityPill priority={rec.severity} />
+                  </td>
+
+                  {/* Produk Rekomendasi */}
+                  <td className="py-3.5 px-space-md min-w-[200px]">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-surface-alt border border-border/40 shrink-0 flex items-center justify-center text-role-accent-doctor">
+                        <FlaskConical className="w-4 h-4" />
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-headline-sm text-body-default text-ink truncate font-medium">
+                          {rec.productName}
+                        </span>
+                        <span className="font-caption text-[11px] text-role-accent-doctor font-medium capitalize">
+                          {rec.productBrand}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Judul Langkah */}
+                  <td className="py-3.5 px-space-md min-w-[180px]">
+                    <span className="font-headline-sm text-body-default text-ink font-medium">
+                      {rec.routineStep}
+                    </span>
+                  </td>
+
+                  {/* Catatan Dokter */}
+                  <td className="py-3.5 px-space-md max-w-[260px]">
+                    <p className="text-ink-muted line-clamp-2 text-caption font-caption leading-relaxed">
+                      {rec.doctorNote}
+                    </p>
+                  </td>
+
+                  {/* Status */}
+                  <td className="py-3.5 px-space-md text-center whitespace-nowrap">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-success/10 text-success font-caption text-caption font-semibold">
+                      Aktif
+                    </span>
+                  </td>
+
+                  {/* Aksi */}
+                  <td className="py-3.5 px-space-md text-right whitespace-nowrap">
+                    <div className="flex items-center justify-end gap-1">
+                      <Link
+                        href={ROUTES.DOCTOR.RECOMMENDATIONS_EDIT(rec.id)}
+                        className="p-1.5 rounded-lg text-ink-subtle hover:text-role-accent-doctor hover:bg-surface-container-low transition-colors"
+                        title="Ubah Aturan"
+                        aria-label="Ubah Aturan"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Link>
+                      <DeleteRecommendationButton
+                        recommendationId={rec.id}
+                        recommendationTitle={rec.routineStep}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Footer */}
+      {pagination.totalPages > 1 && (
+        <div className="border-t border-border/40 bg-surface">
+          <Pagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            totalItems={pagination.totalItems}
+            pageSize={pagination.pageSize}
+            itemLabel={pagination.itemLabel}
+            basePath={pagination.basePath}
           />
-        ) : undefined
-      }
-      footer={
-        <Pagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          totalItems={pagination.totalItems}
-          pageSize={pagination.pageSize}
-          itemLabel={pagination.itemLabel}
-          basePath={pagination.basePath}
-        />
-      }
-    />
+        </div>
+      )}
+    </section>
   );
 }

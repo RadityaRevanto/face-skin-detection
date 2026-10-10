@@ -40,7 +40,7 @@ function VerificationDetailPageInner() {
     sub_specialization?: string | null;
     experience_years?: number | null;
     alma_mater?: string | null;
-    practice_locations?: string[] | null;
+    practice_locations?: Array<{ name: string; dept?: string; schedule?: string }> | string[] | null;
     professional_organizations?: string[] | null;
     revision_note?: string | null;
     documents?: { uuid: string; url: string; file_name: string }[];
@@ -53,10 +53,17 @@ function VerificationDetailPageInner() {
       uuid?: string;
       full_name?: string;
       email?: string;
+      phone?: string | null;
       avatar_url?: string | null;
     };
   };
   const profile = row.doctor;
+
+  const normalizedLocations = Array.isArray(row.practice_locations)
+    ? row.practice_locations.map((loc) =>
+        typeof loc === "string" ? { name: loc } : loc
+      )
+    : [];
 
   return (
     <VerificationDetailContent
@@ -65,14 +72,15 @@ function VerificationDetailPageInner() {
         doctorId: row.doctor_id ?? profile?.uuid ?? "",
         name: profile?.full_name ?? "Dokter",
         email: profile?.email ?? "-",
+        phone: profile?.phone ?? null,
         avatarUrl: profile?.avatar_url ?? null,
         title: row.title ?? null,
         identity: row.str_number ?? "-",
-        specialization: row.specialization ?? "-",
+        specialization: row.specialization ?? "Dermatologi & Venereologi",
         subSpecialization: row.sub_specialization ?? null,
         experienceYears: row.experience_years ?? null,
         almaMater: row.alma_mater ?? null,
-        practiceLocations: row.practice_locations ?? [],
+        practiceLocations: normalizedLocations,
         professionalOrganizations: row.professional_organizations ?? [],
         documents: row.documents ?? [],
         status: mapVerificationStatus(row.verification_status),
@@ -86,7 +94,7 @@ function VerificationDetailPageInner() {
   );
 }
 
-// Static route — identitas verifikasi via query param ?id=<uuid>
+// Static route: identitas verifikasi via query param ?id=<uuid>
 export default function AdminDoctorVerificationDetailPage() {
   return (
     <Suspense>

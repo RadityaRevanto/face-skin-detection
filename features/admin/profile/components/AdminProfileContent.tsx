@@ -6,15 +6,22 @@ import { AdminProfileNav } from "./AdminProfileNav";
 
 export function AdminProfileContent({ profile }: { profile: AdminProfileData }) {
   return (
-    <main className="w-full">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Profil Admin</h1>
-        <p className="text-slate-500 mt-1.5 text-sm sm:text-base">
+    <div className="flex flex-col w-full space-y-6">
+      <div className="flex flex-col gap-1 pb-6 border-b border-border">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="font-eyebrow text-eyebrow text-role-accent-admin uppercase tracking-wider font-semibold">
+            AKUN ADMINISTRATOR
+          </span>
+        </div>
+        <h1 className="font-display text-display text-ink font-semibold tracking-tight">
+          Profil Admin
+        </h1>
+        <p className="font-body-default text-body-default text-ink-muted">
           Ringkasan akun admin, aktivitas login terakhir, dan statistik platform.
         </p>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
         <AdminProfileNav activePage="profile" />
 
         <div className="flex-1 w-full min-w-0 space-y-6">
@@ -28,6 +35,6 @@ export function AdminProfileContent({ profile }: { profile: AdminProfileData }) 
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

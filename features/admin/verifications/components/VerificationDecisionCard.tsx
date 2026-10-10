@@ -127,7 +127,7 @@ export function VerificationDecisionCard({
         </div>
 
         <p className="text-center text-[11px] text-[var(--ink-muted)]">
-          Keputusan bersifat permanen — pastikan dokumen sudah diverifikasi.
+          Keputusan bersifat permanen, pastikan dokumen sudah diverifikasi.
         </p>
       </div>
     </Card>

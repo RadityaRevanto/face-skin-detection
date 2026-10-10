@@ -23,14 +23,20 @@ function UserDetailPageInner() {
         uuid?: string;
         full_name: string;
         email: string;
-        // UserResource (BE) mengirim `role` sebagai string tunggal, bukan array.
         role?: "user" | "doctor" | "admin";
         is_active?: boolean;
         avatar_url?: string | null;
         created_at?: string;
         gender?: string | null;
         age?: number | null;
-        doctor_verification?: unknown;
+        phone?: string | null;
+        date_of_birth?: string | null;
+        email_verified_at?: string | null;
+        doctor_verification?: {
+          specialization?: string;
+          str_number?: string | null;
+          verification_status?: string;
+        } | null;
       };
     },
     enabled: !!id,
@@ -56,12 +62,16 @@ function UserDetailPageInner() {
         createdAt: formatDate(user.created_at ?? null),
         gender: user.gender ?? null,
         age: user.age ?? null,
+        phone: user.phone ?? null,
+        dateOfBirth: user.date_of_birth ?? null,
+        emailVerifiedAt: user.email_verified_at ?? null,
+        doctorVerification: user.doctor_verification ?? null,
       }}
     />
   );
 }
 
-// Static route — identitas user via query param ?id=<uuid>
+// Static route: identitas user via query param ?id=<uuid>
 export default function AdminUserDetailPage() {
   return (
     <Suspense>

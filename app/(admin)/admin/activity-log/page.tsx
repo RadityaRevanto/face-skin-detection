@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
-import { ActivityLogContainer } from "@/features/activity-log/components/ActivityLogContainer";
+import { Suspense } from "react";
+import { ActivityLogClientPage } from "@/features/admin/activity-log/components/ActivityLogClientPage";
+import { TableRowsSkeleton } from "@/components/skeletons";
 
 export const metadata: Metadata = {
-  title: "Activity Log",
-  description: "Log aktivitas sistem",
+  title: "Activity Log | Admin SkinCek",
+  description: "Jejak audit dan log aktivitas sistem SkinCek",
 };
 
 export default function AdminActivityLogPage() {
   return (
-    <main className="w-full">
-      <ActivityLogContainer />
-    </main>
+    <Suspense fallback={<TableRowsSkeleton />}>
+      <ActivityLogClientPage />
+    </Suspense>
   );
 }
+

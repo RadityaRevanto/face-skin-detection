@@ -79,18 +79,68 @@
   --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Admin role — rasa Geex/enterprise: teal-petrol tegas */
+/* Admin role — scoped Stitch Admin Console tokens */
 [data-role="admin"] {
-  --role-accent: #0b6f7a;
-  --role-accent-soft: #e6f4f5;
-  --role-accent-strong: #07525b;
+  --background: #faf8ff;
+  --foreground: #131b2e;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --surface-container-low: #f2f3ff;
+  --surface-container: #eaedff;
+  --surface-container-high: #e2e7ff;
+  --surface-container-highest: #dae2fd;
+  --role-accent: #4338ca;
+  --role-accent-soft: #e2e7ff;
+  --role-accent-strong: #312e81;
+  --role-accent-admin: #4338ca;
+  --role-accent-doctor: #0d9488;
+  --ink: #0f172a;
+  --ink-muted: #475569;
+  --ink-subtle: #64748b;
+  --border: #e2e8f0;
+  --line: #e2e8f0;
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #e11d48;
+  --error: #ba1a1a;
+  --error-container: #ffdad6;
+  --info: #0284c7;
+  --primary: #00685f;
+  --secondary: #4e45d5;
+  --secondary-container: #6860ef;
+  --on-surface: #131b2e;
+  --on-surface-variant: #3d4947;
+  --on-primary: #ffffff;
+  --on-secondary: #ffffff;
 }
 
-/* Doctor role — rasa Doclinic/medical: biru hangat & trustworthy */
+/* Doctor role — Clinical Workspace tokens (Stitch Doctor Console) */
 [data-role="doctor"] {
-  --role-accent: #3563e9;
-  --role-accent-soft: #ebf0fe;
-  --role-accent-strong: #234bc4;
+  --background: #faf8ff;
+  --foreground: #131b2e;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --surface-container-low: #f2f3ff;
+  --surface-container: #eaedff;
+  --surface-container-high: #e2e7ff;
+  --surface-container-highest: #dae2fd;
+  --role-accent: #0d9488;
+  --role-accent-soft: #ccfbf1;
+  --role-accent-strong: #0f766e;
+  --role-accent-doctor: #0d9488;
+  --primary: #00685f;
+  --primary-container: #008378;
+  --on-primary: #ffffff;
+  --ink: #0f172a;
+  --ink-muted: #475569;
+  --ink-subtle: #94a3b8;
+  --border: #e2e8f0;
+  --line: #e2e8f0;
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #e11d48;
+  --error: #ba1a1a;
+  --info: #0284c7;
 }
 
 @theme inline {
@@ -141,6 +191,34 @@
   --color-tone-violet-bg: var(--tone-violet-bg);
   --color-tone-coral-fg: var(--tone-coral-fg);
   --color-tone-coral-bg: var(--tone-coral-bg);
+  /* ── Stitch Admin tokens ── */
+  --color-role-accent-admin: var(--role-accent-admin, #4338CA);
+  --color-role-accent-doctor: var(--role-accent-doctor, #0D9488);
+  --color-surface-container-high: var(--surface-container-high, #e2e7ff);
+  --color-surface-container-highest: var(--surface-container-highest, #dae2fd);
+  --color-surface-container: var(--surface-container, #eaedff);
+  --color-surface-container-low: var(--surface-container-low, #f2f3ff);
+  --color-surface-alt: var(--surface-alt, #F8FAFC);
+  --color-ink-muted: var(--ink-muted, #475569);
+  --color-ink-subtle: var(--ink-subtle, #94A3B8);
+  --color-success: var(--success, #059669);
+  --color-warning: var(--warning, #D97706);
+  --color-danger: var(--danger, #E11D48);
+  --color-error: var(--error, #ba1a1a);
+  --color-error-container: var(--error-container, #ffdad6);
+  --color-info: var(--info, #0284C7);
+  --color-on-surface: var(--on-surface, #131b2e);
+  --color-on-surface-variant: var(--on-surface-variant, #3d4947);
+  --color-on-primary: var(--on-primary, #ffffff);
+  --color-on-secondary: var(--on-secondary, #ffffff);
+  --color-secondary: var(--secondary, #4e45d5);
+  --color-secondary-container: var(--secondary-container, #6860ef);
+  --spacing-space-xs: 0.25rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2rem;
+  --spacing-gutter: 1.5rem;
   --font-sans: var(--font-jakarta), var(--font-poppins), Arial, Helvetica, sans-serif;
   --font-heading: var(--font-poppins), Arial, Helvetica, sans-serif;
   --font-mono: var(--font-geist-mono);
@@ -162,6 +240,15 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-poppins), Arial, Helvetica, sans-serif;
 }
+
+/* Stitch Admin Typography Utilities */
+.text-display, .font-display { font-size: 28px; line-height: 36px; font-weight: 600; }
+.text-headline-lg, .font-headline-lg { font-size: 24px; line-height: 32px; font-weight: 600; }
+.text-headline-md, .font-headline-md { font-size: 20px; line-height: 28px; font-weight: 600; }
+.text-headline-sm, .font-headline-sm { font-size: 16px; line-height: 24px; font-weight: 600; }
+.text-body-default, .font-body-default { font-size: 14px; line-height: 22px; font-weight: 400; }
+.text-caption, .font-caption { font-size: 12px; line-height: 16px; font-weight: 500; }
+.text-eyebrow, .font-eyebrow { font-size: 11px; line-height: 16px; letter-spacing: 0.05em; font-weight: 600; text-transform: uppercase; }
 
 /* ─── Sonner / Custom Toast ─────────────────────────────────────────── */
 

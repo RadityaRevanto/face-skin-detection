@@ -15,7 +15,7 @@ export function AdminDashboardClientContent() {
     queryFn: () => adminService.dashboard(),
   });
 
-  // Widget Activity Timeline (§5.1 poin 5) — method service existing.
+  // Widget Activity Timeline (§5.1 poin 5): method service existing.
   const { data: activityLogs } = useQuery({
     queryKey: ["admin", "activity-log", "dashboard"],
     queryFn: async () => {
@@ -25,8 +25,8 @@ export function AdminDashboardClientContent() {
     staleTime: 60 * 1000,
   });
 
-  // Komposisi status verifikasi untuk donut — count via
-  // adminService.verifications (service existing, tanpa perubahan kontrak).
+  // Komposisi status verifikasi untuk donut (count via
+  // adminService.verifications, service existing tanpa perubahan kontrak).
   const { data: verificationCounts } = useQuery({
     queryKey: ["admin", "verification-counts"],
     queryFn: async () => {
@@ -60,10 +60,7 @@ export function AdminDashboardClientContent() {
   return (
     <AdminDashboardContent
       {...(data as AdminDashboardData)}
-      activityLogs={activityLogs ?? []}
-      verificationCounts={
-        verificationCounts ?? { pending: 0, approved: 0, rejected: 0 }
-      }
+      onRefresh={() => refetch()}
     />
   );
 }

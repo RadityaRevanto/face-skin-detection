@@ -9,7 +9,7 @@ type TrendChartsRowProps = {
   registrations: ChartPoint[];
 };
 
-/** Baris chart tren 14 hari — data dari GET /admin/dashboard. */
+/** Baris chart tren 14 hari: data dari GET /admin/dashboard. */
 export function TrendChartsRow({ scans, registrations }: TrendChartsRowProps) {
   const cards = [
     { title: "Scan per Hari", data: scans, aria: "Tren scan 14 hari terakhir" },

@@ -42,9 +42,11 @@ export function SkincareClientContent() {
       no: from + index + 1,
       name: product.name ?? "-",
       category: product.category ?? "-",
+      gender: product.gender ?? "unisex",
       keyIngredients: product.key_ingredients ?? "-",
       concern: product.concern?.name ?? "-",
       skinType: product.skin_type?.name ?? "-",
+      isActive: product.is_active ?? true,
       updatedAt: formatDate(product.created_at),
     }));
 

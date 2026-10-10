@@ -8,4 +8,12 @@ export type UserDetail = {
   createdAt: string;
   gender?: string | null;
   age?: number | null;
+  phone?: string | null;
+  dateOfBirth?: string | null;
+  emailVerifiedAt?: string | null;
+  doctorVerification?: {
+    specialization?: string;
+    str_number?: string | null;
+    verification_status?: string;
+  } | null;
 };

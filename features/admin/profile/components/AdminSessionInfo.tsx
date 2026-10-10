@@ -8,7 +8,7 @@ type AdminSessionInfoProps = {
 };
 
 function formatLoginAt(iso: string | null) {
-  if (!iso) return "—";
+  if (!iso) return "-";
   return new Intl.DateTimeFormat("id-ID", {
     dateStyle: "medium",
     timeStyle: "short",

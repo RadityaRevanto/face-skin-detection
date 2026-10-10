@@ -1,27 +1,20 @@
 import type { PagePagination } from "@/lib/types/pagination";
 
-export type DoctorDocument = {
-  uuid: string;
-  url: string;
-  file_name: string | null;
-};
-
 export type DoctorRow = {
-  id: string;
-  verificationId: string;
-  no: number;
+  id: string; // uuid
   name: string;
   email: string;
   avatarUrl: string | null;
-  identity: string;
   specialization: string;
-  documents: DoctorDocument[];
-  verifiedAt: string;
-  role: string;
+  strNumber: string;
+  verificationStatus: "approved" | "pending" | "needs_revision" | "rejected";
   isActive: boolean;
+  createdAt: string;
 };
 
 export type DoctorsPageData = {
   doctors: DoctorRow[];
+  totalDoctors: number;
+  pendingSipCount: number;
   pagination: PagePagination;
 };

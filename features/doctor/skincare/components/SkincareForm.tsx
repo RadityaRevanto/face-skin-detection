@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { Card } from "@/components/ui/card";
 import { ROUTES } from "@/lib/constants";
 import { api } from "@/lib/api";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
@@ -125,37 +124,35 @@ export function SkincareForm({
   }
 
   return (
-    <Card className='overflow-hidden rounded-[var(--radius-card)] border-slate-100 bg-white text-slate-950 shadow-[var(--shadow-card)]'>
-      <form onSubmit={handleSubmit} className='space-y-6 p-6'>
-        <SkincareFormBody
-          message={message}
-          concernId={concernId}
-          setConcernId={setConcernId}
-          skinTypeId={skinTypeId}
-          setSkinTypeId={setSkinTypeId}
-          name={name}
-          setName={setName}
-          category={category}
-          setCategory={setCategory}
-          genderSuitability={genderSuitability}
-          setGenderSuitability={setGenderSuitability}
-          keyIngredients={keyIngredients}
-          setKeyIngredients={setKeyIngredients}
-          usageInstruction={usageInstruction}
-          setUsageInstruction={setUsageInstruction}
-          warning={warning}
-          setWarning={setWarning}
-          isActive={isActive}
-          setIsActive={setIsActive}
-          isSubmitting={isSubmitting}
-          onCancel={() => router.push(ROUTES.DOCTOR.SKINCARE)}
-          concerns={concerns}
-          skinTypes={skinTypes}
-          submitLabel={
-            mode === "edit" ? "Simpan Perubahan" : "Tambah Skincare"
-          }
-        />
-      </form>
-    </Card>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <SkincareFormBody
+        message={message}
+        concernId={concernId}
+        setConcernId={setConcernId}
+        skinTypeId={skinTypeId}
+        setSkinTypeId={setSkinTypeId}
+        name={name}
+        setName={setName}
+        category={category}
+        setCategory={setCategory}
+        genderSuitability={genderSuitability}
+        setGenderSuitability={setGenderSuitability}
+        keyIngredients={keyIngredients}
+        setKeyIngredients={setKeyIngredients}
+        usageInstruction={usageInstruction}
+        setUsageInstruction={setUsageInstruction}
+        warning={warning}
+        setWarning={setWarning}
+        isActive={isActive}
+        setIsActive={setIsActive}
+        isSubmitting={isSubmitting}
+        onCancel={() => router.push(ROUTES.DOCTOR.SKINCARE)}
+        concerns={concerns}
+        skinTypes={skinTypes}
+        submitLabel={
+          mode === "edit" ? "Simpan Perubahan" : "Tambah Skincare"
+        }
+      />
+    </form>
   );
 }

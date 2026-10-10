@@ -1,106 +1,153 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { ErrorState } from "@/components/ui/error-state";
+import { customToast } from "@/lib/custom-toast";
 import type { SkinType } from "../types";
-import { getSkinTypes } from "../services/skinTypesService";
-import { SkinTypeTable } from "./SkinTypeTable";
-import { SkinTypeForm } from "./SkinTypeForm";
+import {
+  getSkinTypes,
+  createSkinType,
+  updateSkinType,
+  deleteSkinType,
+} from "../services/skinTypesService";
+
+import { SkinTypesHeader } from "./SkinTypesHeader";
+import { SkinTypesInformationalBanner } from "./SkinTypesInformationalBanner";
+import { SkinTypesTable } from "./SkinTypesTable";
+import { SkinTypesEducationalCard } from "./SkinTypesEducationalCard";
+import { SkinTypeModal } from "./SkinTypeModal";
+import { SkinTypeDeleteModal } from "./SkinTypeDeleteModal";
 
 export function SkinTypesContainer() {
-  const [skinTypes, setSkinTypes] = useState<SkinType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingSkinType, setEditingSkinType] = useState<SkinType | null>(
-    null
-  );
+  const queryClient = useQueryClient();
 
-  const fetchSkinTypes = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const { data } = await getSkinTypes();
-      setSkinTypes(data);
-    } catch (error) {
-      console.error("Failed to fetch skin types:", error);
-    } finally {
-      setIsLoading(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingSkinType, setEditingSkinType] = useState<SkinType | null>(null);
+  const [deletingSkinType, setDeletingSkinType] = useState<SkinType | null>(null);
+
+  // TanStack Query for skin types
+  const { data: response, isLoading, isError, refetch } = useQuery({
+    queryKey: ["skin-types"],
+    queryFn: () => getSkinTypes(1, 50),
+  });
+
+  const skinTypes = response?.data ?? [];
+
+  // Mutations
+  const createMutation = useMutation({
+    mutationFn: (data: { name: string; description?: string }) => createSkinType(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["skin-types"] });
+      customToast.success("Skin type berhasil ditambahkan");
+      setModalOpen(false);
+    },
+    onError: (err: unknown) => {
+      customToast.error(err instanceof Error ? err.message : "Gagal menambahkan skin type");
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ uuid, data }: { uuid: string; data: { name: string; description?: string } }) =>
+      updateSkinType(uuid, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["skin-types"] });
+      customToast.success("Skin type berhasil diperbarui");
+      setModalOpen(false);
+      setEditingSkinType(null);
+    },
+    onError: (err: unknown) => {
+      customToast.error(err instanceof Error ? err.message : "Gagal memperbarui skin type");
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (uuid: string) => deleteSkinType(uuid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["skin-types"] });
+      customToast.success("Skin type berhasil dihapus");
+      setDeletingSkinType(null);
+    },
+    onError: (err: unknown) => {
+      customToast.error(err instanceof Error ? err.message : "Gagal menghapus skin type");
+    },
+  });
+
+  async function handleModalSubmit(data: { name: string; description?: string }) {
+    if (editingSkinType) {
+      await updateMutation.mutateAsync({ uuid: editingSkinType.uuid, data });
+    } else {
+      await createMutation.mutateAsync(data);
     }
-  }, []);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount, setState di dalam async callback
-    fetchSkinTypes();
-  }, [fetchSkinTypes]);
-
-  function handleEdit(skinType: SkinType) {
-    setEditingSkinType(skinType);
-    setShowForm(true);
   }
 
-  function handleSuccess() {
-    setShowForm(false);
-    setEditingSkinType(null);
-    fetchSkinTypes();
+  async function handleDeleteConfirm() {
+    if (!deletingSkinType) return;
+    await deleteMutation.mutateAsync(deletingSkinType.uuid);
   }
 
-  function handleCancel() {
-    setShowForm(false);
-    setEditingSkinType(null);
+  if (isError) {
+    return <ErrorState message="Gagal memuat data klasifikasi skin types." onRetry={() => refetch()} />;
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-            Skin Types
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Kelola jenis kulit yang digunakan dalam sistem rekomendasi
-          </p>
-        </div>
-        {!showForm && (
-          <button
-            type="button"
-            onClick={() => setShowForm(true)}
-            className="rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-emerald-700"
-          >
-            + Tambah Skin Type
-          </button>
-        )}
-      </div>
+    <div className="w-full space-y-6">
+      {/* Top Bar Header */}
+      <SkinTypesHeader
+        activeCount={skinTypes.length}
+        totalCount={skinTypes.length}
+        onAddClick={() => {
+          setEditingSkinType(null);
+          setModalOpen(true);
+        }}
+      />
 
-      {/* Form */}
-      {showForm && (
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-bold text-slate-900">
-            {editingSkinType ? "Edit Skin Type" : "Tambah Skin Type Baru"}
-          </h2>
-          <SkinTypeForm
-            skinType={editingSkinType}
-            onSuccess={handleSuccess}
-            onCancel={handleCancel}
-          />
-        </div>
-      )}
+      {/* Clinical Informational Banner & Micro Visuals */}
+      <SkinTypesInformationalBanner totalCount={skinTypes.length} />
 
-      {/* Table */}
+      {/* Data Table */}
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-16 animate-pulse rounded-2xl bg-slate-100"
-            />
+            <div key={i} className="h-16 animate-pulse rounded-2xl bg-slate-100" />
           ))}
         </div>
       ) : (
-        <SkinTypeTable
+        <SkinTypesTable
           skinTypes={skinTypes}
-          onEdit={handleEdit}
-          onRefresh={fetchSkinTypes}
+          onEdit={(st) => {
+            setEditingSkinType(st);
+            setModalOpen(true);
+          }}
+          onDelete={(st) => {
+            setDeletingSkinType(st);
+          }}
         />
       )}
+
+      {/* Medical Educational Insight Card */}
+      <SkinTypesEducationalCard />
+
+      {/* Modal CRUD Dialog */}
+      <SkinTypeModal
+        isOpen={modalOpen}
+        skinType={editingSkinType}
+        isSubmitting={createMutation.isPending || updateMutation.isPending}
+        onClose={() => {
+          setModalOpen(false);
+          setEditingSkinType(null);
+        }}
+        onSubmit={handleModalSubmit}
+      />
+
+      {/* Confirm Delete Dialog */}
+      <SkinTypeDeleteModal
+        skinType={deletingSkinType}
+        isDeleting={deleteMutation.isPending}
+        onClose={() => setDeletingSkinType(null)}
+        onConfirm={handleDeleteConfirm}
+      />
     </div>
   );
 }

@@ -1,220 +1,150 @@
-import { Eye, Pencil, Power, PowerOff, Trash2 } from "lucide-react";
+"use client";
 
-import { EmptyState } from "@/components/ui/empty-state";
-import { Pagination } from "@/components/ui/pagination";
-import { TableWidget } from "@/components/ui/table-widget";
-import { TableRowActions } from "@/components/ui/table-row-actions";
-import { UserAvatar } from "@/components/ui/user-avatar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { UserX, ChevronLeft, ChevronRight } from "lucide-react";
+import type { AdminUser } from "@/features/admin/services/adminService";
 import type { PagePagination } from "@/lib/types/pagination";
-
-import type { UserRow } from "@/features/admin/users/lib/usersTypes";
+import { UserTableRow } from "./UserTableRow";
 
 type UsersTableProps = {
-  users: UserRow[];
+  users: AdminUser[];
+  currentUserUuid?: string;
+  currentUserEmail?: string;
   pagination: PagePagination;
-  onEdit: (row: UserRow) => void;
-  onToggleActive: (row: UserRow) => void;
-  onDelete: (row: UserRow) => void;
-  busyId: string | null;
+  onPageChange: (page: number) => void;
+  onOpenRoleModal: (user: AdminUser) => void;
+  onOpenSuspendModal: (user: AdminUser) => void;
+  onOpenDeleteModal: (user: AdminUser) => void;
+  isLoading?: boolean;
 };
-
-function buildActions(
-  user: UserRow,
-  handlers: Pick<UsersTableProps, "onEdit" | "onToggleActive" | "onDelete">,
-) {
-  return {
-    primary: {
-      key: "view",
-      label: "Lihat detail",
-      icon: <Eye className="h-4 w-4" />,
-      href: `/admin/users/detail?id=${encodeURIComponent(user.id)}`,
-    },
-    actions: [
-      {
-        key: "edit",
-        label: "Edit user",
-        icon: <Pencil className="h-4 w-4" />,
-        onSelect: () => handlers.onEdit(user),
-      },
-      {
-        key: "toggle",
-        label: user.isActive ? "Suspend" : "Aktifkan",
-        tone: (user.isActive ? "warning" : "success") as "warning" | "success",
-        icon: user.isActive ? <PowerOff className="h-4 w-4" /> : <Power className="h-4 w-4" />,
-        onSelect: () => handlers.onToggleActive(user),
-      },
-      {
-        key: "delete",
-        label: "Hapus",
-        tone: "danger" as const,
-        icon: <Trash2 className="h-4 w-4" />,
-        onSelect: () => handlers.onDelete(user),
-      },
-    ],
-  };
-}
 
 export function UsersTable({
   users,
+  currentUserUuid,
+  currentUserEmail,
   pagination,
-  onEdit,
-  onToggleActive,
-  onDelete,
-  busyId,
+  onPageChange,
+  onOpenRoleModal,
+  onOpenSuspendModal,
+  onOpenDeleteModal,
+  isLoading,
 }: UsersTableProps) {
-  const handlers = { onEdit, onToggleActive, onDelete };
-
-  const paginationNode = (
-    <Pagination
-      currentPage={pagination.currentPage}
-      totalPages={pagination.totalPages}
-      totalItems={pagination.totalItems}
-      pageSize={pagination.pageSize}
-      itemLabel={pagination.itemLabel}
-      basePath={pagination.basePath}
-    />
-  );
-
-  const tableNode = (
-    <Table className="min-w-full divide-y divide-[var(--line)]">
-      <TableHeader className="bg-[var(--surface-2)]/70">
-        <TableRow className="hover:bg-transparent">
-          <TableHead className="hidden w-16 px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-muted)] sm:table-cell sm:px-6 lg:px-8">
-            No
-          </TableHead>
-
-          <TableHead className="px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-muted)] sm:px-6 lg:px-8">
-            User
-          </TableHead>
-
-          <TableHead className="hidden px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-muted)] md:table-cell sm:px-6 lg:px-8">
-            Profil
-          </TableHead>
-
-          <TableHead className="hidden px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-muted)] lg:table-cell lg:px-8">
-            Bergabung
-          </TableHead>
-
-          <TableHead className="px-4 py-3.5 text-right text-[11px] font-semibold uppercase tracking-wider text-[var(--ink-muted)] sm:px-6 lg:px-8">
-            Aksi
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-
-      <TableBody className="divide-y divide-[var(--line)] bg-[var(--surface)]">
-        {users.map((user) => (
-          <TableRow
-            key={user.id}
-            className="group transition-colors hover:bg-[var(--role-accent-soft)]/50"
-          >
-            <TableCell className="hidden whitespace-nowrap px-4 py-3 text-sm font-medium text-[var(--ink-muted)] tabular-nums sm:table-cell sm:px-6 lg:px-8">
-              {user.no}
-            </TableCell>
-
-            <TableCell className="px-4 py-3 sm:px-6 lg:px-8">
-              <div className="flex items-center gap-3">
-                <UserAvatar
-                  name={user.username}
-                  src={user.avatarUrl}
-                  status={user.isActive ? "active" : "inactive"}
-                />
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-[var(--ink)] transition-colors group-hover:text-[var(--role-accent-strong)]">
-                    {user.username}
-                  </p>
-                  <p className="truncate text-xs text-[var(--ink-muted)]">
-                    {user.email}
-                    {!user.isActive ? (
-                      <span className="font-semibold text-[var(--warning-fg)]"> · Nonaktif</span>
-                    ) : null}
-                  </p>
-                </div>
-              </div>
-            </TableCell>
-
-            <TableCell className="hidden whitespace-nowrap px-4 py-3 sm:px-6 md:table-cell lg:px-8">
-              <p className="text-sm font-medium text-[var(--ink-soft)]">
-                {user.gender === "-" ? "Belum diisi" : user.gender}
-              </p>
-              <p className="mt-0.5 text-xs text-[var(--ink-muted)]">
-                {user.age === "-" ? "-" : `${user.age} tahun`}
-              </p>
-            </TableCell>
-
-            <TableCell className="hidden whitespace-nowrap px-4 py-3 lg:table-cell lg:px-8">
-              <p className="text-sm font-medium text-[var(--ink-soft)] tabular-nums">
-                {user.join}
-              </p>
-              <p className="mt-0.5 text-xs text-[var(--ink-muted)]">Pengguna terdaftar</p>
-            </TableCell>
-
-            <TableCell className="whitespace-nowrap px-4 py-3 text-right sm:px-6 lg:px-8">
-              <TableRowActions
-                {...buildActions(user, handlers)}
-                busy={busyId === user.id}
-              />
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-
-  const cardsNode = (
-    <div className="divide-y divide-[var(--line)] bg-[var(--surface)]">
-      {users.map((user) => (
-        <div key={user.id} className="flex items-start gap-3 p-4">
-          <UserAvatar
-            name={user.username}
-            src={user.avatarUrl}
-            status={user.isActive ? "active" : "inactive"}
-          />
-          <div className="min-w-0 flex-1 space-y-1">
-            <p className="truncate text-sm font-bold text-[var(--ink)]">
-              {user.username}
-            </p>
-            <p className="truncate text-xs text-[var(--ink-muted)]">
-              {user.email}
-              {!user.isActive ? (
-                <span className="font-semibold text-[var(--warning-fg)]"> · Nonaktif</span>
-              ) : null}
-            </p>
-            <p className="text-xs text-[var(--ink-muted)]">
-              {user.gender === "-" ? "Belum diisi" : user.gender}
-              {user.age !== "-" ? ` · ${user.age} tahun` : ""} · {user.join}
-            </p>
-          </div>
-
-          <TableRowActions
-            {...buildActions(user, handlers)}
-            busy={busyId === user.id}
-          />
-        </div>
-      ))}
-    </div>
-  );
+  const { currentPage, totalPages, totalItems, pageSize } = pagination;
+  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <TableWidget
-      table={tableNode}
-      cards={users.length > 0 ? cardsNode : undefined}
-      empty={
-        users.length === 0 ? (
-          <EmptyState
-            title="Belum ada data user"
-            description="User terdaftar akan tampil di sini setelah mereka mendaftar, atau ubah kata kunci pencarian."
-          />
-        ) : undefined
-      }
-      footer={paginationNode}
-    />
+    <div className="overflow-x-auto">
+      <table className="w-full text-left border-collapse">
+        {/* Sticky Light Gray Header matching index2.html */}
+        <thead className="bg-surface-container sticky top-0 z-10 shadow-sm">
+          <tr className="h-12 text-ink-muted font-caption text-caption uppercase tracking-wider">
+            <th className="py-3 px-4 font-semibold">Pengguna</th>
+            <th className="py-3 px-4 font-semibold">Email</th>
+            <th className="py-3 px-4 font-semibold">Role</th>
+            <th className="py-3 px-4 font-semibold">Status</th>
+            <th className="py-3 px-4 font-semibold">Tanggal Daftar</th>
+            <th className="py-3 px-4 text-right font-semibold">Aksi</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border/60 font-body-default text-body-default">
+          {users.map((user) => {
+            const isCurrentUser = Boolean(
+              (currentUserUuid && user.uuid === currentUserUuid) ||
+                (currentUserEmail && user.email === currentUserEmail)
+            );
+
+            return (
+              <UserTableRow
+                key={user.uuid || user.id}
+                user={user}
+                isCurrentUser={isCurrentUser}
+                onOpenRoleModal={onOpenRoleModal}
+                onOpenSuspendModal={onOpenSuspendModal}
+                onOpenDeleteModal={onOpenDeleteModal}
+              />
+            );
+          })}
+        </tbody>
+      </table>
+
+      {/* Empty State */}
+      {!isLoading && users.length === 0 && (
+        <div className="py-16 text-center bg-surface">
+          <div className="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center mx-auto mb-3 text-ink-subtle">
+            <UserX className="w-6 h-6" />
+          </div>
+          <h4 className="font-headline-sm text-headline-sm text-ink font-semibold">
+            Tidak ada pengguna ditemukan
+          </h4>
+          <p className="font-body-default text-caption text-ink-muted mt-1 max-w-sm mx-auto">
+            Coba sesuaikan kata kunci pencarian atau reset filter role dan status.
+          </p>
+        </div>
+      )}
+
+      {/* Pagination Footer matching index2.html */}
+      <div className="p-4 bg-surface-alt border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-1.5 font-caption text-caption text-ink-muted">
+          <span>Menampilkan</span>
+          <strong className="text-ink font-semibold">{startItem}-{endItem}</strong>
+          <span>dari</span>
+          <strong className="text-ink font-semibold">{totalItems.toLocaleString("id-ID")}</strong>
+          <span>pengguna</span>
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage <= 1}
+              className="min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] rounded-xl flex items-center justify-center text-ink-subtle hover:text-ink hover:bg-surface-container transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+              aria-label="Halaman sebelumnya"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum: number;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+
+              const isActive = pageNum === currentPage;
+              return (
+                <button
+                  key={pageNum}
+                  type="button"
+                  onClick={() => onPageChange(pageNum)}
+                  className={`min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] rounded-xl flex items-center justify-center font-caption text-caption font-semibold transition-all shadow-sm cursor-pointer ${
+                    isActive
+                      ? "bg-role-accent-admin text-surface"
+                      : "bg-surface hover:bg-surface-container text-ink border border-border/50"
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage >= totalPages}
+              className="min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] rounded-xl flex items-center justify-center text-ink-subtle hover:text-ink hover:bg-surface-container transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+              aria-label="Halaman berikutnya"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

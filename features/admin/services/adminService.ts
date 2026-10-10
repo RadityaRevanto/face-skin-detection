@@ -19,6 +19,12 @@ export type AdminUser = {
   gender?: string | null;
   date_of_birth?: string | null;
   phone?: string | null;
+  doctor_verification?: {
+    title?: string;
+    specialization?: string;
+    str_number?: string | null;
+    verification_status?: string;
+  } | null;
 };
 
 export type AdminUserListResponse = {
@@ -102,57 +108,87 @@ function cleanParams<T extends Record<string, unknown>>(params?: T): Partial<T> 
 }
 
 export const adminService = {
-  /** GET /admin/dashboard — stats + charts + pending actions. */
+  /** GET /admin/dashboard: stats + charts + pending actions. */
   dashboard: async (): Promise<AdminDashboard> => {
     const envelope = await fetchEnvelope<AdminDashboard>("/admin/dashboard");
     return envelope.data;
   },
 
-  /** GET /admin/profile — profil admin + last_login + summary. */
+  /** GET /admin/profile: profil admin + last_login + summary. */
   adminProfile: async (): Promise<AdminUser> => {
     const envelope = await fetchEnvelope<AdminUser>("/admin/profile");
     return envelope.data;
   },
 
-  /** GET /admin/users — UserResource::collection + filter ?role= & ?per_page=. */
+  /** GET /admin/users: UserResource::collection + filter ?role= & ?per_page=. */
   users: (params?: UsersQueryParams): Promise<AdminUserListResponse> =>
     fetchPaginated<AdminUser>("/admin/users", cleanParams(params)),
 
-  /** POST /admin/users — buat user (role: admin|doctor|user). */
+  /** POST /admin/users: buat user (role: admin|doctor|user). */
   createUser: (payload: CreateAdminUserPayload): Promise<ApiEnvelope<AdminUser>> =>
     mutate("post", "/admin/users", payload),
 
-  /** GET /admin/users/{uuid} — detail + doctorVerification. */
+  /** GET /admin/users/{uuid}: detail + doctorVerification. */
   user: async (uuid: string): Promise<AdminUser> => {
     const envelope = await fetchEnvelope<AdminUser>(`/admin/users/${uuid}`);
     return envelope.data;
   },
 
-  /** PATCH /admin/users/{uuid} — update data user. */
+  /** PATCH /admin/users/{uuid}: update data user. */
   updateUser: (uuid: string, payload: UpdateAdminUserPayload): Promise<ApiEnvelope<AdminUser>> =>
     mutate("patch", `/admin/users/${uuid}`, payload),
 
-  /** DELETE /admin/users/{uuid} — soft delete; 422 jika hapus akun sendiri. */
+  /** DELETE /admin/users/{uuid}: soft delete; 422 jika hapus akun sendiri. */
   destroyUser: (uuid: string): Promise<ApiEnvelope<null>> =>
     mutate("delete", `/admin/users/${uuid}`),
 
-  /** PATCH /admin/users/{uuid}/role — ubah role user. */
+  /** PATCH /admin/users/{uuid}/role: ubah role user. */
   assignRole: (uuid: string, role: string): Promise<ApiEnvelope<AdminUser>> =>
     mutate("patch", `/admin/users/${uuid}/role`, { role }),
 
-  /** PATCH /admin/users/{uuid}/toggle-active — suspend / aktifkan. */
+  /** PATCH /admin/users/{uuid}/toggle-active: suspend / aktifkan. */
   toggleActive: (uuid: string): Promise<ApiEnvelope<AdminUser>> =>
     mutate("patch", `/admin/users/${uuid}/toggle-active`),
 
-  /** GET /admin/activity-log — filter ?log_name= & ?causer_id=. */
+  /** GET /admin/activity-log: filter ?log_name= & ?causer_id=. */
   activityLog: (params?: ActivityLogQueryParams) =>
     fetchPaginated<Record<string, unknown>>("/admin/activity-log", cleanParams(params)),
 
-  /** GET /admin/verifications — filter ?verification_status= (atau ?status=). */
+  /** GET /admin/activity-log/stats: Ringkasan telemetri log audit (fallback aman jika BE belum ada). */
+  activityLogStats: async () => {
+    try {
+      const envelope = await fetchEnvelope<{
+        total_mutations_today?: number;
+        mutations_trend?: {
+          percentage?: number;
+          direction?: "up" | "down" | "neutral";
+          comparison_label?: string;
+        };
+        active_admin_sessions?: {
+          count?: number;
+          admins?: string[];
+        };
+        pending_doctor_verifications?: {
+          count?: number;
+          label?: string;
+        };
+        audit_hash_integrity?: {
+          percentage?: string;
+          status?: string;
+          tampering_detected?: boolean;
+        };
+      }>("/admin/activity-log/stats");
+      return envelope.data;
+    } catch {
+      return null;
+    }
+  },
+
+  /** GET /admin/verifications: filter ?verification_status= (atau ?status=). */
   verifications: (params?: { status?: string; page?: number; per_page?: number }) =>
     fetchPaginated<DoctorVerificationSummary>("/admin/verifications", cleanParams(params)),
 
-  /** GET /admin/verifications/{uuid} — detail verifikasi dokter. */
+  /** GET /admin/verifications/{uuid}: detail verifikasi dokter. */
   verification: async (uuid: string): Promise<DoctorVerificationSummary> => {
     const envelope = await fetchEnvelope<DoctorVerificationSummary>(
       `/admin/verifications/${uuid}`,
@@ -161,10 +197,10 @@ export const adminService = {
   },
 
   /**
-   * PATCH /doctor-verifications/{uuid}/review — approve / reject / revise.
+   * PATCH /doctor-verifications/{uuid}/review: approve / reject / revise.
    * Body BE: { status, rejection_reason? (wajib jika rejected),
    *            revision_note? (wajib jika needs_revision) }.
-   * Response: DoctorVerificationResource — {data: {...}} tanpa meta.
+   * Response: DoctorVerificationResource - {data: {...}} tanpa meta.
    */
   reviewVerification: (
     uuid: string,
@@ -180,7 +216,7 @@ export const adminService = {
         : {}),
     }),
 
-  /** GET /admin/skincare-products — list semua produk (admin view). */
+  /** GET /admin/skincare-products: list semua produk (admin view). */
   adminProducts: (page = 1, perPage?: number) =>
     fetchPaginated<SkincareProduct>(
       "/admin/skincare-products",

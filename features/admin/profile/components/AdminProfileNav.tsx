@@ -3,7 +3,7 @@
 import { ProfileSettingsNav, type ProfileSettingsPage } from "@/features/user/components/ProfileSettingsNav";
 
 /**
- * Nav pengaturan akun admin — satu sumber kebenaran via ProfileSettingsNav,
+ * Nav pengaturan akun admin: satu sumber kebenaran via ProfileSettingsNav,
  * sehingga /admin/profile, /login-security, dan /privacy seragam dengan
  * role lain.
  */

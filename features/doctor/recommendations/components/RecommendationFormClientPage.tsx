@@ -6,9 +6,8 @@ import { useSearchParams } from "next/navigation";
 
 import { api } from "@/lib/api";
 import { catalogService } from "@/features/skin-types/services/catalogService";
-import { PageHeader } from "@/components/ui/page-header";
+import { RecommendationFormHeader } from "@/features/doctor/recommendations/components/RecommendationFormHeader";
 import { RecommendationForm } from "@/features/doctor/recommendations/components/RecommendationForm";
-import { ROUTES } from "@/lib/constants";
 
 type RecommendationFormValues = {
   id: string;
@@ -97,16 +96,8 @@ function RecommendationFormPageInner({ mode }: { mode: "create" | "edit" }) {
   }
 
   return (
-    <div className="w-full space-y-6">
-      <PageHeader
-        backHref={ROUTES.DOCTOR.RECOMMENDATIONS}
-        backLabel="Kembali ke Data Rekomendasi"
-        eyebrow={mode === "edit" ? "Perbarui Aturan" : "Aturan Baru"}
-        title={
-          mode === "edit" ? "Edit Rule Rekomendasi" : "Tambah Rule Rekomendasi"
-        }
-        description="Rule ini akan dipakai untuk mencocokkan hasil AI user dengan produk skincare yang sesuai."
-      />
+    <div className="w-full max-w-4xl mx-auto space-y-6">
+      <RecommendationFormHeader mode={mode} />
 
       <RecommendationForm
         mode={mode}

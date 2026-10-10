@@ -5,9 +5,11 @@ export type SkincareRow = {
   no: number;
   name: string;
   category: string;
+  gender?: string;
   keyIngredients: string;
   concern: string;
   skinType: string;
+  isActive?: boolean;
   updatedAt: string;
 };
 

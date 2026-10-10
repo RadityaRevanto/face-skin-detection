@@ -14,11 +14,11 @@ import { cn } from "@/lib/utils";
  * per_page, total, from, to).
  */
 
-type PaginationProps = {
+export type PaginationProps = {
   currentPage: number;
   totalPages: number;
-  totalItems: number;
-  pageSize: number;
+  totalItems?: number;
+  pageSize?: number;
   /** Label item untuk teks ringkasan, default "data". */
   itemLabel?: string;
   /** Link mode: path halaman (mis. "/admin/users"). */
@@ -147,8 +147,17 @@ export function Pagination({
   onPageChange,
   className,
 }: PaginationProps) {
-  const firstItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-  const lastItem = Math.min(currentPage * pageSize, totalItems);
+  const hasItemMetrics =
+    typeof totalItems === "number" &&
+    typeof pageSize === "number" &&
+    !Number.isNaN(totalItems) &&
+    !Number.isNaN(pageSize) &&
+    pageSize > 0;
+
+  const safeTotalItems = hasItemMetrics ? Math.max(0, totalItems!) : 0;
+  const safePageSize = hasItemMetrics ? Math.max(1, pageSize!) : 10;
+  const firstItem = safeTotalItems === 0 ? 0 : (currentPage - 1) * safePageSize + 1;
+  const lastItem = Math.min(currentPage * safePageSize, safeTotalItems);
   const visiblePages = getVisiblePages(currentPage, totalPages);
 
   return (
@@ -158,27 +167,38 @@ export function Pagination({
         className
       )}
     >
-      {/* Mobile: ringkas "1/5" (§4.2) — info lengkap tampil sm+ */}
+      {/* Mobile: ringkas "1/5" (§4.2) - info lengkap tampil sm+ */}
       <p className="text-xs text-[var(--ink-muted)] sm:text-sm">
         <span className="sm:hidden">
           Halaman{" "}
           <span className="font-semibold text-[var(--ink-soft)]">{currentPage}</span>
           {" "}dari{" "}
           <span className="font-semibold text-[var(--ink-soft)]">{totalPages}</span>
-          {totalItems > 0 ? (
+          {hasItemMetrics && safeTotalItems > 0 ? (
             <>
               {" "}·{" "}
-              <span className="font-medium text-[var(--ink-soft)]">{totalItems}</span>{" "}
+              <span className="font-medium text-[var(--ink-soft)]">{safeTotalItems}</span>{" "}
               {itemLabel}
             </>
           ) : null}
         </span>
         <span className="hidden sm:inline">
-          Menampilkan{" "}
-          <span className="font-medium text-[var(--ink-soft)]">{firstItem}</span>–
-          <span className="font-medium text-[var(--ink-soft)]">{lastItem}</span> dari{" "}
-          <span className="font-medium text-[var(--ink-soft)]">{totalItems}</span>{" "}
-          {itemLabel}
+          {hasItemMetrics ? (
+            <>
+              Menampilkan{" "}
+              <span className="font-medium text-[var(--ink-soft)]">{firstItem}</span>-
+              <span className="font-medium text-[var(--ink-soft)]">{lastItem}</span> dari{" "}
+              <span className="font-medium text-[var(--ink-soft)]">{safeTotalItems}</span>{" "}
+              {itemLabel}
+            </>
+          ) : (
+            <>
+              Halaman{" "}
+              <span className="font-semibold text-[var(--ink-soft)]">{currentPage}</span>
+              {" "}dari{" "}
+              <span className="font-semibold text-[var(--ink-soft)]">{totalPages}</span>
+            </>
+          )}
         </span>
       </p>
 

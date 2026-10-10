@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 /**
- * StatusBadge — satu komponen status lintas halaman admin (DESIGN.md §4.3).
+ * StatusBadge: satu komponen status lintas halaman admin (DESIGN.md §4.3).
  *
  * Varian (token §2.1/§2.2):
  * - approved/success → emerald  (disetujui, aktif, online)
@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
  * - neutral          → slate    (default)
  *
  * Bentuk: pill rounded-full px-2.5 py-0.5 text-xs font-semibold + dot 6px.
- * Sama di mobile & desktop. Pencocokan status case-insensitive — aman untuk
+ * Sama di mobile & desktop. Pencocokan status case-insensitive, aman untuk
  * input mentah backend (lowercase) maupun hasil mapVerificationStatus (kapital).
  */
 
