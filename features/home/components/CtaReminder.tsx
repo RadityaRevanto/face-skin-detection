@@ -19,7 +19,7 @@ export function CtaReminder() {
       </div>
       <a
         href='/user/pemeriksaan'
-        className='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-bold text-white shadow-lg shadow-emerald-200 transition-colors hover:bg-emerald-700'
+        className='inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-emerald-700'
       >
         <CameraIcon className='h-5 w-5' />
         Buat Pemeriksaan Baru

@@ -32,7 +32,7 @@ export function DangerZoneCard({
         <div className="flex-1">
           <h3 className="text-lg font-bold text-rose-900 mb-1">Zona Berbahaya</h3>
           <p className="text-sm text-rose-700 mb-4 leading-relaxed">
-            Tindakan ini akan menghapus akun Anda secara permanen beserta seluruh riwayat *scan*, obrolan, dan sisa langganan *Skincek Pro* Anda (jika ada). Data yang telah dihapus tidak dapat dipulihkan kembali.
+            Tindakan ini akan menghapus akun Anda secara permanen beserta seluruh riwayat scan, obrolan, dan sisa langganan Skincek Pro Anda (jika ada). Data yang telah dihapus tidak dapat dipulihkan kembali.
           </p>
           {role === "doctor" && (
             <p className="text-sm text-rose-800 mb-4 leading-relaxed rounded-xl bg-white/70 border border-rose-200 px-4 py-3">

@@ -1,9 +1,10 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import Cropper from "react-easy-crop";
+import Cropper, { type Area } from "react-easy-crop";
 import { Button } from "@/components/ui/button";
 import { X, ZoomIn, ZoomOut } from "lucide-react";
+import { useDialogEscape } from "@/features/shared/hooks/useDialogEscape";
 
 interface CropImageModalProps {
   imageSrc: string;
@@ -14,9 +15,11 @@ interface CropImageModalProps {
 export function CropImageModal({ imageSrc, onCropComplete, onClose }: CropImageModalProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
-  const onCropCompleteHandler = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+  useDialogEscape(true, onClose);
+
+  const onCropCompleteHandler = useCallback((_: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
   }, []);
 
@@ -31,7 +34,7 @@ export function CropImageModal({ imageSrc, onCropComplete, onClose }: CropImageM
 
   const getCroppedImg = async (
     imageSrc: string,
-    pixelCrop: any,
+    pixelCrop: Area,
   ): Promise<{ file: File; url: string }> => {
     const image = await createImage(imageSrc);
     const canvas = document.createElement("canvas");
@@ -83,11 +86,11 @@ export function CropImageModal({ imageSrc, onCropComplete, onClose }: CropImageM
   };
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="crop-title">
       <div className="bg-white rounded-3xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-zinc-100">
-          <h3 className="font-semibold text-lg text-zinc-800">Sesuaikan Foto</h3>
-          <button onClick={onClose} className="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-full transition-colors">
+          <h3 id="crop-title" className="font-semibold text-lg text-zinc-800">Sesuaikan Foto</h3>
+          <button onClick={onClose} aria-label="Tutup" className="p-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-100 rounded-full transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -128,7 +131,7 @@ export function CropImageModal({ imageSrc, onCropComplete, onClose }: CropImageM
             <Button type="button" variant="outline" className="flex-1 rounded-xl h-11" onClick={onClose}>
               Batal
             </Button>
-            <Button type="button" onClick={handleSave} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-11 shadow-md shadow-emerald-500/20">
+            <Button type="button" onClick={handleSave} className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl h-11 shadow-sm">
               Terapkan Foto
             </Button>
           </div>

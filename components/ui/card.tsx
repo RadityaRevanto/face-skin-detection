@@ -2,12 +2,29 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-export function Card({ className, ...props }: React.ComponentProps<"div">) {
+type CardVariant = "default" | "interactive" | "accent-top";
+
+/**
+ * Card — primitif kartu konsisten (Command Center).
+ * - `interactive`: hover-elevation (dipakai kartu yang bisa diklik / link).
+ * - `accent-top`: strip atas memakai `--role-accent` (penanda halaman/role).
+ */
+export function Card({
+  className,
+  variant = "default",
+  ...props
+}: React.ComponentProps<"div"> & { variant?: CardVariant }) {
   return (
     <div
+      data-card-variant={variant}
       className={cn(
-        "rounded-xl border border-zinc-200 bg-white text-zinc-950 shadow-sm dark:border-zinc-200 dark:bg-white dark:text-zinc-950",
-        className
+        "relative rounded-[var(--radius-card)] border bg-[var(--surface)] text-[var(--ink)]",
+        variant === "default" && "border-[var(--line)] shadow-[var(--shadow-card)]",
+        variant === "interactive" &&
+          "border-[var(--line)] shadow-[var(--shadow-card)] transition-all duration-[var(--motion-base)] ease-out hover:-translate-y-0.5 hover:border-[var(--role-accent)] hover:shadow-[var(--shadow-card-hover)]",
+        variant === "accent-top" &&
+          "border-[var(--line)] pt-2.5 shadow-[var(--shadow-card)] before:absolute before:inset-x-3 before:top-0 before:h-0.5 before:rounded-full before:bg-[var(--role-accent)]",
+        className,
       )}
       {...props}
     />
@@ -20,7 +37,7 @@ export function CardHeader({
 }: React.ComponentProps<"div">) {
   return (
     <div
-      className={cn("flex flex-col space-y-1.5 p-6", className)}
+      className={cn("flex flex-col space-y-1.5 border-b border-[var(--line)] px-5 py-4", className)}
       {...props}
     />
   );
@@ -29,12 +46,12 @@ export function CardHeader({
 export function CardTitle({
   className,
   ...props
-}: React.ComponentProps<"h1">) {
+}: React.ComponentProps<"h3">) {
   return (
-    <h1
+    <h3
       className={cn(
-        "text-2xl font-semibold leading-none tracking-tight",
-        className
+        "font-heading text-base font-semibold tracking-tight text-[var(--ink)]",
+        className,
       )}
       {...props}
     />
@@ -46,7 +63,10 @@ export function CardDescription({
   ...props
 }: React.ComponentProps<"p">) {
   return (
-    <p className={cn("text-sm text-zinc-500 dark:text-zinc-400", className)} {...props} />
+    <p
+      className={cn("text-xs text-[var(--ink-muted)]", className)}
+      {...props}
+    />
   );
 }
 
@@ -54,7 +74,7 @@ export function CardContent({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  return <div className={cn("p-6 pt-0", className)} {...props} />;
+  return <div className={cn("px-5 py-4", className)} {...props} />;
 }
 
 export function CardFooter({
@@ -62,6 +82,9 @@ export function CardFooter({
   ...props
 }: React.ComponentProps<"div">) {
   return (
-    <div className={cn("flex items-center p-6 pt-0", className)} {...props} />
+    <div
+      className={cn("flex items-center border-t border-[var(--line)] px-5 py-3", className)}
+      {...props}
+    />
   );
 }

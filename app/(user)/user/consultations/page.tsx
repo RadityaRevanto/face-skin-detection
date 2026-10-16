@@ -1,11 +1,11 @@
 "use client";
 
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { useDoctors } from "@/features/doctors/hooks/useDoctors";
 import { DoctorsContent } from "@/features/doctors/components/DoctorsContent";
+import { DoctorListSkeleton, Skeleton } from "@/components/skeletons";
 
 export default function ConsultationsPage() {
   return (
@@ -35,11 +35,13 @@ function ConsultationsPageInner() {
 
   if (isLoading) {
     return (
-      <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-32 animate-pulse rounded-2xl bg-slate-100" />
-          ))}
+      <main className="w-full">
+        <div className="space-y-6">
+          <div>
+            <Skeleton className="h-7 w-56 rounded" />
+            <Skeleton className="mt-2 h-4 w-80 rounded" />
+          </div>
+          <DoctorListSkeleton count={4} />
         </div>
       </main>
     );
@@ -47,7 +49,7 @@ function ConsultationsPageInner() {
 
   if (isError) {
     return (
-      <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
+      <main className="w-full">
         <div className="rounded-2xl border border-rose-100 bg-rose-50 p-8 text-center text-sm text-rose-600">
           Gagal memuat daftar dokter. Coba muat ulang halaman.
         </div>
@@ -56,7 +58,7 @@ function ConsultationsPageInner() {
   }
 
   return (
-    <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
+    <main className="w-full">
       <DoctorsContent doctors={doctors} pagination={pagination} />
     </main>
   );

@@ -1,128 +1,158 @@
-import Link from "next/link";
+"use client";
 
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import Link from "next/link";
+import { FlaskConical, Pencil, Layers } from "lucide-react";
+import { ROUTES } from "@/lib/constants";
 import { Pagination } from "@/components/ui/pagination";
 import type { PagePagination } from "@/lib/types/pagination";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ROUTES } from "@/lib/constants";
 
 import type { SkincareRow } from "../types";
 import { DeleteSkincareButton } from "./DeleteSkincareButton";
-import { SkincareActionIcon } from "./SkincareActionIcon";
 
-type SkincareTableProps = {
+export type SkincareTableProps = {
   products: SkincareRow[];
   pagination: PagePagination;
 };
 
 export function SkincareTable({ products, pagination }: SkincareTableProps) {
   return (
-    <Card className='overflow-hidden rounded-2xl border-slate-100! bg-white! text-slate-950! shadow-sm dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
-      <Table className='min-w-full divide-y divide-gray-100'>
-        <TableHeader className='bg-gray-50/80'>
-          <TableRow className='hover:bg-transparent'>
-            <TableHead className='w-20 px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
-              No
-            </TableHead>
+    <div className="bg-surface rounded-xl shadow-xs border border-border/50 overflow-hidden flex flex-col">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left">
+          <thead>
+            <tr className="bg-surface-container-low text-ink-muted font-eyebrow text-eyebrow uppercase tracking-wider h-12">
+              <th className="px-space-lg py-3">Nama Produk &amp; Formula</th>
+              <th className="px-space-md py-3">Kategori</th>
+              <th className="px-space-md py-3">Gender</th>
+              <th className="px-space-md py-3">Target Concern</th>
+              <th className="px-space-md py-3">Tipe Kulit</th>
+              <th className="px-space-md py-3">Status</th>
+              <th className="px-space-lg py-3 text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border/30">
+            {products.length === 0 ? (
+              <tr>
+                <td colSpan={7} className="px-space-lg py-12 text-center">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <div className="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-ink-subtle">
+                      <Layers className="w-6 h-6" />
+                    </div>
+                    <p className="font-headline-sm text-headline-sm text-ink font-semibold">
+                      Belum Ada Produk Skincare
+                    </p>
+                    <p className="font-body-default text-caption text-ink-muted max-w-sm">
+                      Daftarkan produk formulasi pertama Anda untuk dihubungkan ke sistem inferensi rekomendasi AI.
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              products.map((product) => (
+                <tr
+                  key={product.id}
+                  className="h-14 bg-surface hover:bg-surface-alt transition-colors group"
+                >
+                  {/* Nama Produk & Formula */}
+                  <td className="px-space-lg py-3">
+                    <div className="flex items-center gap-space-sm">
+                      <div className="w-9 h-9 rounded-lg bg-surface-container-low flex items-center justify-center text-role-accent-doctor shrink-0 font-headline-sm">
+                        <FlaskConical className="w-5 h-5" />
+                      </div>
+                      <div className="flex flex-col min-w-0 max-w-xs">
+                        <span className="font-headline-sm text-body-default text-ink truncate font-semibold">
+                          {product.name}
+                        </span>
+                        <span className="font-caption text-[11px] text-ink-subtle truncate">
+                          {product.keyIngredients !== "-"
+                            ? product.keyIngredients
+                            : `ID: ${product.id.slice(0, 8)}`}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
 
-            <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
-              Produk
-            </TableHead>
+                  {/* Kategori */}
+                  <td className="px-space-md py-3">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full font-caption text-caption bg-surface-container-low text-ink font-medium capitalize">
+                      {product.category}
+                    </span>
+                  </td>
 
-            <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
-              Kategori
-            </TableHead>
+                  {/* Gender */}
+                  <td className="px-space-md py-3">
+                    <span className="font-caption text-caption text-ink font-medium capitalize">
+                      {product.gender || "Unisex"}
+                    </span>
+                  </td>
 
-            <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
-              Skin Concern
-            </TableHead>
+                  {/* Target Concern */}
+                  <td className="px-space-md py-3">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded font-caption text-caption bg-amber-500/10 text-warning font-medium">
+                      {product.concern}
+                    </span>
+                  </td>
 
-            <TableHead className='px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
-              Tipe Kulit
-            </TableHead>
+                  {/* Tipe Kulit */}
+                  <td className="px-space-md py-3 font-caption text-caption text-ink-muted">
+                    {product.skinType}
+                  </td>
 
-            <TableHead className='px-6 py-5 text-right text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8'>
-              Action
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-
-        <TableBody className='divide-y divide-gray-100 bg-white'>
-          {products.map((product) => (
-            <TableRow
-              key={product.id}
-              className='group border-gray-100 transition-colors hover:bg-emerald-50/30'
-            >
-              <TableCell className='whitespace-nowrap px-6 py-5 text-sm font-medium text-gray-500 sm:px-8'>
-                {product.no}
-              </TableCell>
-
-              <TableCell className='min-w-64 px-6 py-5 sm:px-8'>
-                <div className='text-sm font-semibold text-gray-800 transition-colors group-hover:text-emerald-700'>
-                  {product.name}
-                </div>
-
-                <div className='mt-1 text-xs text-gray-500'>
-                  {product.keyIngredients} · Update {product.updatedAt}
-                </div>
-              </TableCell>
-
-              <TableCell className='whitespace-nowrap px-6 py-5 text-sm font-medium text-gray-700 sm:px-8'>
-                {product.category}
-              </TableCell>
-
-              <TableCell className='whitespace-nowrap px-6 py-5 text-sm text-gray-500 sm:px-8'>
-                {product.concern}
-              </TableCell>
-
-              <TableCell className='whitespace-nowrap px-6 py-5 text-sm text-gray-500 sm:px-8'>
-                {product.skinType}
-              </TableCell>
-
-              <TableCell className='whitespace-nowrap px-6 py-5 text-right text-sm font-medium sm:px-8'>
-                <div className='flex items-center justify-end gap-2'>
-                  <Link href={ROUTES.DOCTOR.SKINCARE_EDIT(product.id)}>
-                    <Button
-                      type='button'
-                      variant='ghost'
-                      size='sm'
-                      title='Edit'
-                      className='h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50! hover:text-emerald-700'
+                  {/* Status */}
+                  <td className="px-space-md py-3">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-caption text-caption font-semibold ${
+                        product.isActive !== false
+                          ? "bg-success/10 text-success"
+                          : "bg-surface-container-high text-ink-subtle"
+                      }`}
                     >
-                      <SkincareActionIcon type='edit' />
-                    </Button>
-                  </Link>
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          product.isActive !== false ? "bg-success" : "bg-ink-subtle"
+                        }`}
+                      />
+                      {product.isActive !== false ? "Aktif" : "Nonaktif"}
+                    </span>
+                  </td>
 
-                  <DeleteSkincareButton productId={product.id} />
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                  {/* Aksi */}
+                  <td className="px-space-lg py-3 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <Link
+                        href={ROUTES.DOCTOR.SKINCARE_EDIT(product.id)}
+                        className="p-2 rounded-lg text-ink-subtle hover:text-role-accent-doctor hover:bg-surface-container-low transition-colors"
+                        title="Edit Formula"
+                        aria-label="Edit Formula"
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Link>
+                      <DeleteSkincareButton
+                        productId={product.id}
+                        productName={product.name}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
-      {products.length === 0 ? (
-        <div className='border-t border-gray-100 bg-white px-6 py-8 text-sm font-semibold text-gray-500 sm:px-8'>
-          Belum ada data produk skincare.
+      {/* Table Footer / Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="border-t border-border/40 bg-surface">
+          <Pagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            totalItems={pagination.totalItems}
+            pageSize={pagination.pageSize}
+            itemLabel={pagination.itemLabel}
+            basePath={pagination.basePath}
+          />
         </div>
-      ) : null}
-
-      <Pagination
-        currentPage={pagination.currentPage}
-        totalPages={pagination.totalPages}
-        totalItems={pagination.totalItems}
-        pageSize={pagination.pageSize}
-        itemLabel={pagination.itemLabel}
-        basePath={pagination.basePath}
-      />
-    </Card>
+      )}
+    </div>
   );
 }

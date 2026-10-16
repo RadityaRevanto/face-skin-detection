@@ -78,15 +78,12 @@ function DashboardContentCard({
 export function DoctorDashboardPreview() {
   return (
     <section className='relative hidden min-h-[720px] overflow-hidden rounded-4xl px-8 py-10 lg:block'>
-      <div className='absolute right-0 top-0 h-80 w-80 rounded-full bg-emerald-200/50 blur-3xl' />
-      <div className='absolute bottom-0 left-4 h-72 w-72 rounded-full bg-teal-100/80 blur-3xl' />
 
       <div className='relative'>
         <div className='mb-10 grid grid-cols-[1fr_260px] items-start gap-8'>
           <div className='pt-8'>
-            <div className='mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/70 px-3 py-1 text-xs font-semibold text-emerald-700 shadow-sm backdrop-blur'>
-              <span className='h-1.5 w-1.5 rounded-full bg-emerald-500' />
-              Doctor Dashboard
+            <div className='mb-4 inline-flex items-center gap-2 text-sm font-semibold text-emerald-700'>
+              Doctor Portal
             </div>
             <h2 className='text-4xl font-bold tracking-[-0.04em] text-zinc-950 sm:text-5xl'>
               Kelola Konten Skincare dengan{" "}
@@ -112,7 +109,7 @@ export function DoctorDashboardPreview() {
           </div>
         </div>
 
-        <div className='rounded-4xl border border-white/80 bg-white/85 p-5 shadow-2xl shadow-emerald-950/10 backdrop-blur-xl'>
+        <div className='rounded-4xl border border-zinc-100 bg-white p-5 shadow-sm'>
           <div className='grid gap-5 lg:grid-cols-[150px_1fr]'>
             <aside className='border-r border-zinc-100 pr-4'>
               <div className='mb-6 flex items-center gap-3'>

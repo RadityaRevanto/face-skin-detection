@@ -2,17 +2,19 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { AlertCircle } from "lucide-react";
 
-import { Card } from "@/components/ui/card";
 import { ROUTES } from "@/lib/constants";
 import { api } from "@/lib/api";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
 
 import {
-  RecommendationFormFields,
+  RecommendationFormCardTarget,
   type RecommendationConcernOption,
   type RecommendationProductOption,
-} from "./RecommendationFormFields";
+} from "./RecommendationFormCardTarget";
+import { RecommendationFormCardProtocol } from "./RecommendationFormCardProtocol";
+import { RecommendationFormCardStatus } from "./RecommendationFormCardStatus";
 
 type RecommendationFormProps = {
   concerns: RecommendationConcernOption[];
@@ -111,34 +113,39 @@ export function RecommendationForm({
   }
 
   return (
-    <Card className='overflow-hidden rounded-2xl border-slate-100! bg-white! text-slate-950! shadow-sm dark:border-slate-100! dark:bg-white! dark:text-slate-950!'>
-      <form onSubmit={handleSubmit} className='space-y-6 p-6'>
-        {message ? (
-          <div className='rounded-xl bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700'>
-            {message}
-          </div>
-        ) : null}
+    <form onSubmit={handleSubmit} className="space-y-6 pb-28">
+      {message && (
+        <div className="flex items-center gap-3 rounded-xl bg-error-container/30 border border-error/30 p-4 text-error font-body-default text-body-default font-medium">
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <span>{message}</span>
+        </div>
+      )}
 
-        <RecommendationFormFields
-          concerns={concerns}
-          products={products}
-          concernId={concernId}
-          setConcernId={setConcernId}
-          productId={productId}
-          setProductId={setProductId}
-          title={title}
-          setTitle={setTitle}
-          recommendationText={recommendationText}
-          setRecommendationText={setRecommendationText}
-          priorityLevel={priorityLevel}
-          setPriorityLevel={setPriorityLevel}
-          isActive={isActive}
-          setIsActive={setIsActive}
-          isSubmitting={isSubmitting}
-          mode={mode}
-          onCancel={() => router.push(ROUTES.DOCTOR.RECOMMENDATIONS)}
-        />
-      </form>
-    </Card>
+      <RecommendationFormCardTarget
+        concernId={concernId}
+        setConcernId={setConcernId}
+        concerns={concerns}
+        productId={productId}
+        setProductId={setProductId}
+        products={products}
+      />
+
+      <RecommendationFormCardProtocol
+        title={title}
+        setTitle={setTitle}
+        priorityLevel={priorityLevel}
+        setPriorityLevel={setPriorityLevel}
+        recommendationText={recommendationText}
+        setRecommendationText={setRecommendationText}
+      />
+
+      <RecommendationFormCardStatus
+        isActive={isActive}
+        setIsActive={setIsActive}
+        isSubmitting={isSubmitting}
+        mode={mode}
+        onCancel={() => router.push(ROUTES.DOCTOR.RECOMMENDATIONS)}
+      />
+    </form>
   );
 }

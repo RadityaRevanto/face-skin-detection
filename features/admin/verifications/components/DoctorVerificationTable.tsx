@@ -1,268 +1,139 @@
-import Link from "next/link";
+"use client";
 
-import { EmptyState } from "@/components/ui/empty-state";
-import { Pagination } from "@/components/ui/pagination";
-import { TableWidget } from "@/components/ui/table-widget";
+import { CheckCircle2, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import type { PagePagination } from "@/lib/types/pagination";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
 import type {
   DoctorVerificationPageType,
   DoctorVerificationRequest,
-} from "@/features/admin/verifications/lib/doctorVerificationTypes";
-import { DocumentIcon, ViewIcon } from "./DoctorVerificationIcons";
-import { StatusBadge } from "@/features/admin/components/StatusBadge";
+} from "../lib/doctorVerificationTypes";
+import { VerificationTableRow } from "./VerificationTableRow";
 
 type DoctorVerificationTableProps = {
-  pageType: DoctorVerificationPageType;
+  activeTab: DoctorVerificationPageType;
   verificationRequests: DoctorVerificationRequest[];
   pagination: PagePagination;
+  onPageChange: (page: number) => void;
+  isLoading?: boolean;
 };
 
 export function DoctorVerificationTable({
-  pageType,
+  activeTab,
   verificationRequests,
   pagination,
+  onPageChange,
+  isLoading,
 }: DoctorVerificationTableProps) {
-  const isRejectedPage = pageType === "rejected";
+  const { currentPage, totalPages, totalItems, pageSize } = pagination;
+  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, totalItems);
 
-  const paginationNode = (
-    <Pagination
-      currentPage={pagination.currentPage}
-      totalPages={pagination.totalPages}
-      totalItems={pagination.totalItems}
-      pageSize={pagination.pageSize}
-      itemLabel={pagination.itemLabel}
-      basePath={pagination.basePath}
-    />
-  );
-
-  const tableNode = (
-    <Table className="min-w-full divide-y divide-slate-100">
-      <TableHeader className="bg-slate-50/80">
-        <TableRow className="hover:bg-transparent">
-          <TableHead className="w-20 px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-8">
-            No
-          </TableHead>
-
-          <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-8">
-            Nama Lengkap
-          </TableHead>
-
-          <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-8">
-            Email
-          </TableHead>
-
-          <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-8">
-            Nomor STR / Identitas Dokter
-          </TableHead>
-
-          <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-8">
-            Spesialisasi
-          </TableHead>
-
-          <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-8">
-            Dokumen
-          </TableHead>
-
-          <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-8">
-            Status
-          </TableHead>
-
-          {isRejectedPage ? (
-            <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-8">
-              Alasan Penolakan
-            </TableHead>
-          ) : null}
-
-          <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-8">
-            {isRejectedPage ? "Ditolak" : "Diajukan"}
-          </TableHead>
-
-          <TableHead className="px-6 py-5 text-right text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-8">
-            Aksi
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-
-      <TableBody className="divide-y divide-slate-100 bg-white">
-        {verificationRequests.map((doctor) => (
-          <TableRow
-            key={doctor.id}
-            className="group border-slate-100 transition-colors hover:bg-emerald-50/30"
-          >
-            <TableCell className="px-6 py-5 text-sm font-medium text-slate-500 sm:px-8">
-              {doctor.no}
-            </TableCell>
-
-            <TableCell className="px-6 py-5 text-sm font-medium text-slate-700 transition-colors group-hover:text-emerald-700 sm:px-8">
-              {doctor.name}
-            </TableCell>
-
-            <TableCell className="px-6 py-5 text-sm text-slate-500 sm:px-8">
-              {doctor.email}
-            </TableCell>
-
-            <TableCell className="px-6 py-5 text-sm font-medium text-slate-700 sm:px-8">
-              {doctor.identity}
-            </TableCell>
-
-            <TableCell className="max-w-[200px] px-6 py-5 sm:px-8">
-              <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 shadow-sm">
-                <span className="truncate">{doctor.specialization}</span>
-              </span>
-            </TableCell>
-
-            <TableCell className="max-w-[200px] px-6 py-5 sm:px-8">
-              {doctor.documents.length > 0 ? (
-                <a
-                  href={doctor.documents[0].url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
-                >
-                  <DocumentIcon />
-                  <span className="truncate">
-                    {doctor.documents[0].file_name ?? "Dokumen"}
-                  </span>
-                </a>
-              ) : (
-                <span className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700">
-                  <DocumentIcon />
-                  No Document
-                </span>
-              )}
-            </TableCell>
-
-            <TableCell className="px-6 py-5 sm:px-8">
-              <StatusBadge status={doctor.status} />
-            </TableCell>
-
-            {isRejectedPage ? (
-              <TableCell className="max-w-[280px] px-6 py-5 text-sm font-medium text-rose-700 sm:px-8">
-                <p className="line-clamp-2">
-                  {doctor.rejectionReason ?? "-"}
-                </p>
-              </TableCell>
-            ) : null}
-
-            <TableCell className="px-6 py-5 text-sm font-medium text-slate-700 sm:px-8">
-              {isRejectedPage ? doctor.reviewedAt : doctor.submittedAt}
-              <div className="mt-1 text-xs font-normal text-slate-500">
-                {isRejectedPage ? "Rejected document" : "Submitted document"}
-              </div>
-            </TableCell>
-
-            <TableCell className="px-6 py-5 text-right text-sm font-medium sm:px-8">
-              <Link
-                href={`/admin/doctor-verifications/detail?id=${encodeURIComponent(doctor.id)}`}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl px-3 text-slate-400 transition-all duration-200 hover:bg-sky-50! hover:text-sky-700"
-              >
-                <ViewIcon />
-              </Link>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-
-  // Mobile card list (§4.2) — prioritas: identitas + badge, meta, dokumen, aksi.
-  const cardsNode = (
-    <div className="divide-y divide-slate-100 bg-white">
-      {verificationRequests.map((doctor) => (
-        <div key={doctor.id} className="space-y-3 p-4">
-          <div className="flex items-start justify-between gap-3">
-            <p className="min-w-0 flex-1 truncate text-sm font-bold text-slate-900">
-              {doctor.name}
-            </p>
-            <StatusBadge status={doctor.status} />
-          </div>
-
-          <div className="space-y-0.5 text-xs text-slate-500">
-            <p className="truncate">{doctor.email}</p>
-            <p className="truncate">
-              <span className="font-medium text-slate-600">STR:</span>{" "}
-              {doctor.identity}
-            </p>
-            <p className="truncate">
-              <span className="font-medium text-slate-600">
-                Spesialisasi:
-              </span>{" "}
-              {doctor.specialization}
-            </p>
-            <p>
-              {isRejectedPage ? "Ditolak" : "Diajukan"}:{" "}
-              {isRejectedPage ? doctor.reviewedAt : doctor.submittedAt}
-            </p>
-          </div>
-
-          {isRejectedPage ? (
-            <p className="rounded-xl bg-rose-50 p-2.5 text-xs leading-5 text-rose-700 line-clamp-2">
-              {doctor.rejectionReason ?? "-"}
-            </p>
-          ) : null}
-
-          <div className="flex items-center justify-between gap-3">
-            {doctor.documents.length > 0 ? (
-              <a
-                href={doctor.documents[0].url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
-              >
-                <DocumentIcon />
-                <span className="truncate">
-                  {doctor.documents[0].file_name ?? "Dokumen"}
-                </span>
-              </a>
-            ) : (
-              <span className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-500">
-                <DocumentIcon />
-                No Document
-              </span>
-            )}
-
-            <Link
-              href={`/admin/doctor-verifications/detail?id=${encodeURIComponent(doctor.id)}`}
-              className="inline-flex h-9 shrink-0 items-center justify-center rounded-xl border border-emerald-200 px-4 text-xs font-bold text-emerald-700 transition-colors hover:bg-emerald-50"
-            >
-              Review →
-            </Link>
-          </div>
+  if (verificationRequests.length === 0 && !isLoading) {
+    return (
+      <div className="bg-surface rounded-2xl p-12 text-center shadow-sm flex flex-col items-center justify-center border border-border/50">
+        <div className="w-20 h-20 rounded-full bg-success/10 text-success flex items-center justify-center mb-4">
+          <CheckCircle2 className="w-10 h-10 text-success" />
         </div>
-      ))}
-    </div>
-  );
+        <span className="font-eyebrow text-eyebrow text-success uppercase tracking-wider font-semibold">
+          ANTREAN SELESAI
+        </span>
+        <h3 className="font-headline-md text-headline-md text-ink font-semibold mt-1">
+          Semua antrean verifikasi telah ditinjau!
+        </h3>
+        <p className="font-body-default text-body-default text-ink-muted max-w-md mt-2">
+          Tidak ada berkas pada kategori ini saat ini. Notifikasi akan dikirimkan otomatis ketika ada dokter baru yang mengajukan izin praktik klinis.
+        </p>
+      </div>
+    );
+  }
+
+  const dynamicColHeader =
+    activeTab === "pending"
+      ? "Tanggal Pengajuan"
+      : activeTab === "needs_revision"
+        ? "Catatan Revisi"
+        : "Alasan Penolakan";
 
   return (
-    <TableWidget
-      table={tableNode}
-      cards={verificationRequests.length > 0 ? cardsNode : undefined}
-      empty={
-        verificationRequests.length === 0 ? (
-          <EmptyState
-            title={
-              isRejectedPage
-                ? "Tidak ada data verifikasi dokter yang ditolak"
-                : "Tidak ada antrean verifikasi dokter"
-            }
-            description={
-              isRejectedPage
-                ? "Pengajuan yang ditolak akan tampil di sini beserta alasannya."
-                : "Pengajuan verifikasi dokter baru akan masuk ke antrean ini."
-            }
-          />
-        ) : undefined
-      }
-      footer={paginationNode}
-    />
+    <div className="bg-surface rounded-2xl shadow-sm overflow-hidden flex flex-col border border-border/50">
+      <div className="overflow-x-auto w-full">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-surface-alt text-ink-subtle font-caption text-caption uppercase tracking-wider border-b border-border/60">
+              <th className="py-3.5 pl-6 pr-4 font-semibold">Pemohon</th>
+              <th className="py-3.5 px-4 font-semibold">Email</th>
+              <th className="py-3.5 px-4 font-semibold">Nomor STR</th>
+              <th className="py-3.5 px-4 font-semibold">Spesialisasi</th>
+              <th className="py-3.5 px-4 font-semibold">{dynamicColHeader}</th>
+              <th className="py-3.5 px-4 font-semibold">Status</th>
+              <th className="py-3.5 pr-6 pl-4 font-semibold text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y-0 text-ink font-body-default text-body-default">
+            {verificationRequests.map((req) => (
+              <VerificationTableRow
+                key={req.id}
+                request={req}
+                activeTab={activeTab}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination Footer */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-surface-alt border-t border-border/50">
+        <div className="flex items-center gap-2 font-caption text-caption text-ink-muted">
+          <span>Menampilkan</span>
+          <span className="font-semibold text-ink">{startItem} - {endItem}</span>
+          <span>dari</span>
+          <span className="font-semibold text-ink">{totalItems}</span>
+          <span>pemohon</span>
+        </div>
+
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            aria-label="Halaman pertama"
+            disabled={currentPage <= 1}
+            onClick={() => onPageChange(1)}
+            className="min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] rounded-xl bg-surface shadow-sm text-ink-subtle hover:text-ink disabled:opacity-40 flex items-center justify-center transition-colors border border-border/40 cursor-pointer"
+          >
+            <ChevronsLeft className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            aria-label="Halaman sebelumnya"
+            disabled={currentPage <= 1}
+            onClick={() => onPageChange(currentPage - 1)}
+            className="min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] rounded-xl bg-surface shadow-sm text-ink-subtle hover:text-ink disabled:opacity-40 flex items-center justify-center transition-colors border border-border/40 cursor-pointer"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+
+          <span className="min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] px-3 rounded-xl bg-role-accent-admin text-surface font-caption text-caption font-bold shadow-sm flex items-center justify-center">
+            {currentPage}
+          </span>
+
+          <button
+            type="button"
+            aria-label="Halaman selanjutnya"
+            disabled={currentPage >= totalPages}
+            onClick={() => onPageChange(currentPage + 1)}
+            className="min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] rounded-xl bg-surface shadow-sm text-ink hover:bg-surface-container flex items-center justify-center transition-colors border border-border/40 disabled:opacity-40 cursor-pointer"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            aria-label="Halaman terakhir"
+            disabled={currentPage >= totalPages}
+            onClick={() => onPageChange(totalPages)}
+            className="min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] rounded-xl bg-surface shadow-sm text-ink hover:bg-surface-container flex items-center justify-center transition-colors border border-border/40 disabled:opacity-40 cursor-pointer"
+          >
+            <ChevronsRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -40,6 +40,7 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
   const [modelStatus,  setModelStatus]  = useState<ModelLoadStatus>("loading");
   useEffect(() => { onScanCompleteRef.current = onScanComplete; }, [onScanComplete]);
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- sync status model saat mount
     setModelStatus("loading");
     faceapi.nets.tinyFaceDetector.loadFromUri("/models")
       .then(() => faceapi.nets.faceLandmark68Net.loadFromUri("/models"))
@@ -173,7 +174,7 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
   const isCameraOn = phase === "live" || phase === "countdown" || phase === "analyzing"; const mirrorClass = facingMode === "user" ? "-scale-x-100" : "";
   return (
     <section className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-100">
-      <div className="relative min-h-[440px] overflow-visible rounded-t-3xl bg-linear-to-br from-emerald-50 via-white to-cyan-50 sm:min-h-[520px] lg:min-h-[560px]">
+      <div className="relative min-h-[440px] overflow-visible rounded-t-3xl bg-emerald-50/60 sm:min-h-[520px] lg:min-h-[560px]">
         <CameraControls
           faceDetected={faceDetected} isCameraOn={isCameraOn} isAnalyzing={phase === "analyzing"}
           onToggleCamera={isCameraOn ? stopCamera : () => startCamera()} onSwitchCamera={switchCamera}
@@ -189,7 +190,7 @@ export function CameraPanel({ onScanComplete, onReset }: CameraPanelProps) {
           aria-label={phase === "done" ? "Scan ulang" : "Nyalakan kamera"}
           onClick={phase === "done" ? resetScan : () => startCamera()}
           disabled={phase === "analyzing"}
-          className="absolute bottom-0 left-1/2 z-30 grid h-20 w-20 -translate-x-1/2 translate-y-1/2 place-items-center rounded-full bg-emerald-600 text-white shadow-2xl shadow-emerald-200 ring-8 ring-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-400">
+          className="absolute bottom-0 left-1/2 z-30 grid h-20 w-20 -translate-x-1/2 translate-y-1/2 place-items-center rounded-full bg-emerald-600 text-white shadow-2xl ring-8 ring-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:bg-slate-400">
           {phase === "done" ? <RefreshIcon /> : <CameraIcon className="h-9 w-9" />}
         </button>
       </div>

@@ -37,18 +37,18 @@ export function VerificationStatusContent({
     );
 
   return (
-    <main className='min-h-screen bg-slate-50 px-6 py-10 text-slate-950 sm:px-10 lg:px-12'>
-      <div className='mx-auto w-full max-w-6xl'>
+    <main className='w-full text-slate-950'>
+      <div className='w-full'>
         <section className='overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-100'>
           <div
             className={[
-              "bg-linear-to-br px-8 py-10 text-white",
+              "px-8 py-10 text-white",
               statusConfig.headerClass,
             ].join(" ")}
           >
             <div className='flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between'>
               <div>
-                <p className='text-sm font-bold uppercase tracking-[0.22em] text-white/80'>
+                <p className='text-sm font-semibold text-white/80'>
                   Status Verifikasi Dokter
                 </p>
 
@@ -125,7 +125,6 @@ export function VerificationStatusContent({
         </section>
 
         <VerificationBottomSections
-          doctorProfile={doctorProfile}
           verification={verification}
           normalizedStatus={normalizedStatus}
         />

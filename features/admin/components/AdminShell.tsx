@@ -1,26 +1,13 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
-
-import { DashboardLayout } from "@/components/AppShell";
-import { adminService } from "../services/adminService";
+import { AdminAppShell } from "./AdminAppShell";
 
 /**
- * Layout shell admin dengan badge jumlah verifikasi pending.
- * Fetch client-side via React Query (pengganti server fetch di layout lama).
+ * Layout shell admin khusus Stitch Admin Console.
+ * Terpisah dari AppShell role doctor/user agar bebas regresi.
  */
 export function AdminShell({ children }: { children: ReactNode }) {
-  const { data: pendingCount } = useQuery({
-    queryKey: ["admin", "pending-verifications-count"],
-    queryFn: () => adminService.pendingVerificationCount(),
-    staleTime: 60 * 1000,
-    refetchInterval: 60 * 1000,
-  });
-
-  return (
-    <DashboardLayout role="admin" headerExtra={{ pendingCount: pendingCount ?? 0 }}>
-      {children}
-    </DashboardLayout>
-  );
+  return <AdminAppShell>{children}</AdminAppShell>;
 }
+

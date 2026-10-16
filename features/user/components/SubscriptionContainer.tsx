@@ -1,20 +1,34 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Script from "next/script";
-import { Loader2 } from "lucide-react";
 
 import { subscriptionService } from "@/features/subscription/services/subscriptionService";
+import { profileService } from "@/features/profile/services/profileService";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
+import { SubscriptionCardSkeleton } from "@/components/skeletons";
 
 import type { Subscription, ReceiptData } from "./types";
 import { SubscriptionErrorBanner } from "./SubscriptionErrorBanner";
-import { SubscriptionHero } from "./SubscriptionHero";
 import { ActiveSubscriptionCard } from "./ActiveSubscriptionCard";
 import { InactiveSubscriptionCard } from "./InactiveSubscriptionCard";
 import { SubscriptionHistory } from "./SubscriptionHistory";
 import { ReceiptModal } from "./ReceiptModal";
 import { CancelModal } from "./CancelModal";
+
+/** window.snap di-inject oleh <Script src=".../snap.js"> Midtrans. */
+type MidtransSnap = {
+  pay: (
+    token: string,
+    callbacks: {
+      onSuccess: () => void;
+      onPending: () => void;
+      onError: () => void;
+      onClose: () => void;
+    },
+  ) => void;
+};
 
 export function SubscriptionContainer() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
@@ -25,6 +39,14 @@ export function SubscriptionContainer() {
   const [cancelTargetUuid, setCancelTargetUuid] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<ReceiptData | null>(null);
   const [isLoadingReceipt, setIsLoadingReceipt] = useState(false);
+  const [resumingUuid, setResumingUuid] = useState<string | null>(null);
+
+  // Email user untuk CTA verifikasi — reuse cache ["profile"] dari halaman lain.
+  const { data: profile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: () => profileService.get(),
+    staleTime: 60 * 1000,
+  });
 
   const fetchSubscriptions = async () => {
     setIsLoading(true);
@@ -38,44 +60,69 @@ export function SubscriptionContainer() {
     }
   };
 
-  useEffect(() => { fetchSubscriptions(); }, []);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount, setState di dalam callback async
+    fetchSubscriptions();
+  }, []);
 
   const activeSubscription = subscriptions.find(
     (s) => s.status === "active" && (!s.ends_at || new Date(s.ends_at) >= new Date())
   );
+  // Pending bisa dilanjutkan selama <24 jam sejak dibuat.
+  const pendingSubscription = subscriptions.find((s) => s.status === "pending");
 
   const handleCheckout = async () => {
     setIsProcessing(true);
     setErrorMsg(null);
+    await openSnapPayment(() => subscriptionService.checkout());
+    setIsProcessing(false);
+  };
+
+  /** Buka Snap Midtrans — dipakai checkout baru & lanjut pembayaran pending. */
+  const openSnapPayment = async (
+    request: () => Promise<{ data?: { snap_token?: string } }>,
+  ) => {
+    setErrorMsg(null);
     try {
-      const data = await subscriptionService.checkout();
+      const data = await request();
       if (data.data?.snap_token) {
-        // @ts-ignore
-        window.snap.pay(data.data.snap_token, {
+        const snap = (window as unknown as { snap?: MidtransSnap }).snap;
+        snap?.pay(data.data.snap_token, {
           onSuccess: () => fetchSubscriptions(),
           onPending: () => fetchSubscriptions(),
           onError: () => setErrorMsg("Pembayaran gagal, silakan coba lagi."),
           onClose: () => fetchSubscriptions(),
         });
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      setErrorMsg(getUserFriendlyErrorMessage(err));
+      // Status bisa berubah di BE — sinkronkan list agar callout tidak tertinggal.
+      await fetchSubscriptions();
+    }
+  };
+
+  const handleContinuePayment = async (uuid: string) => {
+    setResumingUuid(uuid);
+    setErrorMsg(null);
+    await openSnapPayment(() => subscriptionService.resumePayment(uuid));
+    setResumingUuid(null);
+  };
+
+  const handleViewReceiptByUuid = async (uuid: string) => {
+    setIsLoadingReceipt(true);
+    try {
+      const data = await subscriptionService.receipt(uuid);
+      setReceipt(data as unknown as ReceiptData);
+    } catch (err: unknown) {
       setErrorMsg(getUserFriendlyErrorMessage(err));
     } finally {
-      setIsProcessing(false);
+      setIsLoadingReceipt(false);
     }
   };
 
   const handleViewReceipt = async () => {
     if (!activeSubscription) return;
-    setIsLoadingReceipt(true);
-    try {
-      const data = await subscriptionService.receipt(activeSubscription.uuid);
-      setReceipt(data as unknown as ReceiptData);
-    } catch (err: any) {
-      setErrorMsg(getUserFriendlyErrorMessage(err));
-    } finally {
-      setIsLoadingReceipt(false);
-    }
+    await handleViewReceiptByUuid(activeSubscription.uuid);
   };
 
   const handleCancelClick = (uuid: string) => {
@@ -91,7 +138,7 @@ export function SubscriptionContainer() {
     try {
       await subscriptionService.cancel(cancelTargetUuid);
       fetchSubscriptions();
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrorMsg(getUserFriendlyErrorMessage(err));
     } finally {
       setIsProcessing(false);
@@ -107,17 +154,49 @@ export function SubscriptionContainer() {
           : "https://app.sandbox.midtrans.com/snap/snap.js"}
         data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
       />
-      <main className="min-h-[calc(100vh-72px)] bg-shell p-4 sm:p-6 lg:p-10 flex flex-col items-center">
-        <SubscriptionErrorBanner message={errorMsg} />
-        <div className="w-full max-w-3xl bg-white rounded-3xl shadow-sm border border-emerald-100/50 overflow-hidden">
-          <SubscriptionHero />
-          <div className="p-6 sm:p-10">
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="w-10 h-10 text-emerald-500 animate-spin mb-4" />
-                <p className="text-slate-500 font-medium">Memuat data langganan...</p>
+      <main className="mx-auto w-full max-w-4xl">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+            Langganan
+          </h1>
+          <p className="mt-1 text-sm text-slate-500 sm:text-base">
+            Kelola paket SkinCek Pro Anda — scan & konsultasi tanpa batas.
+          </p>
+        </div>
+
+        <SubscriptionErrorBanner
+          message={errorMsg}
+          verifyEmail={profile?.email ?? null}
+        />
+
+        {isLoading ? (
+          <SubscriptionCardSkeleton />
+        ) : (
+          <div className="space-y-6">
+            {pendingSubscription && !activeSubscription ? (
+              <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="min-w-0">
+                  <p className="flex items-center gap-2 text-sm font-bold text-amber-800">
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-amber-500" />
+                    Ada pembayaran menunggu — Rp{pendingSubscription.amount.toLocaleString("id-ID")}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-amber-700">
+                    Dibuat {new Date(pendingSubscription.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}.
+                    Selesaikan pembayaran untuk mengaktifkan SkinCek Pro.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleContinuePayment(pendingSubscription.uuid)}
+                  disabled={resumingUuid === pendingSubscription.uuid}
+                  className="shrink-0 rounded-xl bg-amber-500 px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-amber-600 disabled:opacity-60"
+                >
+                  {resumingUuid === pendingSubscription.uuid ? "Membuka..." : "Lanjutkan Pembayaran"}
+                </button>
               </div>
-            ) : activeSubscription ? (
+            ) : null}
+
+            {activeSubscription ? (
               <ActiveSubscriptionCard
                 subscription={activeSubscription}
                 isLoadingReceipt={isLoadingReceipt}
@@ -126,11 +205,21 @@ export function SubscriptionContainer() {
                 onCancel={() => handleCancelClick(activeSubscription.uuid)}
               />
             ) : (
-              <InactiveSubscriptionCard isProcessing={isProcessing} onCheckout={handleCheckout} />
+              <InactiveSubscriptionCard
+                isProcessing={isProcessing}
+                onCheckout={handleCheckout}
+                price={pendingSubscription?.amount ?? subscriptions[0]?.amount ?? null}
+              />
             )}
-            <SubscriptionHistory subscriptions={subscriptions} />
+
+            <SubscriptionHistory
+              subscriptions={subscriptions}
+              resumingUuid={resumingUuid}
+              onContinuePayment={handleContinuePayment}
+              onViewReceipt={handleViewReceiptByUuid}
+            />
           </div>
-        </div>
+        )}
       </main>
       <ReceiptModal receipt={receipt} onClose={() => setReceipt(null)} />
       <CancelModal

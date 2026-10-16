@@ -1,3 +1,5 @@
+import { Lightbulb, Package } from "lucide-react";
+
 import type { SkincareRecommendation, TreatmentRecommendation } from "@/features/scan/services/scanService";
 
 import { SkincareProductCard, TreatmentTipItem } from "./ScanRecommendationItems";
@@ -8,7 +10,7 @@ type ScanRecommendationsSectionProps = {
 };
 
 /**
- * Section hasil scan: 💡 Rekomendasi Perawatan (Tips) + 🧴 Rekomendasi
+ * Section hasil scan: Rekomendasi Perawatan (Tips) + Rekomendasi
  * Skincare (Produk). Keduanya embedded di response scan backend — tidak
  * perlu fetch endpoint terpisah.
  */
@@ -36,8 +38,8 @@ export function ScanRecommendationsSection({
       {tips.length > 0 ? (
         <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
           <div className="mb-5 flex items-center gap-3">
-            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-amber-50 text-lg ring-1 ring-amber-100">
-              💡
+            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-amber-50 text-amber-600 ring-1 ring-amber-100">
+              <Lightbulb className="h-5 w-5" />
             </span>
             <div>
               <h2 className="text-lg font-bold text-slate-900">
@@ -59,8 +61,8 @@ export function ScanRecommendationsSection({
       {products.length > 0 ? (
         <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100">
           <div className="mb-5 flex items-center gap-3">
-            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-sky-50 text-lg ring-1 ring-sky-100">
-              🧴
+            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-sky-50 text-sky-600 ring-1 ring-sky-100">
+              <Package className="h-5 w-5" />
             </span>
             <div>
               <h2 className="text-lg font-bold text-slate-900">
@@ -71,7 +73,8 @@ export function ScanRecommendationsSection({
               </p>
             </div>
           </div>
-          <div className="grid gap-4 xl:grid-cols-2">
+          {/* Sidebar sempit — produk ditumpuk 1 kolom agar mudah dibaca */}
+          <div className="grid gap-4">
             {products.map((product) => (
               <SkincareProductCard key={product.uuid} product={product} />
             ))}

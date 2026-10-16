@@ -1,167 +1,150 @@
-import Link from "next/link";
+"use client";
 
-import { EmptyState } from "@/components/ui/empty-state";
-import { Pagination } from "@/components/ui/pagination";
-import { TableWidget } from "@/components/ui/table-widget";
+import { UserX, ChevronLeft, ChevronRight } from "lucide-react";
+import type { AdminUser } from "@/features/admin/services/adminService";
 import type { PagePagination } from "@/lib/types/pagination";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
-import type { UserRow } from "@/features/admin/users/lib/usersTypes";
-import { UserActionIcon } from "./UserActionIcon";
+import { UserTableRow } from "./UserTableRow";
 
 type UsersTableProps = {
-  users: UserRow[];
+  users: AdminUser[];
+  currentUserUuid?: string;
+  currentUserEmail?: string;
   pagination: PagePagination;
+  onPageChange: (page: number) => void;
+  onOpenRoleModal: (user: AdminUser) => void;
+  onOpenSuspendModal: (user: AdminUser) => void;
+  onOpenDeleteModal: (user: AdminUser) => void;
+  isLoading?: boolean;
 };
 
-export function UsersTable({ users, pagination }: UsersTableProps) {
-  const paginationNode = (
-    <Pagination
-      currentPage={pagination.currentPage}
-      totalPages={pagination.totalPages}
-      totalItems={pagination.totalItems}
-      pageSize={pagination.pageSize}
-      itemLabel={pagination.itemLabel}
-      basePath={pagination.basePath}
-    />
-  );
-
-  const tableNode = (
-    <Table className="min-w-full divide-y divide-slate-100">
-      <TableHeader className="bg-slate-50/80">
-        <TableRow className="hover:bg-transparent">
-          <TableHead className="hidden w-16 px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:table-cell sm:px-6 lg:px-8">
-            No
-          </TableHead>
-
-          <TableHead className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-6 lg:px-8">
-            Username
-          </TableHead>
-
-          <TableHead className="hidden px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 md:table-cell sm:px-6 lg:px-8">
-            Email
-          </TableHead>
-
-          <TableHead className="px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-6 lg:px-8">
-            Profil
-          </TableHead>
-
-          <TableHead className="hidden px-4 py-4 text-left text-xs font-bold uppercase tracking-wider text-slate-500 lg:table-cell lg:px-8">
-            Join
-          </TableHead>
-
-          <TableHead className="px-4 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-500 sm:px-6 lg:px-8">
-            Action
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-
-      <TableBody className="divide-y divide-slate-100 bg-white">
-        {users.map((user) => (
-          <TableRow
-            key={user.id}
-            className="group border-slate-100 transition-colors hover:bg-emerald-50/30"
-          >
-            <TableCell className="hidden whitespace-nowrap px-4 py-4 text-sm font-medium text-slate-500 sm:table-cell sm:px-6 lg:px-8">
-              {user.no}
-            </TableCell>
-
-            <TableCell className="whitespace-nowrap px-4 py-4 sm:px-6 lg:px-8">
-              <p className="text-sm font-medium text-slate-700 transition-colors group-hover:text-emerald-700">
-                {user.username}
-              </p>
-              <p className="mt-0.5 text-xs text-slate-400 md:hidden">
-                {user.email}
-              </p>
-            </TableCell>
-
-            <TableCell className="hidden whitespace-nowrap px-4 py-4 text-sm text-slate-500 md:table-cell sm:px-6 lg:px-8">
-              {user.email}
-            </TableCell>
-
-            <TableCell className="whitespace-nowrap px-4 py-4 sm:px-6 lg:px-8">
-              <p className="text-sm font-medium text-slate-700">
-                {user.gender === "-" ? "Belum diisi" : user.gender}
-              </p>
-              <p className="mt-0.5 text-xs text-slate-500">
-                {user.age === "-" ? "-" : `${user.age} tahun`}
-              </p>
-            </TableCell>
-
-            <TableCell className="hidden whitespace-nowrap px-4 py-4 lg:table-cell lg:px-8">
-              <p className="text-sm font-medium text-slate-700">
-                {user.join}
-              </p>
-              <p className="mt-1 text-xs font-normal text-slate-500">
-                Registered user
-              </p>
-            </TableCell>
-
-            <TableCell className="whitespace-nowrap px-4 py-4 text-right text-sm font-medium sm:px-6 lg:px-8">
-              <div className="flex items-center justify-end gap-2">
-                <Link
-                  href={`/admin/users/detail?id=${encodeURIComponent(user.id)}`}
-                  title="View"
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl p-0 text-slate-400 transition-all duration-200 hover:bg-sky-50! hover:text-sky-700"
-                >
-                  <UserActionIcon type="view" />
-                </Link>
-              </div>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-
-  // Mobile card list (§4.2 §5.2) — username bold, meta gender/umur, email, View kanan-atas.
-  const cardsNode = (
-    <div className="divide-y divide-slate-100 bg-white">
-      {users.map((user) => (
-        <div key={user.id} className="flex items-start justify-between gap-3 p-4">
-          <div className="min-w-0 flex-1 space-y-1">
-            <p className="truncate text-sm font-bold text-slate-900">
-              {user.username}
-            </p>
-            <p className="text-xs text-slate-500">
-              {user.gender === "-" ? "Belum diisi" : user.gender}
-              {user.age !== "-" ? ` · ${user.age} tahun` : ""}
-            </p>
-            <p className="truncate text-xs text-slate-400">{user.email}</p>
-          </div>
-
-          <Link
-            href={`/admin/users/detail?id=${encodeURIComponent(user.id)}`}
-            title="View"
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-slate-400 transition-all duration-200 hover:bg-sky-50! hover:text-sky-700"
-          >
-            <UserActionIcon type="view" />
-          </Link>
-        </div>
-      ))}
-    </div>
-  );
+export function UsersTable({
+  users,
+  currentUserUuid,
+  currentUserEmail,
+  pagination,
+  onPageChange,
+  onOpenRoleModal,
+  onOpenSuspendModal,
+  onOpenDeleteModal,
+  isLoading,
+}: UsersTableProps) {
+  const { currentPage, totalPages, totalItems, pageSize } = pagination;
+  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+  const endItem = Math.min(currentPage * pageSize, totalItems);
 
   return (
-    <TableWidget
-      table={tableNode}
-      cards={users.length > 0 ? cardsNode : undefined}
-      empty={
-        users.length === 0 ? (
-          <EmptyState
-            title="Belum ada data user"
-            description="User terdaftar akan tampil di sini setelah mereka mendaftar."
-          />
-        ) : undefined
-      }
-      footer={paginationNode}
-    />
+    <div className="overflow-x-auto">
+      <table className="w-full text-left border-collapse">
+        {/* Sticky Light Gray Header matching index2.html */}
+        <thead className="bg-surface-container sticky top-0 z-10 shadow-sm">
+          <tr className="h-12 text-ink-muted font-caption text-caption uppercase tracking-wider">
+            <th className="py-3 px-4 font-semibold">Pengguna</th>
+            <th className="py-3 px-4 font-semibold">Email</th>
+            <th className="py-3 px-4 font-semibold">Role</th>
+            <th className="py-3 px-4 font-semibold">Status</th>
+            <th className="py-3 px-4 font-semibold">Tanggal Daftar</th>
+            <th className="py-3 px-4 text-right font-semibold">Aksi</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-border/60 font-body-default text-body-default">
+          {users.map((user) => {
+            const isCurrentUser = Boolean(
+              (currentUserUuid && user.uuid === currentUserUuid) ||
+                (currentUserEmail && user.email === currentUserEmail)
+            );
+
+            return (
+              <UserTableRow
+                key={user.uuid || user.id}
+                user={user}
+                isCurrentUser={isCurrentUser}
+                onOpenRoleModal={onOpenRoleModal}
+                onOpenSuspendModal={onOpenSuspendModal}
+                onOpenDeleteModal={onOpenDeleteModal}
+              />
+            );
+          })}
+        </tbody>
+      </table>
+
+      {/* Empty State */}
+      {!isLoading && users.length === 0 && (
+        <div className="py-16 text-center bg-surface">
+          <div className="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center mx-auto mb-3 text-ink-subtle">
+            <UserX className="w-6 h-6" />
+          </div>
+          <h4 className="font-headline-sm text-headline-sm text-ink font-semibold">
+            Tidak ada pengguna ditemukan
+          </h4>
+          <p className="font-body-default text-caption text-ink-muted mt-1 max-w-sm mx-auto">
+            Coba sesuaikan kata kunci pencarian atau reset filter role dan status.
+          </p>
+        </div>
+      )}
+
+      {/* Pagination Footer matching index2.html */}
+      <div className="p-4 bg-surface-alt border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-1.5 font-caption text-caption text-ink-muted">
+          <span>Menampilkan</span>
+          <strong className="text-ink font-semibold">{startItem}-{endItem}</strong>
+          <span>dari</span>
+          <strong className="text-ink font-semibold">{totalItems.toLocaleString("id-ID")}</strong>
+          <span>pengguna</span>
+        </div>
+
+        {totalPages > 1 && (
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage - 1)}
+              disabled={currentPage <= 1}
+              className="min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] rounded-xl flex items-center justify-center text-ink-subtle hover:text-ink hover:bg-surface-container transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+              aria-label="Halaman sebelumnya"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              let pageNum: number;
+              if (totalPages <= 5) {
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                pageNum = totalPages - 4 + i;
+              } else {
+                pageNum = currentPage - 2 + i;
+              }
+
+              const isActive = pageNum === currentPage;
+              return (
+                <button
+                  key={pageNum}
+                  type="button"
+                  onClick={() => onPageChange(pageNum)}
+                  className={`min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] rounded-xl flex items-center justify-center font-caption text-caption font-semibold transition-all shadow-sm cursor-pointer ${
+                    isActive
+                      ? "bg-role-accent-admin text-surface"
+                      : "bg-surface hover:bg-surface-container text-ink border border-border/50"
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage + 1)}
+              disabled={currentPage >= totalPages}
+              className="min-h-[44px] min-w-[44px] sm:min-h-[36px] sm:min-w-[36px] rounded-xl flex items-center justify-center text-ink-subtle hover:text-ink hover:bg-surface-container transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+              aria-label="Halaman berikutnya"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

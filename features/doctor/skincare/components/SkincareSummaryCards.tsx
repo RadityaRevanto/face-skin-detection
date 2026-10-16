@@ -1,84 +1,90 @@
-import { GradientSummaryCards } from "@/features/shared/components/GradientSummaryCards";
+"use client";
 
+import { FlaskConical, ShieldAlert, Layers, CheckCircle2 } from "lucide-react";
 import type { SkincareSummary } from "../types";
 
-type SkincareSummaryCardsProps = {
+export type SkincareSummaryCardsProps = {
   summary: SkincareSummary;
 };
 
-function BottleWatermark() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-    </svg>
-  );
-}
-
-function TagWatermark() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-      <path
-        d="M6 6h.008v.008H6V6z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-    </svg>
-  );
-}
-
-function FaceWatermark() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0-1.007-.8-1.8-1.8-1.8s-1.8.793-1.8 1.8.8 1.8 1.8 1.8 1.8-.793 1.8-1.8zm7.5 0c0-1.007-.8-1.8-1.8-1.8s-1.8.793-1.8 1.8.8 1.8 1.8 1.8 1.8-.793 1.8-1.8z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-    </svg>
-  );
-}
-
 export function SkincareSummaryCards({ summary }: SkincareSummaryCardsProps) {
-  const cards = [
-    {
-      label: "Total Produk",
-      value: String(summary.totalProducts),
-      helper: "Produk skincare terdaftar",
-      variant: "sky" as const,
-      icon: <BottleWatermark />,
-    },
-    {
-      label: "Kategori",
-      value: String(summary.totalCategories),
-      helper: "Jenis produk tersedia",
-      variant: "emerald" as const,
-      icon: <TagWatermark />,
-    },
-    {
-      label: "Skin Concern",
-      value: String(summary.totalConcerns),
-      helper: "Kondisi kulit tertangani",
-      variant: "amber" as const,
-      icon: <FaceWatermark />,
-    },
-  ];
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+      {/* Card 1: Total Produk */}
+      <div className="bg-surface p-space-lg rounded-xl shadow-xs border border-border/50 flex flex-col justify-between hover:shadow-sm transition-shadow">
+        <div className="flex items-start justify-between">
+          <div className="flex flex-col">
+            <span className="font-eyebrow text-eyebrow text-ink-subtle uppercase tracking-wider font-semibold">
+              Total Produk
+            </span>
+            <span className="font-display text-display text-ink mt-1 tabular-nums font-bold">
+              {summary.totalProducts} Formula
+            </span>
+          </div>
+          <div className="w-12 h-12 rounded-xl bg-role-accent-doctor/10 flex items-center justify-center text-role-accent-doctor shrink-0">
+            <FlaskConical className="w-6 h-6" />
+          </div>
+        </div>
+        <div className="mt-4 pt-3 flex items-center justify-between text-ink-muted bg-surface-alt px-3 py-2 rounded-lg">
+          <span className="font-caption text-caption flex items-center gap-1.5 text-success font-medium">
+            <CheckCircle2 className="w-4 h-4" />
+            Formula Klinik
+          </span>
+          <span className="font-caption text-caption text-ink-subtle">
+            Terverifikasi
+          </span>
+        </div>
+      </div>
 
-  return <GradientSummaryCards cards={cards} />;
+      {/* Card 2: Target Concern */}
+      <div className="bg-surface p-space-lg rounded-xl shadow-xs border border-border/50 flex flex-col justify-between hover:shadow-sm transition-shadow">
+        <div className="flex items-start justify-between">
+          <div className="flex flex-col">
+            <span className="font-eyebrow text-eyebrow text-ink-subtle uppercase tracking-wider font-semibold">
+              Target Concern
+            </span>
+            <span className="font-display text-display text-ink mt-1 tabular-nums font-bold">
+              {summary.totalConcerns} Kondisi Kulit
+            </span>
+          </div>
+          <div className="w-12 h-12 rounded-xl bg-info/10 flex items-center justify-center text-info shrink-0">
+            <ShieldAlert className="w-6 h-6" />
+          </div>
+        </div>
+        <div className="mt-4 pt-3 flex items-center justify-between text-ink-muted bg-surface-alt px-3 py-2 rounded-lg">
+          <span className="font-caption text-caption text-ink-muted truncate font-medium">
+            Jerawat, Flek, Barrier, Pori
+          </span>
+          <span className="font-caption text-caption text-role-accent-doctor font-semibold">
+            Terkover
+          </span>
+        </div>
+      </div>
+
+      {/* Card 3: Kelompok Formula */}
+      <div className="bg-surface p-space-lg rounded-xl shadow-xs border border-border/50 flex flex-col justify-between hover:shadow-sm transition-shadow">
+        <div className="flex items-start justify-between">
+          <div className="flex flex-col">
+            <span className="font-eyebrow text-eyebrow text-ink-subtle uppercase tracking-wider font-semibold">
+              Kelompok Formula
+            </span>
+            <span className="font-display text-display text-ink mt-1 tabular-nums font-bold">
+              {summary.totalCategories} Kategori
+            </span>
+          </div>
+          <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-role-accent-admin shrink-0">
+            <Layers className="w-6 h-6" />
+          </div>
+        </div>
+        <div className="mt-4 pt-3 flex items-center justify-between text-ink-muted bg-surface-alt px-3 py-2 rounded-lg">
+          <span className="font-caption text-caption text-ink-muted truncate font-medium">
+            Cleanser, Serum, Moisturizer
+          </span>
+          <span className="font-caption text-caption text-role-accent-doctor font-semibold">
+            Lengkap
+          </span>
+        </div>
+      </div>
+    </div>
+  );
 }

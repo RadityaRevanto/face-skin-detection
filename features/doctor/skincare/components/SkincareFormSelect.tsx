@@ -3,7 +3,7 @@
 import type { SkincareFormSelectProps } from "./SkincareFormTypes";
 
 const selectClass =
-  "h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 text-sm font-medium text-gray-700 outline-none transition-colors focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100";
+  "h-12 w-full rounded-xl border border-slate-200 bg-slate-50/80 px-4 text-sm font-medium text-slate-700 outline-none transition-colors focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100";
 
 export function SkincareFormSelect({
   id,
@@ -17,7 +17,7 @@ export function SkincareFormSelect({
     <div>
       <label
         htmlFor={id}
-        className='mb-2 block text-sm font-semibold text-gray-700'
+        className='mb-2 block text-sm font-semibold text-slate-700'
       >
         {label}
       </label>

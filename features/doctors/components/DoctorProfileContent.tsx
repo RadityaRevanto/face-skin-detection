@@ -39,7 +39,7 @@ function formatDate(iso: string) {
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1 border-b border-slate-100 py-3 last:border-0 sm:flex-row sm:items-start sm:gap-6">
-      <span className="w-40 shrink-0 text-xs font-bold uppercase tracking-wider text-slate-400">
+      <span className="w-40 shrink-0 text-xs font-bold text-slate-400">
         {label}
       </span>
       <span className="min-w-0 text-sm font-medium text-slate-700">
@@ -149,8 +149,9 @@ export function DoctorProfileContent({
             Review ({reviewsPagination.totalItems})
           </h2>
           {doctor.rating_avg != null && (
-            <span className="text-sm font-semibold text-slate-500">
-              ⭐ {Number(doctor.rating_avg).toFixed(1)}
+            <span className="flex items-center gap-1.5 text-sm font-semibold text-slate-500">
+              <Stars rating={doctor.rating_avg} />
+              {Number(doctor.rating_avg).toFixed(1)}
             </span>
           )}
         </div>

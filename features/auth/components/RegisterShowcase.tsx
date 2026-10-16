@@ -1,34 +1,23 @@
-import { LeafLogo } from "./BrandIcons";
-
 export function RegisterShowcase() {
   return (
     <section className='relative min-h-180 overflow-hidden rounded-4xl px-5 py-10 sm:px-8 lg:min-h-190'>
-      <div className='absolute right-0 top-4 h-56 w-56 rounded-full bg-emerald-200/60 blur-3xl' />
-      <div className='absolute bottom-10 left-8 h-40 w-40 rounded-full bg-teal-100/80 blur-3xl' />
-      <div className='absolute right-4 top-4 h-24 w-24 rounded-full border border-emerald-200/40' />
-      <div className='absolute right-14 top-14 h-40 w-40 rounded-full border border-emerald-200/30' />
-
       <div className='relative mx-auto w-full max-w-4xl'>
         <div className='mb-8 max-w-md'>
-          <div className='mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-emerald-700 shadow-sm backdrop-blur'>
-            <span className='h-1.5 w-1.5 rounded-full bg-emerald-500' />
-            Analisis Kulit Berbasis AI
-          </div>
           <h2 className='text-4xl font-bold tracking-[-0.04em] text-zinc-950 sm:text-5xl'>
-            AI Canggih untuk{" "}
+            Analisis Kulit dengan AI untuk{" "}
             <span className='text-emerald-700'>Kulit Lebih Sehat</span>
           </h2>
         </div>
 
-        <div className='relative rounded-4xl border border-white/80 bg-white/65 p-4 shadow-2xl shadow-emerald-950/10 backdrop-blur-xl sm:p-6 lg:p-7'>
-          <div className='relative min-h-82.5 overflow-hidden rounded-3xl bg-linear-to-br from-emerald-50 via-white to-teal-50'>
-            <div className='absolute left-8 top-7 z-20 flex items-center gap-2 rounded-xl bg-white/85 px-3 py-2 text-xs font-semibold text-zinc-700 shadow-sm backdrop-blur'>
+        <div className='relative rounded-4xl border border-zinc-100 bg-white p-4 shadow-sm sm:p-6 lg:p-7'>
+          <div className='relative min-h-82.5 overflow-hidden rounded-3xl bg-emerald-50/60'>
+            <div className='absolute left-8 top-7 z-20 flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-zinc-700 shadow-sm'>
               <span className='h-2.5 w-2.5 rounded-full bg-emerald-500' />
-              AI Memindai
+              Memindai
             </div>
 
             <div className='absolute left-1/2 top-9 h-80 w-56 -translate-x-1/2 rounded-t-full bg-linear-to-b from-zinc-700 via-zinc-800 to-zinc-900 opacity-90' />
-            <div className='absolute left-1/2 top-20 h-72 w-52 -translate-x-1/2 rounded-[46%] bg-linear-to-b from-orange-100 via-rose-100 to-amber-100 shadow-2xl shadow-emerald-950/10' />
+            <div className='absolute left-1/2 top-20 h-72 w-52 -translate-x-1/2 rounded-[46%] bg-linear-to-b from-orange-100 via-rose-100 to-amber-100 shadow-2xl' />
             <div className='absolute left-1/2 top-20 h-36 w-52 -translate-x-1/2 rounded-t-full bg-linear-to-b from-zinc-800 to-zinc-700' />
             <div className='absolute left-[44%] top-40 h-2.5 w-5 rounded-full border-t-2 border-zinc-700' />
             <div className='absolute right-[44%] top-40 h-2.5 w-5 rounded-full border-t-2 border-zinc-700' />
@@ -42,7 +31,7 @@ export function RegisterShowcase() {
             <div className='absolute bottom-14 left-20 h-8 w-8 rounded-bl-xl border-b-2 border-l-2 border-emerald-500/50' />
             <div className='absolute bottom-14 right-20 h-8 w-8 rounded-br-xl border-b-2 border-r-2 border-emerald-500/50' />
 
-            <div className='absolute right-6 top-16 z-20 w-36 rounded-2xl bg-white/88 p-4 shadow-xl shadow-emerald-950/10 backdrop-blur'>
+            <div className='absolute right-6 top-16 z-20 w-36 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm'>
               <p className='text-[10px] font-semibold text-zinc-500'>
                 Skor Kesehatan Kulit
               </p>
@@ -60,7 +49,7 @@ export function RegisterShowcase() {
               </div>
             </div>
 
-            <div className='absolute right-6 top-52 z-20 w-36 rounded-2xl bg-white/88 p-4 shadow-xl shadow-emerald-950/10 backdrop-blur'>
+            <div className='absolute right-6 top-52 z-20 w-36 rounded-2xl border border-zinc-100 bg-white p-4 shadow-sm'>
               <p className='text-[10px] font-semibold text-zinc-700'>
                 Insight Utama
               </p>
@@ -80,7 +69,7 @@ export function RegisterShowcase() {
             </div>
           </div>
 
-          <div className='relative z-30 -mt-4 mx-5 rounded-3xl border border-white/80 bg-white/90 p-5 shadow-xl shadow-emerald-950/10 backdrop-blur'>
+          <div className='relative z-30 -mt-4 mx-5 rounded-3xl border border-zinc-100 bg-white p-5 shadow-sm'>
             <div className='grid items-center gap-5 sm:grid-cols-[150px_minmax(0,1fr)_130px]'>
               <div>
                 <p className='text-sm font-semibold text-zinc-800'>
@@ -145,25 +134,10 @@ export function RegisterShowcase() {
           </div>
         </div>
 
-        <div className='mt-7 grid gap-4 text-xs sm:grid-cols-3'>
-          {[
-            ["Analisis Kulit AI", "Detail & akurat"],
-            ["Insight Personal", "Sesuai kulit Anda"],
-            ["Pantau Progres", "Lihat perubahan nyata"],
-          ].map(([title, desc]) => (
-            <div key={title} className='flex items-center gap-3'>
-              <span className='flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700'>
-                <LeafLogo />
-              </span>
-              <span>
-                <span className='block font-semibold text-emerald-800'>
-                  {title}
-                </span>
-                <span className='text-zinc-500'>{desc}</span>
-              </span>
-            </div>
-          ))}
-        </div>
+        <p className='mt-7 text-sm font-medium text-zinc-600'>
+          Analisis detail &amp; akurat · insight sesuai kondisi kulit Anda ·
+          pantau perubahan dari waktu ke waktu.
+        </p>
       </div>
     </section>
   );

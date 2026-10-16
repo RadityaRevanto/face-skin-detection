@@ -1,14 +1,12 @@
 import { DoctorLogoutButton } from "@/features/doctor/components/DoctorLogoutButton";
-import type { DoctorProfile, DoctorVerification } from "./VerificationTypes";
+import type { DoctorVerification } from "./VerificationTypes";
 import { isRevisionStatus } from "../utils/verificationUtils";
 import { ResubmissionForm } from "./ResubmissionForm";
 
 export function VerificationBottomSections({
-  doctorProfile,
   verification,
   normalizedStatus,
 }: {
-  doctorProfile: DoctorProfile;
   verification: DoctorVerification | null;
   normalizedStatus: string;
 }) {

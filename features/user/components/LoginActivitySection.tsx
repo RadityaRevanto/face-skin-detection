@@ -43,7 +43,7 @@ export function LoginActivitySection({
     <section className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-blue-50 rounded-xl text-blue-600">
+          <div className="p-2.5 bg-slate-100 rounded-xl text-slate-600">
             <Monitor size={22} />
           </div>
           <div>

@@ -32,10 +32,10 @@ type RecommendationFormFieldsProps = {
 };
 
 const SELECT_CLASS =
-  "h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 text-sm font-medium text-gray-700 outline-none transition-colors focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100";
+  "h-12 w-full rounded-xl border border-slate-200 bg-slate-50/80 px-4 text-sm font-medium text-slate-700 outline-none transition-colors focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100";
 
 const INPUT_CLASS =
-  "h-12 w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 text-sm font-medium text-gray-700 outline-none transition-colors placeholder:text-gray-400 focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100";
+  "h-12 w-full rounded-xl border border-slate-200 bg-slate-50/80 px-4 text-sm font-medium text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100";
 
 export function RecommendationFormFields({
   concerns,
@@ -62,7 +62,7 @@ export function RecommendationFormFields({
         <div>
           <label
             htmlFor='concernId'
-            className='mb-2 block text-sm font-semibold text-gray-700'
+            className='mb-2 block text-sm font-semibold text-slate-700'
           >
             Skin Concern
           </label>
@@ -85,7 +85,7 @@ export function RecommendationFormFields({
         <div>
           <label
             htmlFor='productId'
-            className='mb-2 block text-sm font-semibold text-gray-700'
+            className='mb-2 block text-sm font-semibold text-slate-700'
           >
             Produk Skincare
           </label>
@@ -110,7 +110,7 @@ export function RecommendationFormFields({
         <div>
           <label
             htmlFor='title'
-            className='mb-2 block text-sm font-semibold text-gray-700'
+            className='mb-2 block text-sm font-semibold text-slate-700'
           >
             Judul / Routine Step
           </label>
@@ -128,7 +128,7 @@ export function RecommendationFormFields({
         <div>
           <label
             htmlFor='priorityLevel'
-            className='mb-2 block text-sm font-semibold text-gray-700'
+            className='mb-2 block text-sm font-semibold text-slate-700'
           >
             Priority Level
           </label>
@@ -153,7 +153,7 @@ export function RecommendationFormFields({
       <div>
         <label
           htmlFor='recommendationText'
-          className='mb-2 block text-sm font-semibold text-gray-700'
+          className='mb-2 block text-sm font-semibold text-slate-700'
         >
           Catatan Rekomendasi
         </label>
@@ -164,19 +164,19 @@ export function RecommendationFormFields({
           value={recommendationText}
           onChange={(event) => setRecommendationText(event.target.value)}
           placeholder='Tulis rekomendasi dokter untuk user...'
-          className='w-full resize-none rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-3 text-sm font-medium leading-6 text-gray-700 outline-none transition-colors placeholder:text-gray-400 focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100'
+          className='w-full resize-none rounded-xl border border-slate-200 bg-slate-50/80 px-4 py-3 text-sm font-medium leading-6 text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100'
         />
       </div>
 
-      <label className='flex cursor-pointer items-center gap-3 rounded-xl border border-gray-100 bg-gray-50/80 px-4 py-3'>
+      <label className='flex cursor-pointer items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/80 px-4 py-3'>
         <input
           type='checkbox'
           checked={isActive}
           onChange={(event) => setIsActive(event.target.checked)}
-          className='h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500'
+          className='h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500'
         />
 
-        <span className='text-sm font-semibold text-gray-700'>
+        <span className='text-sm font-semibold text-slate-700'>
           Rekomendasi aktif
         </span>
       </label>

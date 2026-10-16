@@ -29,7 +29,7 @@ export function DoctorProfileClientContent({
 
   if (isLoadingDoctor) {
     return (
-      <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
+      <main className="w-full">
         <div className="space-y-4">
           <div className="h-6 w-40 animate-pulse rounded bg-slate-100" />
           <div className="h-64 animate-pulse rounded-3xl bg-slate-100" />
@@ -40,7 +40,7 @@ export function DoctorProfileClientContent({
 
   if (isDoctorError || !doctor) {
     return (
-      <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
+      <main className="w-full">
         <div className="rounded-2xl border border-rose-100 bg-rose-50 p-8 text-center text-sm text-rose-600">
           Dokter tidak ditemukan.
         </div>
@@ -61,7 +61,7 @@ export function DoctorProfileClientContent({
   };
 
   return (
-    <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
+    <main className="w-full">
       <DoctorProfileContent
         doctor={doctor}
         reviews={reviews}

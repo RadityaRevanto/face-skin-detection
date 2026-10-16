@@ -1,7 +1,7 @@
 "use client";
 
 import { RefObject } from "react";
-import { Send, MoreVertical, Info, ChevronLeft, Star, Sparkles, Trash2 } from "lucide-react";
+import { Send, ChevronLeft, Star, Bot, Trash2 } from "lucide-react";
 import { Conversation, Message } from "@/lib/api/consultations-query";
 import { isAiBotConversation } from "../utils/consultationHelpers";
 import { formatGender } from "@/lib/utils/demographics";
@@ -16,6 +16,8 @@ type ChatPanelProps = {
   inputText: string;
   selectedImagePreview: string | null;
   isSending: boolean;
+  /** Sedang memuat pesan conversation aktif. */
+  isLoadingMessages?: boolean;
   messagesEndRef: RefObject<HTMLDivElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
   onShowSidebar: () => void;
@@ -40,6 +42,7 @@ export function ChatPanel({
   inputText,
   selectedImagePreview,
   isSending,
+  isLoadingMessages = false,
   messagesEndRef,
   fileInputRef,
   onShowSidebar,
@@ -88,7 +91,7 @@ export function ChatPanel({
       } lg:flex flex-1 flex-col min-w-0 bg-zinc-50/30`}
     >
       {/* Chat Header */}
-      <div className="h-14 sm:h-16 border-b border-zinc-100 bg-white/80 backdrop-blur-md px-3 sm:px-6 flex justify-between items-center shrink-0">
+      <div className="h-14 sm:h-16 border-b border-zinc-100 bg-white px-3 sm:px-6 flex justify-between items-center shrink-0">
         <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           <button
             onClick={onShowSidebar}
@@ -98,10 +101,11 @@ export function ChatPanel({
           </button>
 
           {isBot ? (
-            <span className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-linear-to-br from-violet-500 to-emerald-500 text-white flex items-center justify-center shrink-0">
-              <Sparkles size={18} />
+            <span className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+              <Bot size={18} />
             </span>
           ) : (
+            // eslint-disable-next-line @next/next/no-img-element -- avatar URL eksternal (R2/ui-avatars)
             <img
               src={contact?.avatar_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(contact?.full_name || (role === "doctor" ? "U" : "D")) + "&background=10b981&color=fff"}
               alt={contact?.full_name || "Akun Dihapus"}
@@ -110,7 +114,7 @@ export function ChatPanel({
           )}
 
           <div className="min-w-0">
-            <h2 className={`font-semibold text-zinc-900 text-sm truncate ${isBot ? "text-violet-700" : ""}`}>
+            <h2 className="font-semibold text-zinc-900 text-sm truncate">
               {isBot ? "Aura Skin" : contact?.full_name || "Akun Dihapus"}
             </h2>
             <p className="text-xs text-zinc-500 flex items-center gap-1.5 mt-0.5">
@@ -157,16 +161,10 @@ export function ChatPanel({
               </button>
             </>
           ) : null}
-          <button className="p-2 hover:bg-zinc-100 rounded-full hover:text-zinc-600 transition-colors">
-            <Info size={20} />
-          </button>
-          <button className="p-2 hover:bg-zinc-100 rounded-full hover:text-zinc-600 transition-colors">
-            <MoreVertical size={20} />
-          </button>
         </div>
       </div>
 
-      <ChatMessages messages={messages} messagesEndRef={messagesEndRef} role={role} />
+      <ChatMessages messages={messages} messagesEndRef={messagesEndRef} role={role} isLoading={isLoadingMessages} />
 
       <ChatInput
         inputText={inputText}

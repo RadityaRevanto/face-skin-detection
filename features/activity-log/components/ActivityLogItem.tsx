@@ -45,6 +45,8 @@ function resolveEventVariant(event: string): StatusBadgeVariant {
 
 export function ActivityLogItem({ log, hideTimelineLine }: ActivityLogItemProps) {
   const eventLabel = ACTIVITY_EVENT_LABELS[log.event] ?? log.event;
+  const causerName = log.causer?.full_name ?? log.causer_name ?? "System";
+  const causerInitial = (causerName.charAt(0) || "?").toUpperCase();
 
   return (
     <div
@@ -56,14 +58,14 @@ export function ActivityLogItem({ log, hideTimelineLine }: ActivityLogItemProps)
     >
       {/* Avatar — 36px mobile, 40px sm+ (§4.4) */}
       <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-slate-100 text-xs font-bold text-slate-600 sm:h-10 sm:w-10">
-        {log.causer_name?.charAt(0)?.toUpperCase() ?? "?"}
+        {causerInitial}
       </div>
 
       {/* Content */}
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm font-semibold text-slate-900">
-            {log.causer_name ?? "System"}
+            {causerName}
           </span>
           <StatusBadge
             status={eventLabel}

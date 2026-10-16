@@ -96,7 +96,7 @@ export function TipsClientContent() {
   });
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-6 py-10">
+    <main className="w-full">
       <div className="space-y-6">
         <HeroSection latestPrediction={latest} />
 

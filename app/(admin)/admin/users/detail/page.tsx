@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { adminService } from "@/features/admin/services/adminService";
-import { LoadingState } from "@/components/ui/loading-state";
+import { DetailPageSkeleton } from "@/components/skeletons";
 import { ErrorState } from "@/components/ui/error-state";
 import { UserDetailContent } from "@/features/admin/users/components/UserDetailContent";
 import { formatDate } from "@/features/admin/users/lib/userDetailUtils";
@@ -21,28 +21,34 @@ function UserDetailPageInner() {
       return response as unknown as {
         id?: string;
         uuid?: string;
-        full_name?: string;
-        email?: string;
-        role?: string;
-        roles?: { name: string }[];
+        full_name: string;
+        email: string;
+        role?: "user" | "doctor" | "admin";
         is_active?: boolean;
         avatar_url?: string | null;
         created_at?: string;
+        gender?: string | null;
+        age?: number | null;
+        phone?: string | null;
+        date_of_birth?: string | null;
+        email_verified_at?: string | null;
+        doctor_verification?: {
+          specialization?: string;
+          str_number?: string | null;
+          verification_status?: string;
+        } | null;
       };
     },
     enabled: !!id,
   });
 
   if (isLoading) {
-    return <LoadingState variant="detail" />;
+    return <DetailPageSkeleton />;
   }
 
   if (!id || !user) {
     return <ErrorState message="User tidak ditemukan." />;
   }
-
-  const roleObj = user.roles?.[0];
-  const role = roleObj ? roleObj.name : user.role;
 
   return (
     <UserDetailContent
@@ -50,16 +56,22 @@ function UserDetailPageInner() {
         id: user.uuid ?? user.id ?? "unknown",
         name: user.full_name ?? "User",
         email: user.email ?? "-",
-        role: (role as "user" | "doctor" | "admin") ?? "user",
+        role: user.role ?? "user",
         avatarUrl: user.avatar_url ?? null,
         isActive: user.is_active ?? true,
         createdAt: formatDate(user.created_at ?? null),
+        gender: user.gender ?? null,
+        age: user.age ?? null,
+        phone: user.phone ?? null,
+        dateOfBirth: user.date_of_birth ?? null,
+        emailVerifiedAt: user.email_verified_at ?? null,
+        doctorVerification: user.doctor_verification ?? null,
       }}
     />
   );
 }
 
-// Static route — identitas user via query param ?id=<uuid>
+// Static route: identitas user via query param ?id=<uuid>
 export default function AdminUserDetailPage() {
   return (
     <Suspense>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { ArrowRightIcon, CheckIcon } from "./LandingIcons";
+import { CheckIcon } from "./LandingIcons";
 
 function ResultPreview() {
   const problems = [
@@ -10,7 +10,7 @@ function ResultPreview() {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-md rounded-3xl bg-white p-7 shadow-xl shadow-emerald-100/50 ring-1 ring-slate-100">
+    <div className="mx-auto w-full max-w-md rounded-3xl bg-white p-7 shadow-sm ring-1 ring-slate-100">
       <div className="flex items-center justify-between">
         <h3 className="text-base font-bold text-slate-900">
           Ringkasan Kondisi Kulit
@@ -69,7 +69,7 @@ export function LandingBenefits({ benefits }: { benefits: string[] }) {
     <section id="keunggulan" className="scroll-mt-20 bg-slate-50">
       <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-24">
         <div>
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-emerald-600">
+          <p className="text-sm font-bold text-emerald-600">
             Kenapa Skincek
           </p>
           <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
@@ -95,10 +95,9 @@ export function LandingBenefits({ benefits }: { benefits: string[] }) {
 
           <Link
             href="/register"
-            className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-7 text-sm font-bold text-white shadow-lg shadow-emerald-200 transition-colors hover:bg-emerald-700"
+            className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-7 text-sm font-bold text-white shadow-sm transition-colors hover:bg-emerald-700"
           >
             Coba Sekarang
-            <ArrowRightIcon className="h-5 w-5" />
           </Link>
         </div>
 

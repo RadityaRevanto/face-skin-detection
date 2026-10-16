@@ -57,7 +57,7 @@ export function HomeContent({ displayName }: HomeContentProps) {
   const name = displayName ?? profileName ?? currentUser?.full_name ?? "Pengguna";
 
   return (
-    <main className="w-full px-8 py-8 sm:px-10 lg:px-12">
+    <main className="w-full">
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">

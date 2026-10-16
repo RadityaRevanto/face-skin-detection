@@ -1,8 +1,8 @@
 import type { PagePagination } from "@/lib/types/pagination";
 
-export type VerificationStatus = "pending" | "approved" | "rejected";
+export type DoctorVerificationStatus = "pending" | "needs_revision" | "rejected" | "approved";
 
-export type DoctorVerificationPageType = "pending" | "rejected";
+export type DoctorVerificationPageType = "pending" | "needs_revision" | "rejected";
 
 export type VerificationDocument = {
   uuid: string;
@@ -15,10 +15,11 @@ export type DoctorVerificationRequest = {
   no: number;
   name: string;
   email: string;
+  avatarUrl: string | null;
   identity: string;
   specialization: string;
   documents: VerificationDocument[];
-  status: "Pending" | "Rejected";
+  status: "pending" | "needs_revision" | "rejected" | "approved";
   submittedAt: string;
   reviewedAt: string;
   rejectionReason: string | null;
@@ -26,13 +27,19 @@ export type DoctorVerificationRequest = {
 
 export type DoctorVerificationStats = {
   pendingCount: number;
+  needsRevisionCount: number;
   rejectedCount: number;
   approvedCount: number;
 };
 
 export type DoctorVerificationPageData = {
-  pageType: DoctorVerificationPageType;
+  activeTab: DoctorVerificationPageType;
   verificationRequests: DoctorVerificationRequest[];
   stats: DoctorVerificationStats;
   pagination: PagePagination;
+  onPageChange: (page: number) => void;
+  search: string;
+  onSearchChange: (value: string) => void;
+  onTabChange: (tab: DoctorVerificationPageType) => void;
+  isLoading?: boolean;
 };

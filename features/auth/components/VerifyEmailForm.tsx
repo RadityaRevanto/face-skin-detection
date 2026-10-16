@@ -47,7 +47,7 @@ export function VerifyEmailForm({
 
       <Button
         variant='success'
-        className='h-12 w-full rounded-xl bg-emerald-700 text-base shadow-xl shadow-emerald-700/25 hover:bg-emerald-800 mt-4'
+        className='h-12 w-full rounded-xl bg-emerald-700 text-base shadow-sm hover:bg-emerald-800 mt-4'
         disabled={locked}
         type='submit'
       >

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { X, Search, Check, AlertCircle } from "lucide-react";
 import { scanService, type PredictionResult } from "@/features/scan/services/scanService";
 import { getConcernDisplayName } from "@/lib/utils/skin-labels";
+import { useDialogEscape } from "@/features/shared/hooks/useDialogEscape";
 
 interface ScanHistoryModalProps {
   isOpen: boolean;
@@ -39,6 +40,8 @@ export function ScanHistoryModal({ isOpen, onClose, onSelectScan }: ScanHistoryM
     }
   }, [isOpen, fetchScans]);
 
+  useDialogEscape(isOpen, onClose);
+
   if (!isOpen) return null;
 
   const getSeverityColor = (level: string) => {
@@ -60,7 +63,7 @@ export function ScanHistoryModal({ isOpen, onClose, onSelectScan }: ScanHistoryM
   };
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-60 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="scan-history-title">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-zinc-900/40 backdrop-blur-sm transition-opacity"
@@ -72,9 +75,10 @@ export function ScanHistoryModal({ isOpen, onClose, onSelectScan }: ScanHistoryM
         
         {/* Header */}
         <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between shrink-0">
-          <h2 className="font-bold text-lg text-zinc-900">Pilih Riwayat Scan</h2>
+          <h2 id="scan-history-title" className="font-bold text-lg text-zinc-900">Pilih Riwayat Scan</h2>
           <button 
             onClick={onClose}
+            aria-label="Tutup"
             className="p-2 -mr-2 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-50 rounded-full transition-colors"
           >
             <X size={20} />
@@ -115,7 +119,7 @@ export function ScanHistoryModal({ isOpen, onClose, onSelectScan }: ScanHistoryM
                 <button
                   key={scan.uuid}
                   onClick={() => onSelectScan(scan)}
-                  className="flex gap-4 p-3 bg-white rounded-xl border border-zinc-200 hover:border-emerald-300 hover:shadow-md hover:shadow-emerald-500/5 transition-all text-left group"
+                  className="flex gap-4 p-3 bg-white rounded-xl border border-zinc-200 hover:border-emerald-300 hover:shadow-md transition-all text-left group"
                 >
                   {scan.image_url ? (
                     // eslint-disable-next-line @next/next/no-img-element

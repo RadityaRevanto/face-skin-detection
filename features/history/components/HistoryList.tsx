@@ -50,16 +50,18 @@ export function HistoryList({ histories, pagination, filters }: HistoryListProps
                 href={`/user/history/detail?id=${encodeURIComponent(item.id)}`}
                 className="group flex flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white transition-all hover:border-emerald-200 hover:shadow-md"
               >
-                <div className="relative h-40 w-full overflow-hidden bg-slate-100">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                   {imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
+                    // eslint-disable-next-line @next/next/no-img-element -- URL R2 dinamis; object-contain agar foto utuh tanpa crop
                     <img
                       src={imageUrl}
                       alt={label}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald-100 to-cyan-50 text-xs font-bold text-slate-400">
+                    <div className="flex h-full w-full items-center justify-center text-xs font-bold text-slate-400">
                       Foto sudah dihapus (retensi 90 hari)
                     </div>
                   )}
@@ -90,7 +92,7 @@ export function HistoryList({ histories, pagination, filters }: HistoryListProps
                     </div>
 
                     <span className="flex items-center gap-1 rounded-full bg-slate-50 px-2 py-0.5 text-[10px] font-semibold text-slate-500">
-                      {item.scan_mode === "livecam" ? "📷 Kamera" : "🖼️ Upload"}
+                      {item.scan_mode === "livecam" ? "Kamera" : "Upload"}
                     </span>
                   </div>
 
@@ -106,8 +108,14 @@ export function HistoryList({ histories, pagination, filters }: HistoryListProps
             Belum ada riwayat pemeriksaan.
           </p>
           <p className="mt-1 text-xs text-slate-400">
-            Lakukan scan terlebih dahulu.
+            Hasil scan akan tersimpan otomatis di sini.
           </p>
+          <Link
+            href="/user/scan"
+            className="mt-4 inline-flex h-10 items-center rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+          >
+            Mulai Scan
+          </Link>
         </div>
       )}
 

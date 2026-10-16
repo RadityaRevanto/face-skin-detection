@@ -2,13 +2,12 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { Suspense } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 import { api } from "@/lib/api";
 import { catalogService } from "@/features/skin-types/services/catalogService";
+import { RecommendationFormHeader } from "@/features/doctor/recommendations/components/RecommendationFormHeader";
 import { RecommendationForm } from "@/features/doctor/recommendations/components/RecommendationForm";
-import { ROUTES } from "@/lib/constants";
 
 type RecommendationFormValues = {
   id: string;
@@ -97,25 +96,8 @@ function RecommendationFormPageInner({ mode }: { mode: "create" | "edit" }) {
   }
 
   return (
-    <div className="w-full space-y-6">
-      <div>
-        <Link
-          href={ROUTES.DOCTOR.RECOMMENDATIONS}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 transition-colors hover:text-emerald-800"
-        >
-          <span aria-hidden="true">←</span>
-          Kembali ke Data Rekomendasi
-        </Link>
-
-        <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-950">
-          {mode === "edit" ? "Edit Rule Rekomendasi" : "Tambah Rule Rekomendasi"}
-        </h1>
-
-        <p className="mt-1 text-sm text-slate-500">
-          Rule ini akan dipakai untuk mencocokkan hasil AI user dengan
-          produk skincare yang sesuai.
-        </p>
-      </div>
+    <div className="w-full max-w-4xl mx-auto space-y-6">
+      <RecommendationFormHeader mode={mode} />
 
       <RecommendationForm
         mode={mode}

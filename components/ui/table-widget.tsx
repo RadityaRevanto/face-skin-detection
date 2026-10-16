@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
  * - Desktop (md+): tabel asli via slot `table` (hidden md:block + overflow-x-auto).
  * - Mobile (<md): card list via slot `cards` (md:hidden) — bukan scroll horizontal
  *   (keputusan eksplisit §4.2).
- * - Header: judul + deskripsi + count chip opsional + link "View all" kanan.
+ * - Header: judul + deskripsi + count chip opsional + link "Lihat semua" kanan.
  * - Footer: slot `footer` (Pagination).
  */
 
@@ -20,7 +20,7 @@ type TableWidgetProps = {
   description?: string;
   /** Chip jumlah (mis. "24 user") di samping judul. */
   countChip?: ReactNode;
-  /** Link "View all" kanan header. */
+  /** Link "Lihat semua" kanan header. */
   viewAllHref?: string;
   viewAllLabel?: string;
   /** Slot tabel desktop — dirender dalam Card + overflow wrapper. */
@@ -40,7 +40,7 @@ export function TableWidget({
   description,
   countChip,
   viewAllHref,
-  viewAllLabel = "View all",
+  viewAllLabel = "Lihat semua",
   table,
   cards,
   footer,
@@ -50,32 +50,32 @@ export function TableWidget({
   return (
     <Card
       className={cn(
-        "overflow-hidden rounded-2xl border-slate-100 bg-white text-slate-950 shadow-sm",
+        "overflow-hidden",
         className,
       )}
     >
       {title ? (
-        <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-4 sm:px-6 sm:py-5">
+        <div className="flex items-start justify-between gap-3 border-b border-[var(--line)] px-4 py-4 sm:px-6 sm:py-5">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h2 className="text-sm font-semibold text-slate-900 sm:text-base">
+              <h2 className="text-sm font-semibold text-[var(--ink)] sm:text-base">
                 {title}
               </h2>
               {countChip ? (
-                <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">
+                <span className="inline-flex items-center rounded-full bg-[var(--surface-2)] px-2 py-0.5 text-xs font-bold text-[var(--ink-soft)]">
                   {countChip}
                 </span>
               ) : null}
             </div>
             {description ? (
-              <p className="mt-0.5 text-xs text-slate-500">{description}</p>
+              <p className="mt-0.5 text-xs text-[var(--ink-muted)]">{description}</p>
             ) : null}
           </div>
 
           {viewAllHref ? (
             <a
               href={viewAllHref}
-              className="shrink-0 text-xs font-semibold text-emerald-700 transition-colors hover:text-emerald-800"
+              className="shrink-0 text-xs font-semibold text-[var(--role-accent-strong)] transition-colors hover:text-[var(--role-accent)]"
             >
               {viewAllLabel}
             </a>
@@ -94,7 +94,7 @@ export function TableWidget({
         <div className="px-4 py-8 sm:px-6 lg:px-8">{empty}</div>
       ) : null}
 
-      {footer ? <div className="border-t border-slate-100">{footer}</div> : null}
+      {footer ? <div className="border-t border-[var(--line)]">{footer}</div> : null}
     </Card>
   );
 }

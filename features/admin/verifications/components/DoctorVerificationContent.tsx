@@ -1,47 +1,47 @@
-import type { DoctorVerificationPageData } from "@/features/admin/verifications/lib/doctorVerificationTypes";
-import { DoctorVerificationStats } from "./DoctorVerificationStats";
-import { DoctorVerificationTable } from "./DoctorVerificationTable";
-import { DoctorVerificationTabs } from "./DoctorVerificationTabs";
+"use client";
 
-type DoctorVerificationContentProps = DoctorVerificationPageData;
+import type { DoctorVerificationPageData } from "../lib/doctorVerificationTypes";
+import { VerificationHeaderStrip } from "./VerificationHeaderStrip";
+import { VerificationTabFilterBar } from "./VerificationTabFilterBar";
+import { DoctorVerificationTable } from "./DoctorVerificationTable";
+import { VerificationProtocolBanner } from "./VerificationProtocolBanner";
 
 export function DoctorVerificationContent({
-  pageType,
+  activeTab,
   verificationRequests,
   stats,
   pagination,
-}: DoctorVerificationContentProps) {
-  const isPendingPage = pageType === "pending";
-
+  onPageChange,
+  search,
+  onSearchChange,
+  onTabChange,
+  isLoading,
+}: DoctorVerificationPageData) {
   return (
-    <div className='w-full space-y-6'>
-      <div>
-        <h1 className='text-2xl font-bold tracking-tight text-slate-950'>
-          {isPendingPage
-            ? "Pending Doctor Verification"
-            : "Rejected Doctor Verification"}
-        </h1>
+    <div className="flex flex-col w-full space-y-6">
+      {/* 1. Header with Live Telemetry Mini Metrics */}
+      <VerificationHeaderStrip stats={stats} />
 
-        <p className='mt-1 text-sm text-slate-500'>
-          {isPendingPage
-            ? "Review dokumen STR atau identitas dokter sebelum akun dokter diberi akses ke dashboard."
-            : "Lihat riwayat dokter yang ditolak beserta alasan penolakannya."}
-        </p>
-      </div>
-
-      <DoctorVerificationTabs
-        pageType={pageType}
-        pendingCount={stats.pendingCount}
-        rejectedCount={stats.rejectedCount}
+      {/* 2. Underline Tab & Filter Bar */}
+      <VerificationTabFilterBar
+        activeTab={activeTab}
+        onTabChange={onTabChange}
+        stats={stats}
+        search={search}
+        onSearchChange={onSearchChange}
       />
 
-      <DoctorVerificationStats stats={stats} />
-
+      {/* 3. Primary Data Table */}
       <DoctorVerificationTable
-        pageType={pageType}
+        activeTab={activeTab}
         verificationRequests={verificationRequests}
         pagination={pagination}
+        onPageChange={onPageChange}
+        isLoading={isLoading}
       />
+
+      {/* 4. Comparative Protocol Banner */}
+      <VerificationProtocolBanner />
     </div>
   );
 }

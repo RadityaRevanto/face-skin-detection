@@ -5,25 +5,29 @@ import { getProfile, UserProfile } from "@/lib/api/profile-query";
 import { ProfileForm } from "@/features/user/components/ProfileForm";
 import { ProfileSidebar } from "@/features/user/components/ProfileSidebar";
 import { Info } from "lucide-react";
+import { ProfilePageSkeleton } from "@/components/skeletons";
 
 export function UserProfileContainer() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => { fetchProfile(); }, []);
-
   const fetchProfile = async () => {
     try { const res = await getProfile(); setProfile(res.data); }
-    catch (err: any) { setError(err.message || "Gagal memuat profil"); }
+    catch (err: unknown) { setError(err instanceof Error ? err.message : "Gagal memuat profil"); }
     finally { setIsLoading(false); }
   };
 
-  if (isLoading) return <div className="flex justify-center items-center h-[calc(100vh-100px)]"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-emerald-500" /></div>;
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount + retry manual, setState di dalam async callback
+    fetchProfile();
+  }, []);
+
+  if (isLoading) return <ProfilePageSkeleton />;
   if (error || !profile) return <div className="flex justify-center items-center h-[calc(100vh-100px)]"><div className="text-center"><p className="text-rose-500 mb-4">{error}</p><button onClick={fetchProfile} className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">Coba Lagi</button></div></div>;
 
   return (
-    <main className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+    <main className="w-full">
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">Pengaturan Profil</h1>
         <p className="text-zinc-500 mt-1.5 text-sm sm:text-base">Kelola informasi pribadi dan keamanan akun Anda.</p>

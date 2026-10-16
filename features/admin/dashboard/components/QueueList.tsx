@@ -1,13 +1,14 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import { StatusBadge } from "@/features/admin/components/StatusBadge";
 
 /**
- * QueueList (DESIGN.md §4.5) — pola Dasher "My Task", diadaptasi jadi
+ * QueueList (DESIGN.md §4.5): pola Dasher "My Task", diadaptasi jadi
  * antrean verifikasi dokter.
  *
  * - Item: ikon konteks 40px (shield emerald-50) + judul (nama dokter)
- *   + meta (STR/spesialisasi) + badge status kanan + tombol "Review →".
+ *   + meta (STR/spesialisasi) + badge status kanan + tombol "Review".
  * - Mobile: list scrollable max-h-80 overflow-y-auto.
  */
 
@@ -62,7 +63,7 @@ export function QueueList({
   description,
   items,
   viewAllHref,
-  viewAllLabel = "View all",
+  viewAllLabel = "Lihat semua",
   emptyTitle = "Tidak ada antrean",
   emptyDescription,
   className,
@@ -70,7 +71,7 @@ export function QueueList({
   return (
     <section
       className={cn(
-        "overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm",
+        "overflow-hidden rounded-[var(--radius-card)] border border-slate-100 bg-white shadow-[var(--shadow-card)]",
         className,
       )}
     >
@@ -107,7 +108,7 @@ export function QueueList({
             <Link
               key={item.id}
               href={item.href}
-              className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-emerald-50/50 sm:px-6"
+              className="flex items-center gap-3 px-4 py-3.5 transition-colors duration-[var(--motion-fast)] hover:bg-[var(--role-accent-soft)] sm:px-6"
             >
               <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-emerald-50">
                 <ShieldIcon />
@@ -124,8 +125,14 @@ export function QueueList({
                 ) : null}
               </span>
 
+              <StatusBadge
+                status={item.status}
+                variant={item.statusVariant}
+                className="hidden shrink-0 sm:inline-flex"
+              />
+
               <span className="inline-flex h-8 shrink-0 items-center rounded-lg border border-emerald-200 px-3 text-xs font-bold text-emerald-700">
-                Review →
+                Review
               </span>
             </Link>
           ))}

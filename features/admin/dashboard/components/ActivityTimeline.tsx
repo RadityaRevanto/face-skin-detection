@@ -8,14 +8,14 @@ import type { ActivityLog } from "@/features/activity-log/types";
 import { ActivityLogItem } from "@/features/activity-log/components/ActivityLogItem";
 
 /**
- * ActivityTimeline (DESIGN.md §4.4) — pola Dasher "Activity Log".
+ * ActivityTimeline (DESIGN.md §4.4): pola Dasher "Activity Log".
  *
  * - Desktop: garis timeline vertikal dashed antar item (border-start);
  *   tanpa garis di mobile (lebih bersih).
  * - Mobile: stack penuh, avatar dipadatkan (36px) via prop item.
- * - Footer CTA "View Full Log" → /admin/activity-log.
+ * - Footer CTA "Lihat semua log" → /admin/activity-log.
  *
- * Reuse ActivityLogItem — data & format relatif waktu tidak berubah.
+ * Reuse ActivityLogItem: data & format relatif waktu tidak berubah.
  */
 
 type ActivityTimelineProps = {
@@ -29,13 +29,13 @@ type ActivityTimelineProps = {
 export function ActivityTimeline({
   logs,
   viewAllHref = "/admin/activity-log",
-  viewAllLabel = "View Full Log",
+  viewAllLabel = "Lihat semua log",
   className,
 }: ActivityTimelineProps) {
   return (
     <Card
       className={cn(
-        "overflow-hidden rounded-2xl border-slate-100 bg-white text-slate-950 shadow-sm",
+        "overflow-hidden rounded-[var(--radius-card)] border-slate-100 bg-white text-slate-950 shadow-[var(--shadow-card)]",
         className,
       )}
     >
@@ -68,7 +68,7 @@ export function ActivityTimeline({
       <div className="border-t border-slate-100 p-4 sm:p-6">
         <Link
           href={viewAllHref}
-          className="inline-flex h-10 w-full items-center justify-center rounded-xl border border-slate-200 bg-white text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
+          className="inline-flex h-10 w-full items-center justify-center rounded-[var(--radius-control)] border border-slate-200 bg-white text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50"
         >
           {viewAllLabel}
         </Link>

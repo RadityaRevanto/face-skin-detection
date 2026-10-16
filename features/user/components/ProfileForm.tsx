@@ -59,8 +59,8 @@ export function ProfileForm({ profile, onProfileUpdated }: ProfileFormProps) {
       setSuccessMsg("Foto profil berhasil dihapus");
       if (onProfileUpdated) onProfileUpdated({ ...profile, avatar_url: null });
       router.refresh(); // Refresh the layout to update the navbar avatar
-    } catch (error: any) {
-      setErrorMsg(error.message || "Gagal menghapus foto profil");
+    } catch (error: unknown) {
+      setErrorMsg(error instanceof Error ? error.message : "Gagal menghapus foto profil");
     } finally {
       setIsLoading(false);
     }
@@ -93,8 +93,8 @@ export function ProfileForm({ profile, onProfileUpdated }: ProfileFormProps) {
       if (onProfileUpdated) onProfileUpdated(res.data);
 
       router.refresh(); // Refresh the layout to update the navbar avatar
-    } catch (error: any) {
-      setErrorMsg(error.message || "Terjadi kesalahan saat menyimpan profil");
+    } catch (error: unknown) {
+      setErrorMsg(error instanceof Error ? error.message : "Terjadi kesalahan saat menyimpan profil");
     } finally {
       setIsLoading(false);
     }

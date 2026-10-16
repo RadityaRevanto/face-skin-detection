@@ -10,13 +10,9 @@ export const metadata: Metadata = {
 
 export default function RegisterDoctorSuccessPage() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-shell-alt px-4 py-6 text-zinc-950 sm:px-6">
-      {/* Background orbs */}
-      <div className="absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-emerald-100/80 blur-3xl" />
-      <div className="absolute right-0 top-0 h-136 w-136 rounded-full bg-emerald-200/45 blur-3xl" />
-
-      <div className="relative mx-auto flex min-h-[calc(100vh-3rem)] max-w-lg items-center justify-center">
-        <section className="w-full rounded-4xl border border-zinc-200/70 bg-white px-6 py-10 shadow-2xl shadow-emerald-950/10 sm:px-10">
+    <main className="bg-shell-alt px-4 py-6 text-zinc-950 sm:px-6">
+      <div className="mx-auto flex min-h-[calc(100vh-3rem)] max-w-lg items-center justify-center">
+        <section className="w-full rounded-4xl border border-zinc-200/70 bg-white px-6 py-10 shadow-sm sm:px-10">
           {/* Logo */}
           <div className="mb-8 flex justify-center">
             <span className="rounded-2xl border border-emerald-100 bg-emerald-50 p-2">
@@ -48,14 +44,14 @@ export default function RegisterDoctorSuccessPage() {
           <p className="mt-3 text-center text-sm leading-6 text-zinc-600">
             Akun dokter kamu sudah dibuat dan{" "}
             <span className="font-semibold text-amber-600">
-              SEDANG DIVERIFIKASI
+              sedang diverifikasi
             </span>{" "}
             oleh admin.
           </p>
 
           {/* Steps */}
           <div className="mt-8 space-y-4">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <h2 className="text-xs font-bold text-zinc-400">
               Langkah selanjutnya
             </h2>
 
@@ -91,7 +87,7 @@ export default function RegisterDoctorSuccessPage() {
           {/* Capabilities */}
           <div className="mt-8 grid gap-4 sm:grid-cols-2">
             <div className="rounded-xl border border-emerald-100 bg-emerald-50/50 p-4">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-emerald-600">
+              <p className="mb-2 text-xs font-bold text-emerald-600">
                 Kamu sudah bisa
               </p>
               <ul className="space-y-1.5 text-sm text-zinc-700">
@@ -107,7 +103,7 @@ export default function RegisterDoctorSuccessPage() {
             </div>
 
             <div className="rounded-xl border border-zinc-100 bg-zinc-50 p-4">
-              <p className="mb-2 text-xs font-bold uppercase tracking-wider text-zinc-400">
+              <p className="mb-2 text-xs font-bold text-zinc-400">
                 Belum bisa (sampai verified)
               </p>
               <ul className="space-y-1.5 text-sm text-zinc-500">
@@ -125,8 +121,8 @@ export default function RegisterDoctorSuccessPage() {
           {/* Actions */}
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
-              href={ROUTES.LOGIN}
-              className="flex h-11 flex-1 items-center justify-center rounded-xl bg-emerald-600 text-sm font-semibold text-white shadow-xl shadow-emerald-600/25 transition hover:bg-emerald-700"
+              href="/verify-email"
+              className="flex h-11 flex-1 items-center justify-center rounded-xl bg-emerald-600 text-sm font-semibold text-white transition hover:bg-emerald-700"
             >
               Verifikasi Email Sekarang
             </Link>

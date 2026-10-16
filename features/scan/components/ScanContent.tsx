@@ -60,23 +60,20 @@ export function PemeriksaanContent({
   initialProfile = null,
 }: PemeriksaanContentProps) {
   const [liveScan, setLiveScan] = useState<LiveScanResult | null>(null);
-  // Modal bisa ditutup user (onSuccess) — perlu state dismiss, default false.
-  const [profileModalDismissed, setProfileModalDismissed] = useState(false);
 
   // Gate #2 SCAN_FLOW: scan pertama butuh DOB + gender lengkap.
   // Derived (bukan useState awal): `initialProfile` datang async dari query —
   // kalau pakai useState(!isProfileComplete) saat mount, modal terkunci true
   // untuk user yang datanya sebenarnya sudah lengkap (race condition).
+  // Modal hilang otomatis saat cache ["profile"] terupdate (ProfileIncompleteModal
+  // melakukan setQueryData setelah simpan sukses).
   const isProfileComplete = Boolean(
     initialProfile &&
       initialProfile.gender &&
       initialProfile.date_of_birth,
   );
-
-  // Modal hanya relevan SETELAH data profile benar-benar diambil
-  // (initialProfile != null) dan terbukti belum lengkap.
   const showProfileModal =
-    initialProfile != null && !isProfileComplete && !profileModalDismissed;
+    initialProfile != null && !isProfileComplete;
 
   const activePrediction = liveScan
     ? toPredictionHistory(liveScan)
@@ -92,8 +89,23 @@ export function PemeriksaanContent({
   return (
     <>
       {showProfileModal && (
-        <ProfileIncompleteModal onSuccess={() => setProfileModalDismissed(true)} />
+        <ProfileIncompleteModal onSuccess={() => setLiveScan(null)} />
       )}
+
+      {/* Hero halaman */}
+      <section className='mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between'>
+        <div>
+          
+          <h1 className='mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl'>
+            Pemeriksaan Kulit
+          </h1>
+          <p className='mt-1.5 max-w-xl text-sm leading-6 text-slate-500 sm:text-base'>
+            Scan wajah langsung via kamera atau unggah foto — AI menganalisis
+            kondisi kulit dan memberi rekomendasi perawatan dalam hitungan detik.
+          </p>
+        </div>
+      </section>
+
       <div className="grid gap-6 xl:grid-cols-[1.65fr_0.75fr] xl:gap-8">
         <div className="min-w-0 space-y-6">
           <CameraPanel

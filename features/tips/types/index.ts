@@ -1,5 +1,3 @@
-import type { SkinConcernInfo } from "@/features/scan/services/scanService";
-
 // Prediksi terbaru dari PredictionHistoryResource (subset yang dipakai halaman tips).
 export type PredictionHistory = {
   id: string;

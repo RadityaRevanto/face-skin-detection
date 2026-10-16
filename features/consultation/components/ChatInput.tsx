@@ -41,6 +41,7 @@ export function ChatInput({
           >
             <X size={14} />
           </button>
+          {/* eslint-disable-next-line @next/next/no-img-element -- preview blob lokal, next/image tidak cocok */}
           <img
             src={selectedImagePreview}
             alt="Preview"

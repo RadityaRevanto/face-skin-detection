@@ -109,11 +109,8 @@ export function ForgotPasswordView() {
 
   return (
     <main className='relative flex min-h-screen items-center justify-center overflow-hidden bg-shell px-4 py-8 text-zinc-950'>
-      <div className='absolute -left-20 top-14 h-72 w-72 rounded-full bg-emerald-100/80 blur-3xl' />
-      <div className='absolute right-0 top-0 h-136 w-136 rounded-full bg-emerald-200/45 blur-3xl' />
-      <div className='absolute bottom-0 right-20 h-72 w-72 rounded-full bg-teal-100/70 blur-3xl' />
 
-      <section className='relative w-full max-w-md rounded-4xl border border-zinc-200/70 bg-white px-8 py-10 shadow-2xl shadow-emerald-950/10 sm:px-10'>
+      <section className='relative w-full max-w-md rounded-4xl border border-zinc-200/70 bg-white px-8 py-10 shadow-sm sm:px-10'>
         <Link href={ROUTES.HOME} className='mb-10 flex items-center gap-3'>
           <LeafLogo />
           <span>
@@ -163,7 +160,7 @@ export function ForgotPasswordView() {
 
           <Button
             variant='success'
-            className='h-12 w-full rounded-xl bg-emerald-700 text-base shadow-xl shadow-emerald-700/25 hover:bg-emerald-800 mt-2'
+            className='h-12 w-full rounded-xl bg-emerald-700 text-base shadow-sm hover:bg-emerald-800 mt-2'
             disabled={isLoading || (!isError && !!message)}
             type='submit'
           >

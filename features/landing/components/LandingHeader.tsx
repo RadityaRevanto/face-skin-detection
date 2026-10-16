@@ -15,7 +15,7 @@ export function LandingHeader() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-slate-100 bg-white">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2.5">
           <Logo className="h-9 w-9" />
@@ -45,7 +45,7 @@ export function LandingHeader() {
           </Link>
           <Link
             href="/register"
-            className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-200 transition-colors hover:bg-emerald-700"
+            className="rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-emerald-700"
           >
             Daftar Gratis
           </Link>
@@ -91,7 +91,7 @@ export function LandingHeader() {
               <Link
                 href="/register"
                 onClick={() => setIsOpen(false)}
-                className="rounded-xl bg-emerald-600 px-4 py-3 text-center text-sm font-bold text-white shadow-lg shadow-emerald-200 transition-colors hover:bg-emerald-700"
+                className="rounded-xl bg-emerald-600 px-4 py-3 text-center text-sm font-bold text-white shadow-sm transition-colors hover:bg-emerald-700"
               >
                 Daftar Gratis
               </Link>

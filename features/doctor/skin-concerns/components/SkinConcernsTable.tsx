@@ -1,9 +1,16 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Pagination } from "@/components/ui/pagination";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { ChevronRight } from "lucide-react";
 
+import { EmptyState } from "@/components/ui/empty-state";
+import { Pagination } from "@/components/ui/pagination";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import type { PagePagination } from "@/lib/types/pagination";
 import type { SkinConcernRow } from "../lib/skinConcernsTypes";
 
@@ -12,60 +19,119 @@ type SkinConcernsTableProps = {
   pagination: PagePagination;
 };
 
-function DetailIcon() {
+export function SkinConcernsTable({
+  concerns,
+  pagination,
+}: SkinConcernsTableProps) {
   return (
-    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12Z" />
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15.25A3.25 3.25 0 1 0 12 8.75a3.25 3.25 0 0 0 0 6.5Z" />
-    </svg>
-  );
-}
-
-export function SkinConcernsTable({ concerns, pagination }: SkinConcernsTableProps) {
-  const from = (pagination.currentPage - 1) * pagination.pageSize;
-
-  return (
-    <Card className="overflow-hidden rounded-2xl border-slate-100! bg-white! text-slate-950! shadow-sm">
-      <Table className="min-w-full divide-y divide-gray-100">
-        <TableHeader className="bg-gray-50/80">
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="w-20 px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8">No</TableHead>
-            <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8">Skin Concern</TableHead>
-            <TableHead className="px-6 py-5 text-left text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8">Default Severity</TableHead>
-            <TableHead className="px-6 py-5 text-right text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-8">Detail</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody className="divide-y divide-gray-100 bg-white">
-          {concerns.map((concern, index) => (
-            <TableRow key={concern.uuid} className="group border-gray-100 transition-colors hover:bg-emerald-50/30">
-              <TableCell className="whitespace-nowrap px-6 py-5 text-sm font-medium text-gray-500 sm:px-8">{from + index + 1}</TableCell>
-              <TableCell className="min-w-72 px-6 py-5 sm:px-8">
-                <div className="text-sm font-semibold text-gray-800 transition-colors group-hover:text-emerald-700">{concern.name ?? "-"}</div>
-                <div className="mt-1 text-xs text-gray-500">{concern.description ?? "Tidak ada deskripsi."}</div>
-              </TableCell>
-              <TableCell className="whitespace-nowrap px-6 py-5 text-sm font-medium text-gray-700 sm:px-8">{concern.default_severity_score ?? "-"}</TableCell>
-              <TableCell className="whitespace-nowrap px-6 py-5 text-right text-sm font-medium sm:px-8">
-                <Link href={`/doctor/skin-concerns/detail?id=${encodeURIComponent(concern.uuid)}`}>
-                  <Button type="button" variant="ghost" size="sm" title="Lihat Detail" className="h-10 w-10 rounded-xl p-0 text-gray-400 transition-all duration-200 hover:bg-emerald-50! hover:text-emerald-700">
-                    <DetailIcon />
-                  </Button>
-                </Link>
-              </TableCell>
+    <div className="bg-surface rounded-2xl shadow-xs border border-border/50 overflow-hidden">
+      <div className="overflow-x-auto">
+        <Table className="w-full text-left border-collapse">
+          <TableHeader>
+            <TableRow className="bg-slate-50 border-b border-border/40 hover:bg-slate-50">
+              <TableHead className="py-3.5 px-6 font-caption text-caption text-ink-subtle uppercase tracking-wider font-semibold">
+                Nama Concern
+              </TableHead>
+              <TableHead className="py-3.5 px-6 font-caption text-caption text-ink-subtle uppercase tracking-wider font-semibold">
+                Label Model ML
+              </TableHead>
+              <TableHead className="py-3.5 px-6 font-caption text-caption text-ink-subtle uppercase tracking-wider font-semibold">
+                Deskripsi Klinis
+              </TableHead>
+              <TableHead className="py-3.5 px-6 font-caption text-caption text-ink-subtle uppercase tracking-wider font-semibold">
+                Status
+              </TableHead>
+              <TableHead className="py-3.5 px-6 font-caption text-caption text-ink-subtle uppercase tracking-wider font-semibold text-right">
+                Aksi
+              </TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+
+          <TableBody className="divide-y divide-border/30">
+            {concerns.map((concern) => {
+              const isActive = concern.is_active !== false;
+
+              return (
+                <TableRow
+                  key={concern.uuid}
+                  className="hover:bg-surface-alt/60 transition-colors"
+                >
+                  {/* Nama Concern */}
+                  <TableCell className="px-6 py-4">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-role-accent-doctor shrink-0" />
+                      <span className="font-headline-sm text-caption text-ink font-semibold">
+                        {concern.name ?? "-"}
+                      </span>
+                    </div>
+                  </TableCell>
+
+                  {/* Label Model ML */}
+                  <TableCell className="px-6 py-4 font-mono">
+                    <span className="bg-surface-container-low text-role-accent-doctor px-2.5 py-1 rounded-md font-caption text-caption font-semibold">
+                      {concern.ml_label ?? (concern.name ? concern.name.toLowerCase().replace(/\s+/g, "_") : "-")}
+                    </span>
+                  </TableCell>
+
+                  {/* Deskripsi Klinis */}
+                  <TableCell className="px-6 py-4">
+                    <p className="font-body-default text-body-default text-ink-muted line-clamp-1 max-w-md">
+                      {concern.description || "Referensi kondisi patologis klinis kulit."}
+                    </p>
+                  </TableCell>
+
+                  {/* Status */}
+                  <TableCell className="px-6 py-4 whitespace-nowrap">
+                    {isActive ? (
+                      <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-success px-2.5 py-1 rounded-full font-caption text-caption font-semibold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-success" />
+                        Aktif Deteksi
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 bg-amber-50 text-warning px-2.5 py-1 rounded-full font-caption text-caption font-semibold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-warning" />
+                        Dalam Evaluasi
+                      </span>
+                    )}
+                  </TableCell>
+
+                  {/* Aksi */}
+                  <TableCell className="px-6 py-4 text-right whitespace-nowrap">
+                    <Link
+                      href={`/doctor/skin-concerns/detail?id=${encodeURIComponent(concern.uuid)}`}
+                      className="inline-flex items-center gap-1 text-role-accent-doctor hover:underline font-headline-sm text-caption font-semibold transition-all cursor-pointer"
+                    >
+                      <span>Lihat Detail</span>
+                      <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
+
       {concerns.length === 0 && (
-        <div className="border-t border-gray-100 bg-white px-6 py-8 text-sm font-semibold text-gray-500 sm:px-8">Belum ada data skin concern.</div>
+        <div className="p-8">
+          <EmptyState
+            title="Tidak ada skin concern ditemukan"
+            description="Tidak ada data masalah kulit yang cocok dengan kriteria pencarian Anda."
+          />
+        </div>
       )}
-      <Pagination
-        currentPage={pagination.currentPage}
-        totalPages={pagination.totalPages}
-        totalItems={pagination.totalItems}
-        pageSize={pagination.pageSize}
-        itemLabel={pagination.itemLabel}
-        basePath={pagination.basePath}
-      />
-    </Card>
+
+      {/* Pagination Footer */}
+      <div className="border-t border-border/40 bg-surface">
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          totalItems={pagination.totalItems}
+          pageSize={pagination.pageSize}
+          itemLabel={pagination.itemLabel}
+          basePath={pagination.basePath}
+        />
+      </div>
+    </div>
   );
 }

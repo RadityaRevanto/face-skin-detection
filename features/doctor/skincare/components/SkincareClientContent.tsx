@@ -7,7 +7,8 @@ import { useSearchParams } from "next/navigation";
 
 import { useDoctorProducts } from "../hooks/useDoctorProducts";
 import { catalogService } from "@/features/skin-types/services/catalogService";
-import type { SkincarePageData } from "../types";
+import { ErrorState } from "@/components/ui/error-state";
+import type { SkincarePageData, SkincareRow } from "../types";
 
 import { SkincareContent } from "./SkincareContent";
 
@@ -25,7 +26,7 @@ export function SkincareClientContent() {
   const searchParams = useSearchParams();
   const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
 
-  const { data, isLoading } = useDoctorProducts(page, PAGE_SIZE);
+  const { data, isLoading, isError, refetch } = useDoctorProducts(page, PAGE_SIZE);
 
   const { data: concernsResponse } = useQuery({
     queryKey: ["catalog", "skin-concerns", "count"],
@@ -36,14 +37,16 @@ export function SkincareClientContent() {
     const rows = data?.data ?? [];
     const from = (page - 1) * PAGE_SIZE;
 
-    const products = rows.map((product, index) => ({
+    const products: SkincareRow[] = rows.map((product, index) => ({
       id: product.uuid,
       no: from + index + 1,
       name: product.name ?? "-",
       category: product.category ?? "-",
+      gender: product.gender ?? "unisex",
       keyIngredients: product.key_ingredients ?? "-",
       concern: product.concern?.name ?? "-",
       skinType: product.skin_type?.name ?? "-",
+      isActive: product.is_active ?? true,
       updatedAt: formatDate(product.created_at),
     }));
 
@@ -56,7 +59,10 @@ export function SkincareClientContent() {
       summary: {
         totalProducts: data?.meta?.total ?? 0,
         totalCategories: uniqueCategories.size,
-        totalConcerns: (concernsResponse?.data as unknown as { length: number }[])?.length ?? 0,
+        totalConcerns:
+          concernsResponse?.meta
+            ? ((concernsResponse.meta as { total?: number }).total ?? 0)
+            : 0,
       },
       pagination: {
         currentPage: page,
@@ -68,6 +74,10 @@ export function SkincareClientContent() {
       },
     };
   }, [data, concernsResponse, page]);
+
+  if (isError) {
+    return <ErrorState message="Gagal memuat produk skincare." onRetry={() => refetch()} />;
+  }
 
   if (isLoading && !data) {
     return (

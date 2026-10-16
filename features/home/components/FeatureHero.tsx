@@ -20,7 +20,7 @@ const featureItems = [
 
 export function FeatureHero() {
   return (
-    <section className='overflow-hidden rounded-3xl bg-linear-to-br from-emerald-50 via-white to-cyan-50 shadow-sm ring-1 ring-slate-100'>
+    <section className='overflow-hidden rounded-3xl bg-emerald-50/60 shadow-sm ring-1 ring-slate-100'>
       <div className='grid min-h-[340px] gap-6 p-7 md:grid-cols-[0.85fr_1.15fr]'>
         <div className='z-10 flex flex-col justify-center'>
           <h2 className='text-2xl font-bold tracking-tight text-slate-950'>
@@ -48,7 +48,7 @@ export function FeatureHero() {
 
           <a
             href='/user/pemeriksaan'
-            className='mt-6 inline-flex h-11 w-fit items-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-bold text-white shadow-lg shadow-emerald-200 transition-colors hover:bg-emerald-700'
+            className='mt-6 inline-flex h-11 w-fit items-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-emerald-700'
           >
             <CameraIcon className='h-5 w-5' />
             Mulai Pemeriksaan
@@ -57,7 +57,7 @@ export function FeatureHero() {
 
         <div className='relative flex min-h-[280px] items-end justify-center'>
           <div className='absolute inset-x-8 top-10 h-40 rounded-[42px] border-4 border-white/90' />
-          <div className='relative h-[270px] w-[230px] overflow-hidden rounded-t-[110px] bg-linear-to-b from-amber-100 to-amber-200 shadow-2xl shadow-emerald-100'>
+          <div className='relative h-[270px] w-[230px] overflow-hidden rounded-t-[110px] bg-linear-to-b from-amber-100 to-amber-200 shadow-2xl'>
             <div className='absolute left-1/2 top-14 h-28 w-24 -translate-x-1/2 rounded-[45%] bg-illustration-skin' />
             <div className='absolute left-1/2 top-9 h-20 w-32 -translate-x-1/2 rounded-t-full bg-slate-950' />
             <div className='absolute left-[88px] top-[102px] h-2 w-2 rounded-full bg-slate-900' />
@@ -65,13 +65,12 @@ export function FeatureHero() {
             <div className='absolute left-1/2 top-[130px] h-1.5 w-10 -translate-x-1/2 rounded-full bg-rose-300' />
             <div className='absolute bottom-0 h-24 w-full rounded-t-[60px] bg-white' />
           </div>
-          <button
-            type='button'
-            aria-label='Buka kamera pemeriksaan'
-            className='absolute bottom-8 grid h-16 w-16 place-items-center rounded-full bg-emerald-600 text-white shadow-xl shadow-emerald-200 ring-8 ring-white/90 transition-colors hover:bg-emerald-700'
+          <div
+            aria-hidden='true'
+            className='absolute bottom-8 grid h-16 w-16 place-items-center rounded-full bg-emerald-600 text-white shadow-xl ring-8 ring-white/90'
           >
             <CameraIcon className='h-7 w-7' />
-          </button>
+          </div>
         </div>
       </div>
     </section>

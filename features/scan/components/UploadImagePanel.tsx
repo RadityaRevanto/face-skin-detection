@@ -38,12 +38,80 @@ export function UploadImagePanel({
   onReset,
 }: UploadImagePanelProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileRef = useRef<File | null>(null);
   const [phase, setPhase] = useState<UploadPhase>("idle");
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  async function analyzeFile(file: File, imagePreviewUrl: string) {
+  function pickImage() {
+    inputRef.current?.click();
+  }
+
+  function resetUpload() {
+    fileRef.current = null;
+    setPhase("idle");
+    setPreviewUrl(null);
+    setFileName("");
+    setErrorMsg("");
+
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+
+    onReset?.();
+  }
+
+  /** Validasi + tampilkan preview. Analisis HANYA dijalankan lewat tombol. */
+  async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+    if (!allowedTypes.includes(file.type)) {
+      fileRef.current = null;
+      setPreviewUrl(null);
+      setPhase("error");
+      setErrorMsg("Format file tidak didukung. Gunakan JPG, JPEG, atau PNG.");
+      return;
+    }
+
+    const maxSizeBytes = 5 * 1024 * 1024;
+    if (file.size > maxSizeBytes) {
+      fileRef.current = null;
+      setPreviewUrl(null);
+      setPhase("error");
+      setErrorMsg("Ukuran file melebihi 5MB.");
+      return;
+    }
+
+    try {
+      const imagePreviewUrl = await readFileAsDataUrl(file);
+      fileRef.current = file;
+      setPreviewUrl(imagePreviewUrl);
+      setFileName(file.name);
+      setErrorMsg("");
+      // Tunggu user menekan "Analisis Sekarang" — tidak auto-upload.
+      setPhase("preview");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Gagal membaca gambar.";
+      setErrorMsg(message);
+      setPhase("error");
+    }
+  }
+
+  /** Analisis gambar yang sudah dipreview (dipicu tombol "Analisis Sekarang"). */
+  async function handleAnalyze() {
+    const file = fileRef.current;
+    const imagePreviewUrl = previewUrl;
+
+    if (!file || !imagePreviewUrl || phase === "analyzing") {
+      return;
+    }
+
     setPhase("analyzing");
     setErrorMsg("");
 
@@ -69,73 +137,19 @@ export function UploadImagePanel({
     }
   }
 
-  async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-    if (!allowedTypes.includes(file.type)) {
-      setPhase("error");
-      setErrorMsg("Format file tidak didukung. Gunakan JPG, JPEG, atau PNG.");
-      return;
-    }
-
-    const maxSizeBytes = 5 * 1024 * 1024;
-    if (file.size > maxSizeBytes) {
-      setPhase("error");
-      setErrorMsg("Ukuran file melebihi 5MB.");
-      return;
-    }
-
-    try {
-      const imagePreviewUrl = await readFileAsDataUrl(file);
-      setPreviewUrl(imagePreviewUrl);
-      setFileName(file.name);
-      setPhase("preview");
-      await analyzeFile(file, imagePreviewUrl);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Gagal membaca gambar.";
-      setErrorMsg(message);
-      setPhase("error");
-    }
-  }
-
-  function resetUpload() {
-    setPhase("idle");
-    setPreviewUrl(null);
-    setFileName("");
-    setErrorMsg("");
-
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
-
-    onReset?.();
-  }
-
-  function pickImage() {
-    inputRef.current?.click();
-  }
-
   return (
-    <section className='rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-100'>
-      <UploadPanelHeader
-        phase={phase}
-        onPickImage={pickImage}
-        onReset={resetUpload}
-      />
+    <section className='rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-100 sm:p-6'>
+      <UploadPanelHeader hasPendingImage={phase === "preview"} />
 
-      <div className='mt-5 overflow-hidden rounded-3xl border border-dashed border-emerald-100 bg-linear-to-br from-emerald-50 via-white to-cyan-50'>
+      <div className='mt-4 overflow-hidden rounded-3xl border border-dashed border-emerald-200 bg-emerald-50/50'>
         <UploadPreview
           phase={phase}
           previewUrl={previewUrl}
           fileName={fileName}
           errorMsg={errorMsg}
-          inputRef={inputRef}
           onPickImage={pickImage}
+          onAnalyze={handleAnalyze}
+          onReset={resetUpload}
         />
       </div>
 

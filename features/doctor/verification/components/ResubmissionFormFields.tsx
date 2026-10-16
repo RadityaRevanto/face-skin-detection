@@ -50,7 +50,7 @@ export function ResubmissionFormFields({
   return (
     <form onSubmit={onSubmit} className='mt-5 grid gap-5 md:grid-cols-2'>
       <div>
-        <label htmlFor='vs-specialization' className='mb-2 block text-sm font-semibold text-gray-700'>
+        <label htmlFor='vs-specialization' className='mb-2 block text-sm font-semibold text-slate-700'>
           Spesialisasi <span className='text-rose-500'>*</span>
         </label>
         <input
@@ -64,7 +64,7 @@ export function ResubmissionFormFields({
       </div>
 
       <div>
-        <label htmlFor='vs-str' className='mb-2 block text-sm font-semibold text-gray-700'>
+        <label htmlFor='vs-str' className='mb-2 block text-sm font-semibold text-slate-700'>
           Nomor STR
         </label>
         <input
@@ -78,7 +78,7 @@ export function ResubmissionFormFields({
       </div>
 
       <div>
-        <label htmlFor='vs-title' className='mb-2 block text-sm font-semibold text-gray-700'>
+        <label htmlFor='vs-title' className='mb-2 block text-sm font-semibold text-slate-700'>
           Gelar
         </label>
         <input
@@ -92,7 +92,7 @@ export function ResubmissionFormFields({
       </div>
 
       <div>
-        <label htmlFor='vs-subspec' className='mb-2 block text-sm font-semibold text-gray-700'>
+        <label htmlFor='vs-subspec' className='mb-2 block text-sm font-semibold text-slate-700'>
           Sub-spesialisasi
         </label>
         <input
@@ -105,7 +105,7 @@ export function ResubmissionFormFields({
       </div>
 
       <div>
-        <label htmlFor='vs-exp' className='mb-2 block text-sm font-semibold text-gray-700'>
+        <label htmlFor='vs-exp' className='mb-2 block text-sm font-semibold text-slate-700'>
           Pengalaman (tahun)
         </label>
         <input
@@ -120,7 +120,7 @@ export function ResubmissionFormFields({
       </div>
 
       <div>
-        <label htmlFor='vs-alma' className='mb-2 block text-sm font-semibold text-gray-700'>
+        <label htmlFor='vs-alma' className='mb-2 block text-sm font-semibold text-slate-700'>
           Alma Mater
         </label>
         <input
@@ -133,8 +133,8 @@ export function ResubmissionFormFields({
       </div>
 
       <div>
-        <label htmlFor='vs-practice' className='mb-2 block text-sm font-semibold text-gray-700'>
-          Lokasi Praktik <span className='font-normal text-gray-400'>(pisahkan dengan koma)</span>
+        <label htmlFor='vs-practice' className='mb-2 block text-sm font-semibold text-slate-700'>
+          Lokasi Praktik <span className='font-normal text-slate-400'>(pisahkan dengan koma)</span>
         </label>
         <input
           id='vs-practice'
@@ -147,8 +147,8 @@ export function ResubmissionFormFields({
       </div>
 
       <div>
-        <label htmlFor='vs-orgs' className='mb-2 block text-sm font-semibold text-gray-700'>
-          Organisasi Profesi <span className='font-normal text-gray-400'>(pisahkan dengan koma)</span>
+        <label htmlFor='vs-orgs' className='mb-2 block text-sm font-semibold text-slate-700'>
+          Organisasi Profesi <span className='font-normal text-slate-400'>(pisahkan dengan koma)</span>
         </label>
         <input
           id='vs-orgs'
@@ -161,10 +161,10 @@ export function ResubmissionFormFields({
       </div>
 
       <div className='md:col-span-2'>
-        <label htmlFor='vs-documents' className='mb-2 block text-sm font-semibold text-gray-700'>
+        <label htmlFor='vs-documents' className='mb-2 block text-sm font-semibold text-slate-700'>
           Dokumen Verifikasi{" "}
           {isResubmit ? (
-            <span className='font-normal text-gray-400'>(opsional — akan mengganti dokumen lama)</span>
+            <span className='font-normal text-slate-400'>(opsional — akan mengganti dokumen lama)</span>
           ) : (
             <span className='text-rose-500'>*</span>
           )}
@@ -175,7 +175,7 @@ export function ResubmissionFormFields({
           type='file'
           multiple
           accept='.jpg,.jpeg,.png,.pdf'
-          className='w-full rounded-xl border border-dashed border-gray-300 bg-gray-50/60 px-4 py-3 text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-xs file:font-bold file:text-white hover:file:bg-emerald-700'
+          className='w-full rounded-xl border border-dashed border-slate-300 bg-slate-50/60 px-4 py-3 text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-600 file:px-4 file:py-2 file:text-xs file:font-bold file:text-white hover:file:bg-emerald-700'
         />
       </div>
 

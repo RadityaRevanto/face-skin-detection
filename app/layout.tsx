@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Poppins } from "next/font/google";
+import { Geist_Mono, Plus_Jakarta_Sans, Poppins } from "next/font/google";
 import "./globals.css";
 
 import { AppProviders } from "@/components/providers/AppProviders";
@@ -8,6 +8,12 @@ const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-jakarta",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 const geistMono = Geist_Mono({
@@ -31,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
+      className={`${poppins.variable} ${jakarta.variable} ${geistMono.variable} h-full scroll-smooth antialiased`}
     >
       {/* suppressHydrationWarning: ekstensi browser (mis. ColorZilla) menyuntikkan
           atribut seperti cz-shortcut-listen ke <body> sebelum hydrate. */}

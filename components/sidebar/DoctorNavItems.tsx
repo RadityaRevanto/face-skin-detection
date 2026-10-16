@@ -29,10 +29,9 @@ export function getDoctorNavItems(): SidebarNavItem[] {
       href: ROUTES.DOCTOR.SKINCARE,
       icon: (
         <NavIcon>
-          <path d="M16 19c0-2.2-1.8-4-4-4H8c-2.2 0-4 1.8-4 4" {...s} />
-          <path d="M10 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" {...s} />
-          <path d="M20 19c0-1.7-1-3.1-2.5-3.7" {...s} />
-          <path d="M15.5 5.3a3 3 0 0 1 0 5.4" {...s} />
+          <path d="M10 2h4" {...s} />
+          <path d="M10 2v3.5L8.5 8v11a3 3 0 0 0 3 3h1a3 3 0 0 0 3-3V8L14 5.5V2" {...s} />
+          <path d="M8.5 13h7" {...s} />
         </NavIcon>
       ),
     },
@@ -41,11 +40,8 @@ export function getDoctorNavItems(): SidebarNavItem[] {
       href: ROUTES.DOCTOR.RECOMMENDATIONS,
       icon: (
         <NavIcon>
-          <path d="M7 4v5a5 5 0 0 0 10 0V4" {...s} />
-          <path d="M7 4H5" {...s} />
-          <path d="M17 4h2" {...s} />
-          <path d="M12 14v2a4 4 0 0 0 8 0v-1" {...s} />
-          <path d="M20 15a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" {...s} />
+          <path d="M10.5 20.5a5 5 0 0 1-7-7l6-6a5 5 0 0 1 7 7l-6 6Z" {...s} />
+          <path d="m8 9 7 7" {...s} />
         </NavIcon>
       ),
     },

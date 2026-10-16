@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Sparkles } from "lucide-react";
+import { Bot } from "lucide-react";
 
 import { ROUTES } from "@/lib/constants";
 import type { DoctorCard } from "../types";
@@ -63,11 +63,11 @@ function AiBotCard({ doctor }: { doctor: DoctorCard }) {
   return (
     <Link
       href={ROUTES.USER.DOCTOR_PROFILE(doctor.uuid)}
-      className="group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-transparent bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 p-[1.5px] transition-all hover:shadow-lg"
+      className="group flex items-center gap-4 rounded-2xl border border-emerald-200 bg-white p-4 transition-colors hover:border-emerald-300 sm:p-5"
     >
-      <div className="flex w-full items-center gap-4 rounded-[calc(1rem-1.5px)] bg-white p-4 sm:p-5">
-        <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-linear-to-br from-emerald-100 to-teal-50 ring-1 ring-emerald-200">
-          <Sparkles className="h-6 w-6 text-emerald-600" />
+      <div className="flex w-full items-center gap-4">
+        <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-emerald-100 text-emerald-600">
+          <Bot className="h-6 w-6" />
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { MessageSquarePlus, Search, Sparkles } from "lucide-react";
+import { MessageSquarePlus, Search, Bot } from "lucide-react";
 import { Conversation } from "@/lib/api/consultations-query";
+import { ConversationListSkeleton } from "@/components/skeletons";
 import { ConversationItem } from "./ConversationItem";
 
 export type ConversationFilter = "all" | "unread" | "done";
@@ -158,13 +159,13 @@ export function ConversationSidebar({
             <button
               onClick={handleStartAiChat}
               disabled={isStartingAi}
-              className="w-full flex items-center gap-3 p-3 rounded-xl bg-linear-to-r from-violet-50 to-emerald-50 border border-violet-100 hover:border-violet-300 transition-all text-left disabled:opacity-60"
+              className="w-full flex items-center gap-3 p-3 rounded-xl border border-emerald-200 bg-emerald-50 hover:border-emerald-300 transition-colors text-left disabled:opacity-60"
             >
-              <span className="w-12 h-12 rounded-full bg-linear-to-br from-violet-500 to-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <span className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 ring-1 ring-emerald-200">
                 {isStartingAi ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-600" />
                 ) : (
-                  <Sparkles size={22} />
+                  <Bot size={22} />
                 )}
               </span>
               <span className="min-w-0">
@@ -180,9 +181,7 @@ export function ConversationSidebar({
         {/* Conversation list */}
         <div className="flex-1 overflow-y-auto min-h-0">
           {isLoadingConversations ? (
-            <div className="flex justify-center p-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
-            </div>
+            <ConversationListSkeleton count={6} />
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center p-8 text-center text-zinc-500">
               <MessageSquarePlus size={32} className="mb-3 text-zinc-300" />

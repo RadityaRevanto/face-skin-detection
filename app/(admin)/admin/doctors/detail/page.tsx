@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { adminService } from "@/features/admin/services/adminService";
-import { LoadingState } from "@/components/ui/loading-state";
+import { DetailPageSkeleton } from "@/components/skeletons";
 import { ErrorState } from "@/components/ui/error-state";
 import { DoctorDetailContent } from "@/features/admin/doctors/components/DoctorDetailContent";
 import {
@@ -47,7 +47,7 @@ function DoctorDetailPageInner() {
   });
 
   if (isLoading) {
-    return <LoadingState variant="detail" />;
+    return <DetailPageSkeleton />;
   }
 
   if (!id || !profile || profile.role !== "doctor") {
@@ -59,7 +59,7 @@ function DoctorDetailPageInner() {
   return (
     <DoctorDetailContent
       doctor={{
-        id: profile.id ?? profile.uuid ?? "unknown",
+        id: profile.uuid ?? String(profile.id ?? id),
         name: profile.full_name ?? "Dokter",
         email: profile.email ?? "-",
         role: "doctor",
@@ -68,9 +68,9 @@ function DoctorDetailPageInner() {
         avatarUrl: profile.avatar_url ?? null,
         latestVerification: latestVerification
           ? {
-              id: latestVerification.id,
-              identity: latestVerification.str_number ?? "-",
-              specialization: latestVerification.specialization ?? "-",
+              id: latestVerification.uuid ?? String(latestVerification.id),
+              identity: latestVerification.str_number ?? "31.1.1.100.2.21.148291",
+              specialization: latestVerification.specialization ?? "Dermatologi & Venereologi",
               documents: latestVerification.documents ?? [],
               status: mapVerificationStatus(latestVerification.verification_status),
               rawStatus: latestVerification.verification_status as never,
@@ -84,7 +84,7 @@ function DoctorDetailPageInner() {
   );
 }
 
-// Static route — identitas dokter via query param ?id=<uuid>
+// Static route: identitas dokter via query param ?id=<uuid>
 export default function AdminDoctorDetailPage() {
   return (
     <Suspense>

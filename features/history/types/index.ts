@@ -1,7 +1,6 @@
 // Tipe area history mengikuti kontrak kanonik backend (PredictionHistoryResource).
 import type {
   OtherConcern,
-  PredictionResult,
   ScanMode,
   SeverityLevel,
   SkincareRecommendation,

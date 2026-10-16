@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 
 import { profileService } from "@/features/profile/services/profileService";
@@ -11,9 +12,10 @@ interface ProfileIncompleteModalProps {
 }
 
 export function ProfileIncompleteModal({ onSuccess }: ProfileIncompleteModalProps) {
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [gender, setGender] = useState("");
   const [dob, setDob] = useState("");
 
@@ -33,6 +35,16 @@ export function ProfileIncompleteModal({ onSuccess }: ProfileIncompleteModalProp
         date_of_birth: dob,
       });
 
+      // Update cache ["profile"] SEKARANG — tanpa ini, ScanContent tetap
+      // membaca data lama (belum lengkap) dan modal muncul lagi saat user
+      // kembali ke /user/scan sebelum cache stale.
+      queryClient.setQueryData(["profile"], (old: unknown) => ({
+        ...(typeof old === "object" && old !== null ? old : {}),
+        gender,
+        date_of_birth: dob,
+        profile_completed: true,
+      }));
+
       onSuccess();
     } catch (err: unknown) {
       setError(
@@ -50,10 +62,10 @@ export function ProfileIncompleteModal({ onSuccess }: ProfileIncompleteModalProp
       className="fixed inset-0 flex items-center justify-center bg-zinc-900/50 p-4 backdrop-blur-sm"
       style={{ zIndex: 9999 }}
     >
-      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-400 to-emerald-600" />
+      <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
         
-        <h2 className="text-xl font-bold text-zinc-900 mb-2 mt-2">Lengkapi Profil Anda</h2>
+        
+        <h2 className="text-xl font-bold text-zinc-900 mb-2">Lengkapi Profil Anda</h2>
         <p className="text-sm text-zinc-500 mb-6">
           Sebelum melakukan scan wajah, mohon lengkapi data jenis kelamin dan tanggal lahir untuk hasil prediksi yang lebih akurat.
         </p>

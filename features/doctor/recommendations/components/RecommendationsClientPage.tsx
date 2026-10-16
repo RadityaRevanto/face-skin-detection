@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 
 import { api } from "@/lib/api";
 import { catalogService } from "@/features/skin-types/services/catalogService";
+import { ErrorState } from "@/components/ui/error-state";
 import type { RecommendationsPageData } from "../lib/recommendationsTypes";
 
 import { RecommendationContent } from "./RecommendationContent";
@@ -32,7 +33,7 @@ function RecommendationsPageInner() {
   const searchParams = useSearchParams();
   const page = Math.max(1, Number(searchParams.get("page") ?? "1") || 1);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["doctor", "recommendations", page],
     queryFn: async () => {
       const response = await api.get<{
@@ -58,7 +59,6 @@ function RecommendationsPageInner() {
       no: from + index + 1,
       concern: recommendation.concern?.name ?? "-",
       severity: formatPriority(recommendation.priority_level),
-      skinType: "Semua tipe kulit",
       productName: recommendation.product?.name ?? "-",
       productBrand: recommendation.product?.category ?? "-",
       routineStep: recommendation.title ?? "-",
@@ -90,6 +90,10 @@ function RecommendationsPageInner() {
       },
     };
   }, [data, concernsResponse, page]);
+
+  if (isError) {
+    return <ErrorState message="Gagal memuat rekomendasi." onRetry={() => refetch()} />;
+  }
 
   if (isLoading && !data) {
     return (

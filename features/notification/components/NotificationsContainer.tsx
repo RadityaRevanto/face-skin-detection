@@ -36,6 +36,7 @@ export function NotificationsContainer() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount/page, setState di dalam async callback
     fetchNotifications(currentPage);
   }, [currentPage, fetchNotifications]);
 
@@ -80,7 +81,7 @@ export function NotificationsContainer() {
     }).format(new Date(dateStr));
 
   return (
-    <main className="min-h-[calc(100vh-72px)] bg-shell p-4 sm:p-6 lg:p-8">
+    <main className="w-full">
       <div className="mx-auto max-w-3xl">
         <NotificationsHeader
           total={total}

@@ -5,7 +5,6 @@ export type RecommendationRow = {
   no: number;
   concern: string;
   severity: string;
-  skinType: string;
   productName: string;
   productBrand: string;
   routineStep: string;

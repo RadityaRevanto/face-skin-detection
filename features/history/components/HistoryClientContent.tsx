@@ -10,6 +10,7 @@ import type { PredictionHistory } from "../types";
 import type { HistoryFilters } from "../types";
 import { HistoryFilterBar } from "./HistoryFilterBar";
 import { HistoryList } from "./HistoryList";
+import { HistoryListSkeleton } from "@/components/skeletons";
 
 const HISTORY_PAGE_SIZE = 5;
 
@@ -86,11 +87,7 @@ export function HistoryClientContent({ page, filters }: HistoryClientContentProp
       />
 
       {isLoading ? (
-        <div className="grid gap-4 sm:grid-cols-2">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-64 animate-pulse rounded-2xl bg-slate-100" />
-          ))}
-        </div>
+        <HistoryListSkeleton count={4} />
       ) : isError ? (
         <div className="rounded-2xl border border-rose-100 bg-rose-50 p-8 text-center text-sm text-rose-600">
           Gagal memuat riwayat pemeriksaan. Coba muat ulang halaman.

@@ -2,6 +2,7 @@
 
 import { ReceiptText, XCircle } from "lucide-react";
 import type { ReceiptData } from "./types";
+import { useDialogEscape } from "@/features/shared/hooks/useDialogEscape";
 
 type Props = {
   receipt: ReceiptData | null;
@@ -9,15 +10,16 @@ type Props = {
 };
 
 export function ReceiptModal({ receipt, onClose }: Props) {
+  useDialogEscape(!!receipt, onClose);
   if (!receipt) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        <div className="bg-linear-to-r from-emerald-700 to-emerald-500 p-5 text-white flex items-center justify-between">
-          <h3 className="font-bold flex items-center gap-2">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/40 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-labelledby="receipt-title">
+      <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+        <div className="bg-emerald-700 p-5 text-white flex items-center justify-between">
+          <h3 id="receipt-title" className="font-bold flex items-center gap-2">
             <ReceiptText size={20} /> Struk Langganan
           </h3>
-          <button onClick={onClose} className="opacity-80 hover:opacity-100">
+          <button onClick={onClose} aria-label="Tutup" className="opacity-80 hover:opacity-100">
             <XCircle size={22} />
           </button>
         </div>

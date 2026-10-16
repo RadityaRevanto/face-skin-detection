@@ -22,7 +22,7 @@ export function FormFooter({
   termsLabel = "Terms of Service",
   privacyLink = "#",
   privacyLabel = "Privacy Policy",
-  buttonClassName = "h-12 w-full rounded-xl bg-emerald-600 text-base shadow-xl shadow-emerald-600/25 hover:bg-emerald-700",
+  buttonClassName = "h-12 w-full rounded-xl bg-emerald-600 text-base shadow-sm hover:bg-emerald-700",
   children,
 }: FormFooterProps) {
   return (

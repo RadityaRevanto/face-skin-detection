@@ -28,7 +28,7 @@ export function PasswordChangeSection({
   return (
     <section className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm">
       <div className="flex items-center gap-3 mb-6">
-        <div className="p-2.5 bg-amber-50 rounded-xl text-amber-600">
+        <div className="p-2.5 bg-slate-100 rounded-xl text-slate-600">
           <Lock size={22} />
         </div>
         <div>

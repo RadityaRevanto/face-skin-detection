@@ -32,6 +32,25 @@ function isAlreadySeen(id: string): boolean {
  * - Deduplication: notifikasi yang sudah pernah dilihat tidak trigger toast lagi
  * - Backend event name: `.notification.new` (bukan BroadcastNotificationCreated)
  */
+/** Channel Echo untuk private channel — API minimal yang dipakai hook ini. */
+type EchoChannel = {
+  listen: (event: string, callback: (payload: unknown) => void) => unknown;
+  stopListening: (event: string) => unknown;
+};
+
+/** Payload broadcast BE (NotificationSent::broadcastWith). */
+type RealtimeNotificationPayload = {
+  id: string | number;
+  type?: string;
+  category?: string;
+  title?: string;
+  message?: string;
+  action_url?: string | null;
+  is_read?: boolean;
+  created_at?: string;
+  notification?: RealtimeNotificationPayload;
+};
+
 export function useRealtimeNotifications({
   userId,
   userUuid,
@@ -44,7 +63,7 @@ export function useRealtimeNotifications({
   useEffect(() => {
     if (!userId && !userUuid) return;
 
-    let uuidChannel: any = null;
+    let uuidChannel: EchoChannel | null = null;
 
     try {
       const echo = getEcho();
@@ -53,8 +72,11 @@ export function useRealtimeNotifications({
       if (echoSubscribedRef.current) return;
       echoSubscribedRef.current = true;
 
-      const handleNewNotification = (rawPayload: any) => {
-        const notification: NotificationData = rawPayload?.notification ?? rawPayload;
+      const handleNewNotification = (rawPayload: RealtimeNotificationPayload | unknown) => {
+        const payload = (
+          typeof rawPayload === "object" && rawPayload !== null ? rawPayload : {}
+        ) as RealtimeNotificationPayload;
+        const notification = (payload.notification ?? payload) as NotificationData;
         if (!notification || !notification.id) return;
 
         const strId = String(notification.id);
@@ -67,7 +89,7 @@ export function useRealtimeNotifications({
       };
 
       if (userUuid) {
-        uuidChannel = echo.private(`user.${userUuid}`);
+        uuidChannel = echo.private(`user.${userUuid}`) as unknown as EchoChannel;
         uuidChannel.listen(".notification.new", handleNewNotification);
       }
 

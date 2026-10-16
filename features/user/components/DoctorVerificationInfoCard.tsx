@@ -110,7 +110,7 @@ export function DoctorVerificationInfoCard() {
             key={row.label}
             className="flex flex-col gap-1 border-b border-slate-100 py-3 last:border-0 sm:flex-row sm:items-start sm:gap-6"
           >
-            <span className="w-40 shrink-0 text-xs font-bold uppercase tracking-wider text-slate-400">
+            <span className="w-40 shrink-0 text-xs font-bold text-slate-400">
               {row.label}
             </span>
             <span className="min-w-0 text-sm font-medium text-slate-700">

@@ -12,16 +12,20 @@ export function AiConsentCard({ consentStatus, isConsentLoading, onToggle }: Pro
   return (
     <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
       <div className="flex items-start gap-4">
-        <div className="p-3 bg-indigo-50 rounded-xl text-indigo-600">
+        <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600">
           <Bot size={24} />
         </div>
         <div className="flex-1">
           <h3 className="text-lg font-bold text-slate-900 mb-1">Persetujuan Kecerdasan Buatan (AI)</h3>
           <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-            Dengan menyetujui, Anda mengizinkan Skincek membagikan isi pesan teks *chat* Anda ke penyedia kecerdasan buatan (Google Gemini) agar bot Aura Skin dapat menjawab pertanyaan Anda. Pesan ini tidak digunakan untuk melatih model mereka. Anda dapat mencabut persetujuan ini kapan saja.
+            Dengan menyetujui, Anda mengizinkan Skincek membagikan isi pesan teks chat Anda ke penyedia kecerdasan buatan (Google Gemini) agar bot Aura Skin dapat menjawab pertanyaan Anda. Pesan ini tidak digunakan untuk melatih model mereka. Anda dapat mencabut persetujuan ini kapan saja.
           </p>
           <div className="flex items-center gap-4">
             <button
+              type="button"
+              role="switch"
+              aria-checked={consentStatus}
+              aria-label="Persetujuan AI"
               onClick={onToggle}
               disabled={isConsentLoading}
               className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${consentStatus ? 'bg-emerald-500' : 'bg-slate-300'}`}

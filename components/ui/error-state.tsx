@@ -2,8 +2,8 @@ import { cn } from "@/lib/utils";
 
 /**
  * ErrorState — banner error standarisasi (DESIGN.md §4.8).
- * bg-rose-50 border-rose-100 text-rose-700 rounded-2xl p-8 text-center
- * + tombol retry bg-emerald-600 opsional (via onRetry).
+ * bg/token destructive, rounded-card p-8 text-center
+ * + tombol retry (cta) opsional (via onRetry).
  */
 
 type ErrorStateProps = {
@@ -23,11 +23,11 @@ export function ErrorState({
   return (
     <div
       className={cn(
-        "w-full rounded-2xl border border-rose-100 bg-rose-50 p-8 text-center",
+        "w-full rounded-[var(--radius-card)] border border-[var(--destructive-fg)]/20 bg-[var(--destructive-bg)] p-8 text-center",
         className,
       )}
     >
-      <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-rose-100 text-rose-500">
+      <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-[var(--destructive-fg)]/10 text-[var(--destructive-fg)]">
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
@@ -44,13 +44,13 @@ export function ErrorState({
         </svg>
       </div>
 
-      <p className="mt-3 text-sm font-semibold text-rose-700">{message}</p>
+      <p className="mt-3 text-sm font-semibold text-[var(--destructive-fg)]">{message}</p>
 
       {onRetry ? (
         <button
           type="button"
           onClick={onRetry}
-          className="mt-5 inline-flex h-10 items-center justify-center rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-emerald-700"
+          className="mt-5 inline-flex h-10 cursor-pointer items-center justify-center rounded-[var(--radius-control)] bg-[var(--cta)] px-5 text-sm font-semibold text-white transition-colors hover:bg-[var(--cta-hover)]"
         >
           {retryLabel}
         </button>

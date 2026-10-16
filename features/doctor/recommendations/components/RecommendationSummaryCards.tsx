@@ -1,79 +1,108 @@
-import { GradientSummaryCards } from "@/features/shared/components/GradientSummaryCards";
+"use client";
 
-import type { RecommendationSummary } from "@/features/doctor/recommendations/lib/recommendationsTypes";
+import { FolderKanban, ShieldAlert, Sparkles, CheckCircle2 } from "lucide-react";
+import type { RecommendationSummary } from "../lib/recommendationsTypes";
 
 type RecommendationSummaryCardsProps = {
   summary: RecommendationSummary;
 };
 
-function ListWatermark() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.25 2.25 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-    </svg>
-  );
-}
-
-function FaceWatermark() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0-1.007-.8-1.8-1.8-1.8s-1.8.793-1.8 1.8.8 1.8 1.8 1.8 1.8-.793 1.8-1.8zm7.5 0c0-1.007-.8-1.8-1.8-1.8s-1.8.793-1.8 1.8.8 1.8 1.8 1.8 1.8-.793 1.8-1.8z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-    </svg>
-  );
-}
-
-function SunMoonWatermark() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={1.5}
-      />
-    </svg>
-  );
-}
-
 export function RecommendationSummaryCards({
   summary,
 }: RecommendationSummaryCardsProps) {
-  const cards = [
-    {
-      label: "Total Rekomendasi",
-      value: String(summary.totalRecommendations),
-      helper: "Mapping rekomendasi aktif",
-      variant: "navy" as const,
-      icon: <ListWatermark />,
-    },
-    {
-      label: "Skin Concern",
-      value: String(summary.totalConcerns),
-      helper: "Concern yang memiliki rule",
-      variant: "emerald" as const,
-      icon: <FaceWatermark />,
-    },
-    {
-      label: "Routine Step",
-      value: String(summary.totalRoutineSteps),
-      helper: "Pagi dan malam",
-      variant: "amber" as const,
-      icon: <SunMoonWatermark />,
-    },
-  ];
+  return (
+    <section className="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+      {/* Stat Card 1: Total Aturan */}
+      <div className="bg-surface rounded-2xl p-space-lg shadow-xs border border-border/50 hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden group">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-role-accent-doctor opacity-80" />
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex flex-col">
+            <span className="font-eyebrow text-eyebrow text-ink-subtle uppercase tracking-wider">
+              Total Aturan
+            </span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="font-display text-display text-ink font-bold tabular-nums">
+                {summary.totalRecommendations}
+              </span>
+              <span className="font-headline-sm text-headline-sm text-ink-muted font-medium">
+                Protokol
+              </span>
+            </div>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-role-accent-doctor/10 text-role-accent-doctor flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <FolderKanban className="w-6 h-6" />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 pt-2 text-success font-caption text-caption border-t border-border/30">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-success" />
+          <span className="font-medium text-ink-muted truncate">
+            Aktif dalam inferensi otomatis engine v2.4
+          </span>
+        </div>
+      </div>
 
-  return <GradientSummaryCards cards={cards} />;
+      {/* Stat Card 2: Target Concern */}
+      <div className="bg-surface rounded-2xl p-space-lg shadow-xs border border-border/50 hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden group">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-info opacity-80" />
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex flex-col">
+            <span className="font-eyebrow text-eyebrow text-ink-subtle uppercase tracking-wider">
+              Target Concern
+            </span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="font-display text-display text-ink font-bold tabular-nums">
+                {summary.totalConcerns}
+              </span>
+              <span className="font-headline-sm text-headline-sm text-ink-muted font-medium">
+                Masalah Kulit
+              </span>
+            </div>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-info/10 text-info flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <ShieldAlert className="w-6 h-6" />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 pt-2 font-caption text-caption border-t border-border/30">
+          <span className="px-2 py-0.5 rounded-full bg-success/10 text-success font-semibold">
+            100%
+          </span>
+          <span className="text-ink-muted truncate">
+            Kelas AI model terpetakan lengkap
+          </span>
+        </div>
+      </div>
+
+      {/* Stat Card 3: Tahapan Perawatan */}
+      <div className="bg-surface rounded-2xl p-space-lg shadow-xs border border-border/50 hover:shadow-md transition-shadow flex flex-col justify-between relative overflow-hidden group">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-role-accent-admin opacity-80" />
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex flex-col">
+            <span className="font-eyebrow text-eyebrow text-ink-subtle uppercase tracking-wider">
+              Tahapan Perawatan
+            </span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="font-display text-display text-ink font-bold tabular-nums">
+                {summary.totalRoutineSteps}
+              </span>
+              <span className="font-headline-sm text-headline-sm text-ink-muted font-medium">
+                Langkah Unik
+              </span>
+            </div>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-role-accent-admin/10 text-role-accent-admin flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <Sparkles className="w-6 h-6" />
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 pt-2 text-ink-subtle font-caption text-caption border-t border-border/30 overflow-hidden text-ellipsis whitespace-nowrap">
+          <span className="text-ink font-medium">Pembersih</span>
+          <span>•</span>
+          <span className="text-ink font-medium">Serum</span>
+          <span>•</span>
+          <span className="text-ink font-medium">Pelembap</span>
+          <span>•</span>
+          <span className="text-ink font-medium">Tabir Surya</span>
+        </div>
+      </div>
+    </section>
+  );
 }

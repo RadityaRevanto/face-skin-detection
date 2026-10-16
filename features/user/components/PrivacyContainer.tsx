@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { aiChatService } from "@/features/ai-chat/services/aiChatService";
 import { profileService } from "@/features/profile/services/profileService";
 import { tokenStorage } from "@/lib/api";
+import { customToast } from "@/lib/custom-toast";
 import { getUserFriendlyErrorMessage } from "@/lib/api-errors";
 
 import { PrivacySidebar } from "./PrivacySidebar";
@@ -50,7 +51,10 @@ export function PrivacyContainer({ role, basePath }: PrivacyContainerProps) {
     finally { setIsLoading(false); setIsConsentLoading(false); }
   }, [needsConsent]);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- fetch-on-mount, setState di dalam async callback
+    fetchData();
+  }, [fetchData]);
 
   const toggleConsent = async () => {
     try {
@@ -71,24 +75,27 @@ export function PrivacyContainer({ role, basePath }: PrivacyContainerProps) {
         // Route download protected auth:sanctum (walau URL signed) — unduh via axios blob.
         await profileService.downloadExport(downloadUrl);
       } else {
-        alert(
+        customToast.info(
           ((response as { meta?: { message?: string } })?.meta?.message as string) ||
             "Fitur ekspor data sedang dalam pengembangan.",
         );
       }
-    } catch (error) { alert(getUserFriendlyErrorMessage(error)); }
+    } catch (error) { customToast.error("Gagal", { description: getUserFriendlyErrorMessage(error) }); }
     finally { setIsExporting(false); }
   };
 
   const deleteAccount = async () => {
-    if (deleteConfirmText !== "HAPUS AKUN SAYA") { alert("Teks konfirmasi tidak sesuai"); return; }
+    if (deleteConfirmText !== "HAPUS AKUN SAYA") {
+      customToast.warning("Teks konfirmasi tidak sesuai");
+      return;
+    }
     try {
       setIsDeleting(true);
       await profileService.destroy();
       tokenStorage.clear();
       router.replace("/login");
     } catch (error) {
-      alert(getUserFriendlyErrorMessage(error));
+      customToast.error("Gagal", { description: getUserFriendlyErrorMessage(error) });
       setIsDeleting(false);
     }
   };
@@ -98,7 +105,7 @@ export function PrivacyContainer({ role, basePath }: PrivacyContainerProps) {
   }
 
   return (
-    <main className="p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto">
+    <main className="w-full">
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 tracking-tight">Privasi & Data</h1>
         <p className="text-zinc-500 mt-1.5 text-sm sm:text-base">Kelola persetujuan AI, ekspor data Anda, atau hapus akun permanen.</p>

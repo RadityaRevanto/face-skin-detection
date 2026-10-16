@@ -5,9 +5,12 @@ export type UserRow = {
   no: number;
   username: string;
   email: string;
+  avatarUrl: string | null;
   join: string;
   gender: string;
   age: number | string;
+  role: string;
+  isActive: boolean;
 };
 
 export type UsersPageData = {

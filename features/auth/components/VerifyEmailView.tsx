@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { type FormEvent, useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -12,6 +13,7 @@ import { VerifyEmailForm } from "./VerifyEmailForm";
 
 export function VerifyEmailView() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const email = searchParams.get('email') || ""; // Can be passed from register
 
@@ -25,7 +27,8 @@ export function VerifyEmailView() {
     if (email) {
       handleResendOTP();
     }
-  }, [email]); // Only run when email is available
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fire sekali per email; fungsi memakai state guard sendiri
+  }, [email]);
 
   async function handleResendOTP() {
     if (isResending) return;
@@ -77,10 +80,16 @@ export function VerifyEmailView() {
       if (data?.meta?.message) {
         setMessage(String(data.meta.message));
         setIsError(false);
-        // Redirect ke login setelah verifikasi sukses
+
+        // Refresh cache profile & auth state agar banner "belum verifikasi"
+        // hilang dan dashboard membaca status terbaru.
+        await authService.me();
+        queryClient.invalidateQueries({ queryKey: ["profile"] });
+
+        // User sudah login — langsung ke dashboard, tidak perlu login ulang.
         setTimeout(() => {
-          router.push(ROUTES.LOGIN);
-        }, 2000);
+          router.push("/user/home");
+        }, 1500);
       } else {
         setMessage("Kode OTP tidak valid atau kedaluwarsa.");
         setIsError(true);
@@ -95,11 +104,8 @@ export function VerifyEmailView() {
 
   return (
     <main className='relative flex min-h-screen items-center justify-center overflow-hidden bg-shell px-4 py-8 text-zinc-950'>
-      <div className='absolute -left-20 top-14 h-72 w-72 rounded-full bg-emerald-100/80 blur-3xl' />
-      <div className='absolute right-0 top-0 h-136 w-136 rounded-full bg-emerald-200/45 blur-3xl' />
-      <div className='absolute bottom-0 right-20 h-72 w-72 rounded-full bg-teal-100/70 blur-3xl' />
 
-      <section className='relative w-full max-w-md rounded-4xl border border-zinc-200/70 bg-white px-8 py-10 shadow-2xl shadow-emerald-950/10 sm:px-10'>
+      <section className='relative w-full max-w-md rounded-4xl border border-zinc-200/70 bg-white px-8 py-10 shadow-sm sm:px-10'>
         <Link href={ROUTES.HOME} className='mb-10 flex items-center gap-3'>
           <LeafLogo />
           <span>
