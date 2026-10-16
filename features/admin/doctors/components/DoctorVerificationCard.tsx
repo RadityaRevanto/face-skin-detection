@@ -36,7 +36,10 @@ export function DoctorVerificationCard({
               label='Tanggal Pengajuan'
               value={verification.submittedAt}
             />
-            <InfoBox label='Tanggal Review' value={verification.reviewedAt} />
+            <InfoBox
+              label='Tanggal Review'
+              value={verification.reviewedAt ?? "-"}
+            />
           </div>
 
           <div className='rounded-[var(--radius-control)] bg-[var(--surface-2)] p-3.5'>

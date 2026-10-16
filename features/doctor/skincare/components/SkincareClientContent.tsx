@@ -8,7 +8,7 @@ import { useSearchParams } from "next/navigation";
 import { useDoctorProducts } from "../hooks/useDoctorProducts";
 import { catalogService } from "@/features/skin-types/services/catalogService";
 import { ErrorState } from "@/components/ui/error-state";
-import type { SkincarePageData } from "../types";
+import type { SkincarePageData, SkincareRow } from "../types";
 
 import { SkincareContent } from "./SkincareContent";
 
@@ -37,7 +37,7 @@ export function SkincareClientContent() {
     const rows = data?.data ?? [];
     const from = (page - 1) * PAGE_SIZE;
 
-    const products = rows.map((product, index) => ({
+    const products: SkincareRow[] = rows.map((product, index) => ({
       id: product.uuid,
       no: from + index + 1,
       name: product.name ?? "-",

@@ -132,6 +132,7 @@ export function VerificationTableRow({
         <div className="flex items-center gap-3 min-w-[220px]">
           <div className="relative shrink-0">
             {request.avatarUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={request.avatarUrl}
                 alt={request.name}

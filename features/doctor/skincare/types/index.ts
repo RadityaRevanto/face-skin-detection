@@ -125,6 +125,8 @@ export type DoctorProductRow = {
   uuid: string;
   name: string;
   category: string;
+  gender?: string | null;
+  is_active?: boolean | null;
   key_ingredients?: string | null;
   created_at?: string | null;
   concern?: { name?: string } | null;

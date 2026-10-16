@@ -1,10 +1,15 @@
-import type { PagePagination } from "@/lib/types/pagination";
-
 export type ActivityLogCauser = {
   uuid?: string;
   full_name?: string | null;
   email?: string | null;
   role?: string | null;
+};
+
+export type ActivityLogPagination = {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
 };
 
 export type ActivityLogItemData = {
@@ -49,7 +54,7 @@ export type ActivityLogContentProps = {
   logs: ActivityLogItemData[];
   stats: ActivityLogStats;
   filters: ActivityLogFilterState;
-  pagination: PagePagination;
+  pagination: ActivityLogPagination;
   onSearchChange: (search: string) => void;
   onLogNameChange: (logName: string) => void;
   onCauserChange: (causer: string) => void;

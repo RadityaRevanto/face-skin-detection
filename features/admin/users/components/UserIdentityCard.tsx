@@ -51,6 +51,7 @@ export function UserIdentityCard({ user }: UserIdentityCardProps) {
         <div className="relative shrink-0">
           <div className="w-20 h-20 rounded-2xl overflow-hidden bg-surface-container shadow-inner flex items-center justify-center font-headline-lg text-headline-lg font-bold text-role-accent-admin">
             {user.avatarUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
             ) : (
               initials || "U"

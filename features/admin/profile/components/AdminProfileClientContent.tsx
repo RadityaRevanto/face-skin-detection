@@ -11,10 +11,7 @@ import type { AdminProfileData } from "../types";
 export function AdminProfileClientContent() {
   const { data: profile, isLoading } = useQuery({
     queryKey: ["admin", "profile"],
-    queryFn: async () => {
-      const response = await adminService.adminProfile();
-      return response as unknown as AdminProfileData;
-    },
+    queryFn: () => adminService.adminProfile(),
   });
 
   if (isLoading) {

@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 type InfoBoxProps = {
   label: string;
-  value: string;
+  value?: string | null;
   className?: string;
 };
 
@@ -15,7 +15,7 @@ export function InfoBox({ label, value, className = "" }: InfoBoxProps) {
       )}
     >
       <p className="mb-1 text-xs text-[var(--ink-muted)]">{label}</p>
-      <p className="text-sm font-semibold text-[var(--ink)]">{value}</p>
+      <p className="text-sm font-semibold text-[var(--ink)]">{value ?? "-"}</p>
     </div>
   );
 }

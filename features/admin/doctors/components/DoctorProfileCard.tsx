@@ -44,6 +44,7 @@ export function DoctorProfileCard({ doctor, onToggleStatus }: DoctorProfileCardP
         <div className="relative mb-4 mt-2">
           <div className="w-28 h-28 rounded-2xl overflow-hidden ring-4 ring-surface shadow-md bg-surface-alt">
             {doctor.avatarUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img src={doctor.avatarUrl} alt={doctor.name} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full bg-role-accent-doctor/10 text-role-accent-doctor flex items-center justify-center font-display text-2xl font-bold">

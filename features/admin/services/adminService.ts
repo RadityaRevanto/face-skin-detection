@@ -2,8 +2,9 @@ import { fetchEnvelope, fetchPaginated, mutate } from "@/lib/api/handlers";
 import type { ApiEnvelope, PaginationMeta } from "@/lib/api/envelope";
 import { paginationParams } from "@/lib/api/envelope";
 import type { SkincareProduct } from "@/features/skin-types/services/catalogService";
+import type { AdminProfileData } from "@/features/admin/profile/types";
 
-export type { PaginationMeta as ApiPaginationMeta };
+export type { PaginationMeta as ApiPaginationMeta, AdminProfileData };
 
 export type AdminUser = {
   uuid: string;
@@ -15,6 +16,7 @@ export type AdminUser = {
   avatar_url?: string | null;
   google_avatar_url?: string | null;
   created_at?: string;
+  updated_at?: string;
   email_verified_at?: string | null;
   gender?: string | null;
   date_of_birth?: string | null;
@@ -87,6 +89,15 @@ export type UsersQueryParams = {
   per_page?: number;
   role?: string;
   search?: string;
+  status?: string;
+};
+
+export type VerificationsQueryParams = {
+  status?: string;
+  verification_status?: string;
+  page?: number;
+  per_page?: number;
+  search?: string;
 };
 
 export type ActivityLogQueryParams = {
@@ -115,8 +126,8 @@ export const adminService = {
   },
 
   /** GET /admin/profile: profil admin + last_login + summary. */
-  adminProfile: async (): Promise<AdminUser> => {
-    const envelope = await fetchEnvelope<AdminUser>("/admin/profile");
+  adminProfile: async (): Promise<AdminProfileData> => {
+    const envelope = await fetchEnvelope<AdminProfileData>("/admin/profile");
     return envelope.data;
   },
 
@@ -148,6 +159,10 @@ export const adminService = {
 
   /** PATCH /admin/users/{uuid}/toggle-active: suspend / aktifkan. */
   toggleActive: (uuid: string): Promise<ApiEnvelope<AdminUser>> =>
+    mutate("patch", `/admin/users/${uuid}/toggle-active`),
+
+  /** Alias untuk toggleActive atau update status aktif akun user/dokter. */
+  updateStatus: (uuid: string, _targetStatus?: boolean): Promise<ApiEnvelope<AdminUser>> =>
     mutate("patch", `/admin/users/${uuid}/toggle-active`),
 
   /** GET /admin/activity-log: filter ?log_name= & ?causer_id=. */
@@ -184,8 +199,8 @@ export const adminService = {
     }
   },
 
-  /** GET /admin/verifications: filter ?verification_status= (atau ?status=). */
-  verifications: (params?: { status?: string; page?: number; per_page?: number }) =>
+  /** GET /admin/verifications: filter ?verification_status= (atau ?status=) & ?search=. */
+  verifications: (params?: VerificationsQueryParams) =>
     fetchPaginated<DoctorVerificationSummary>("/admin/verifications", cleanParams(params)),
 
   /** GET /admin/verifications/{uuid}: detail verifikasi dokter. */

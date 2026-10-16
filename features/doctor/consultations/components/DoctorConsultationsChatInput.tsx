@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, type KeyboardEvent } from "react";
+import { useState, useRef, type KeyboardEvent, type ChangeEvent, type FormEvent } from "react";
 import { Send, Image as ImageIcon, X, Loader2 } from "lucide-react";
 
 type DoctorConsultationsChatInputProps = {
@@ -17,7 +17,7 @@ export function DoctorConsultationsChatInput({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -41,7 +41,7 @@ export function DoctorConsultationsChatInput({
     }
   };
 
-  const handleSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: FormEvent) => {
     if (e) e.preventDefault();
     if (isSending || (!inputText.trim() && !selectedFile)) return;
 

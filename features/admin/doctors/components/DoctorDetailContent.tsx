@@ -25,7 +25,7 @@ export function DoctorDetailContent({ doctor }: DoctorDetailContentProps) {
     setIsSubmitting(true);
     const targetStatus = !doctor.isActive;
     try {
-      await adminService.updateStatus(uuid, targetStatus);
+      await adminService.toggleActive(uuid);
       customToast.success(
         targetStatus
           ? "Akun dokter berhasil diaktifkan kembali"

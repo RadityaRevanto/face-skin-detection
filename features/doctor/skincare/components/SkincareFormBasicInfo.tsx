@@ -73,8 +73,8 @@ export function SkincareFormBasicInfo({
           >
             <option value="">Pilih kategori produk</option>
             {categoryOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
+              <option key={opt} value={opt}>
+                {opt}
               </option>
             ))}
           </select>

@@ -62,6 +62,7 @@ export function DoctorTableRow({ doctor }: DoctorTableRowProps) {
         <div className="flex items-center gap-3">
           <div className="relative shrink-0">
             {doctor.avatarUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={doctor.avatarUrl}
                 alt={doctor.name}

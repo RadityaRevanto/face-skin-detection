@@ -105,7 +105,7 @@ export function ActivityLogClientPage() {
   const totalMutationsToday = statsData?.total_mutations_today ?? totalLogs;
 
   const mutationsTrendText = statsData?.mutations_trend
-    ? `${statsData.mutations_trend.direction === "up" ? "+" : "-"}${statsData.mutations_trend.percentage}% ${statsData.mutations_trend.comparison_label}`
+    ? `${statsData.mutations_trend.direction === "up" ? "+" : statsData.mutations_trend.direction === "down" ? "-" : ""}${statsData.mutations_trend.percentage ?? 0}% ${statsData.mutations_trend.comparison_label ?? ""}`
     : totalLogs > 0
       ? `${totalLogs} aktivitas tercatat`
       : "Belum ada aktivitas hari ini";

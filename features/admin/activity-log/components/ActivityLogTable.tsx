@@ -1,14 +1,13 @@
 "use client";
 
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
-import type { ActivityLogItemData } from "../lib/activityLogTypes";
-import type { PagePagination } from "@/lib/types/pagination";
+import type { ActivityLogItemData, ActivityLogPagination } from "../lib/activityLogTypes";
 import { ActivityLogRow } from "./ActivityLogRow";
 import { ActivityLogEmptyState } from "./ActivityLogEmptyState";
 
 type ActivityLogTableProps = {
   logs: ActivityLogItemData[];
-  pagination: PagePagination;
+  pagination: ActivityLogPagination;
   onPageChange: (page: number) => void;
   onResetFilters: () => void;
   isLoading?: boolean;
